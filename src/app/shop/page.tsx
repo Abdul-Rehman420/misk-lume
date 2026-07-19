@@ -42,7 +42,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
   try {
     const [dbProducts, count] = await Promise.all([
       getShopProducts({ gender, category, search, minPrice, maxPrice, sort, limit: ITEMS_PER_PAGE, offset }),
-      getShopProductsCount({ gender, category, search, minPrice, maxPrice }),
+      getShopProductsCount({ gender, category, search, minPrice, maxPrice, sizes: sizes.length > 0 ? sizes : undefined }),
     ]);
 
     if (dbProducts && dbProducts.length > 0) {

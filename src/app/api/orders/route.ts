@@ -116,29 +116,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Failed to create order items" }, { status: 500 });
     }
 
-    // Update stock
-    for (const item of validatedItems) {
-      const { error: stockError } = await supabase.rpc("decrement_stock", {
-        p_product_id: item.product_id,
-        p_quantity: item.quantity,
-      });
-
-      if (stockError) {
-        // Fallback: read current stock and decrement directly
-        const { data: currentProduct } = await supabase
-          .from("products")
-          .select("stock_quantity")
-          .eq("id", item.product_id)
-          .single();
-
-        const currentStock = currentProduct?.stock_quantity ?? 0;
-        await supabase
-          .from("products")
-          .update({ stock_quantity: Math.max(0, currentStock - item.quantity) })
-          .eq("id", item.product_id);
-      }
-    }
-
     // Update discount usage
     if (discount_code && discountAmount > 0) {
       const { data: dc } = await supabase

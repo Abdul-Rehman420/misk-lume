@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Button from "@/components/ui/Button";
 import ProductCard from "@/components/ui/ProductCard";
-import { getCollections, getCollectionBySlug } from "@/lib/supabase/queries";
+import { getCollectionBySlug } from "@/lib/supabase/queries";
 import type { Metadata } from "next";
 
 interface CollectionPageProps {

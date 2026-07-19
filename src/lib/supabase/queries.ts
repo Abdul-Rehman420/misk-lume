@@ -142,7 +142,7 @@ export async function getRelatedProducts(productId: string, limit = 4) {
 
 export async function getShopProducts(filters?: {
   category?: string; gender?: string; search?: string;
-  minPrice?: number; maxPrice?: number; sizes?: string[];
+  minPrice?: number; maxPrice?: number;
   sort?: string; limit?: number; offset?: number;
 }) {
   const supabase = await createClient()
@@ -169,10 +169,10 @@ export async function getShopProducts(filters?: {
 
 export async function getShopProductsCount(filters?: {
   category?: string; gender?: string; search?: string;
-  minPrice?: number; maxPrice?: number;
+  minPrice?: number; maxPrice?: number; sizes?: string[];
 }) {
   const supabase = await createClient()
-  let query = supabase.from('products').select('id', { count: 'exact', head: true }).eq('is_active', true)
+  let query = supabase.from('products').select('id, product_sizes(size_ml)', { count: 'exact', head: true }).eq('is_active', true)
 
   if (filters?.category) query = query.eq('categories.slug', filters.category)
   if (filters?.gender) query = query.eq('gender', filters.gender)
@@ -182,5 +182,20 @@ export async function getShopProductsCount(filters?: {
 
   const { count, error } = await query
   if (error) throw error
-  return count || 0
+
+  if (!filters?.sizes?.length) return count || 0
+
+  const { data: allProducts } = await supabase
+    .from('products')
+    .select('id, product_sizes(size_ml)')
+    .eq('is_active', true)
+
+  if (!allProducts) return count || 0
+
+  const sizeFilters = filters.sizes.map(s => parseInt(s.replace('ml', '')))
+  const filteredCount = allProducts.filter(p =>
+    p.product_sizes?.some((s: { size_ml: number }) => sizeFilters.includes(s.size_ml))
+  ).length
+
+  return filteredCount
 }

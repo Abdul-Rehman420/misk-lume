@@ -8,6 +8,7 @@ import Button from "@/components/ui/Button";
 import { useCart } from "@/lib/context/CartContext";
 
 const SHIPPING_COST = 200;
+const FREE_SHIPPING_THRESHOLD = 8000;
 
 const provinces = [
   "Punjab", "Sindh", "KPK", "Balochistan",
@@ -34,7 +35,8 @@ export default function CheckoutPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const total = subtotal + SHIPPING_COST;
+  const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
+  const total = subtotal + shipping;
 
   function update(field: string, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -225,7 +227,12 @@ export default function CheckoutPage() {
               </div>
               <div className="mt-6 space-y-3 border-t border-border pt-6 text-sm">
                 <div className="flex justify-between text-text-muted"><span>Subtotal</span><span>PKR {subtotal.toLocaleString()}</span></div>
-                <div className="flex justify-between text-text-muted"><span>Shipping</span><span>PKR {SHIPPING_COST.toLocaleString()}</span></div>
+                {shipping > 0 && subtotal < FREE_SHIPPING_THRESHOLD && (
+                  <p className="rounded-sm bg-accent-gold/10 px-3 py-2 text-xs text-accent-gold">
+                    Add PKR {(FREE_SHIPPING_THRESHOLD - subtotal).toLocaleString()} more for free shipping
+                  </p>
+                )}
+                <div className="flex justify-between text-text-muted"><span>Shipping</span><span>{shipping === 0 ? <span className="text-accent-gold font-medium">FREE</span> : `PKR ${shipping.toLocaleString()}`}</span></div>
                 <div className="border-t border-border pt-3">
                   <div className="flex justify-between text-base font-bold text-accent-gold"><span>Total</span><span>PKR {total.toLocaleString()}</span></div>
                 </div>
