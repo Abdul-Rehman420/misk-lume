@@ -1,29 +1,22 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Button from "@/components/ui/Button";
 import { useCart } from "@/lib/context/CartContext";
 
 const SHIPPING_COST = 200;
+const FREE_SHIPPING_THRESHOLD = 8000;
 
 export default function CartPage() {
   const { items, updateQuantity, removeItem } = useCart();
-  const [discountCode, setDiscountCode] = useState("");
-  const [discount, setDiscount] = useState(0);
 
   const subtotal = items.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0,
   );
-  const total = subtotal + SHIPPING_COST - discount;
-
-  function applyDiscount() {
-    if (discountCode.toUpperCase() === "MISK10") {
-      setDiscount(Math.round(subtotal * 0.1));
-    }
-  }
+  const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
+  const total = subtotal + shipping;
 
   return (
     <div className="min-h-screen bg-bg-primary">
@@ -61,7 +54,7 @@ export default function CartPage() {
 
                     <div className="flex-1 min-w-0">
                       <Link
-                        href={`/product/${item.name.toLowerCase().replace(/ /g, "-")}`}
+                        href={`/product/${item.slug}`}
                         className="font-display text-base font-medium text-text-primary transition-colors hover:text-accent-gold"
                       >
                         {item.name}
@@ -129,13 +122,12 @@ export default function CartPage() {
                 </div>
                 <div className="flex justify-between text-text-muted">
                   <span>Shipping</span>
-                  <span>PKR {SHIPPING_COST.toLocaleString()}</span>
+                  <span>{shipping === 0 ? <span className="text-accent-gold font-medium">FREE</span> : `PKR ${SHIPPING_COST.toLocaleString()}`}</span>
                 </div>
-                {discount > 0 && (
-                  <div className="flex justify-between text-green-500">
-                    <span>Discount</span>
-                    <span>-PKR {discount.toLocaleString()}</span>
-                  </div>
+                {shipping > 0 && subtotal < FREE_SHIPPING_THRESHOLD && (
+                  <p className="rounded-sm bg-accent-gold/10 px-3 py-2 text-xs text-accent-gold">
+                    Add PKR {(FREE_SHIPPING_THRESHOLD - subtotal).toLocaleString()} more for free shipping
+                  </p>
                 )}
                 <div className="border-t border-border pt-3">
                   <div className="flex justify-between text-base font-bold text-accent-gold">
@@ -143,22 +135,6 @@ export default function CartPage() {
                     <span>PKR {total.toLocaleString()}</span>
                   </div>
                 </div>
-              </div>
-
-              <div className="mt-6 flex gap-2">
-                <input
-                  type="text"
-                  placeholder="Discount code"
-                  value={discountCode}
-                  onChange={(e) => setDiscountCode(e.target.value)}
-                  className="flex-1 rounded-sm border border-border bg-bg-primary px-4 py-3 text-sm text-text-primary outline-none transition-colors placeholder:text-text-dim focus:border-accent-gold"
-                />
-                <button
-                  onClick={applyDiscount}
-                  className="rounded-sm border border-accent-gold px-4 py-3 text-xs font-semibold uppercase tracking-wider text-accent-gold transition-colors hover:bg-accent-gold hover:text-bg-primary"
-                >
-                  Apply
-                </button>
               </div>
 
               <div className="mt-6">

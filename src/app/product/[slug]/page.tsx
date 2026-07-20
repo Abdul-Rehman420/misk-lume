@@ -6,6 +6,7 @@ import ReviewCard from "@/components/ui/ReviewCard";
 import Button from "@/components/ui/Button";
 import ProductActions from "@/components/product/ProductActions";
 import { getProductBySlug, getProductReviews, getRelatedProducts } from "@/lib/supabase/queries";
+import { ProductJsonLd } from "@/components/ui/JsonLd";
 import type { Metadata } from "next";
 
 interface ProductPageProps {
@@ -146,9 +147,20 @@ export default async function ProductPage({ params }: ProductPageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-bg-primary">
+    <>
+      <ProductJsonLd product={{
+        name: product.name,
+        description: product.short_description || product.description?.slice(0, 160) || "",
+        image: product.image_url,
+        price: product.sale_price || product.price,
+        sku: product.sku,
+        rating: product.rating,
+        reviewCount: product.review_count,
+        availability: product.stock_quantity > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+      }} />
+      <div className="min-h-screen bg-bg-primary">
       <div className="mx-auto max-w-7xl px-4 pb-4 pt-6 sm:px-6 lg:px-8">
-        <nav className="flex items-center gap-2 text-xs text-text-dim">
+        <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-text-dim">
           <Link href="/" className="transition-colors hover:text-accent-gold">Home</Link>
           <span>/</span>
           <Link href="/shop" className="transition-colors hover:text-accent-gold">Shop</Link>
@@ -283,5 +295,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
         </div>
       </section>
     </div>
+    </>
   );
 }

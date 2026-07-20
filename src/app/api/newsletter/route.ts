@@ -6,7 +6,7 @@ import { rateLimit, rateLimiters } from "@/lib/rate-limit";
 export async function POST(request: NextRequest) {
   try {
     const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "anonymous";
-    const rl = rateLimit(`${rateLimiters.newsletter.prefix}:${ip}`, rateLimiters.newsletter.limit, rateLimiters.newsletter.windowMs);
+    const rl = await rateLimit(`${rateLimiters.newsletter.prefix}:${ip}`, rateLimiters.newsletter.limit, rateLimiters.newsletter.windowMs);
     if (!rl.success) {
       return NextResponse.json({ error: "Too many requests. Please try again later." }, { status: 429 });
     }
@@ -15,6 +15,10 @@ export async function POST(request: NextRequest) {
 
     if (!email || typeof email !== "string") {
       return NextResponse.json({ error: "Valid email is required" }, { status: 400 });
+    }
+
+    if (email.length > 254) {
+      return NextResponse.json({ error: "Email address is too long" }, { status: 400 });
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

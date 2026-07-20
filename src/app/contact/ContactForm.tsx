@@ -52,17 +52,20 @@ export default function ContactForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       {error && (
-        <div className="rounded-md border border-red-500/20 bg-red-500/5 p-3 text-sm text-red-500">{error}</div>
+        <div className="flex items-start justify-between rounded-md border border-red-500/20 bg-red-500/5 p-3 text-sm text-red-500">
+          <span>{error}</span>
+          <button type="button" onClick={() => setError("")} className="ml-3 text-red-400 hover:text-red-300">&times;</button>
+        </div>
       )}
 
       <div>
         <label htmlFor="name" className="mb-1.5 block text-xs uppercase tracking-[0.2em] text-text-dim">Name</label>
-        <input type="text" id="name" name="name" required className="w-full rounded-lg border border-border-subtle bg-bg-surface px-4 py-3 text-text-primary placeholder:text-text-dim focus:border-accent-gold/50 focus:outline-none" placeholder="Your name" />
+        <input type="text" id="name" name="name" required maxLength={100} className="w-full rounded-lg border border-border-subtle bg-bg-surface px-4 py-3 text-text-primary placeholder:text-text-dim focus:border-accent-gold/50 focus:outline-none" placeholder="Your name" />
       </div>
 
       <div>
         <label htmlFor="email" className="mb-1.5 block text-xs uppercase tracking-[0.2em] text-text-dim">Email</label>
-        <input type="email" id="email" name="email" required className="w-full rounded-lg border border-border-subtle bg-bg-surface px-4 py-3 text-text-primary placeholder:text-text-dim focus:border-accent-gold/50 focus:outline-none" placeholder="your@email.com" />
+        <input type="email" id="email" name="email" required maxLength={254} className="w-full rounded-lg border border-border-subtle bg-bg-surface px-4 py-3 text-text-primary placeholder:text-text-dim focus:border-accent-gold/50 focus:outline-none" placeholder="your@email.com" />
       </div>
 
       <div>
@@ -78,7 +81,7 @@ export default function ContactForm() {
 
       <div>
         <label htmlFor="message" className="mb-1.5 block text-xs uppercase tracking-[0.2em] text-text-dim">Message</label>
-        <textarea id="message" name="message" required rows={5} className="w-full resize-none rounded-lg border border-border-subtle bg-bg-surface px-4 py-3 text-text-primary placeholder:text-text-dim focus:border-accent-gold/50 focus:outline-none" placeholder="How can we help?" />
+        <textarea id="message" name="message" required rows={5} maxLength={5000} className="w-full resize-none rounded-lg border border-border-subtle bg-bg-surface px-4 py-3 text-text-primary placeholder:text-text-dim focus:border-accent-gold/50 focus:outline-none" placeholder="How can we help?" />
       </div>
 
       <button type="submit" disabled={loading} className="w-full rounded-lg bg-accent-gold px-6 py-3 font-body text-sm font-medium uppercase tracking-[0.15em] text-bg-primary transition-colors hover:bg-accent-gold/90 disabled:opacity-50">

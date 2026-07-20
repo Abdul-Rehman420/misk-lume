@@ -49,7 +49,10 @@ export default function CustomersPage() {
       </div>
 
       {error && (
-        <div className="rounded-md border border-red-500/20 bg-red-500/5 p-4 text-sm text-red-500">{error}</div>
+        <div className="flex items-start justify-between rounded-md border border-red-500/20 bg-red-500/5 p-4 text-sm text-red-500">
+          <span>{error}</span>
+          <button type="button" onClick={() => setError(null)} className="ml-3 text-red-400 hover:text-red-300">&times;</button>
+        </div>
       )}
 
       <div className="relative max-w-md">

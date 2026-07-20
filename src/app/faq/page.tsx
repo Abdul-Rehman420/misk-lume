@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import FaqAccordion from "./FaqAccordion";
+import { FaqJsonLd } from "@/components/ui/JsonLd";
 
 export const metadata: Metadata = {
   title: "FAQ | Misk Lume",
@@ -109,8 +110,12 @@ type Category = keyof typeof faqData;
 export default function FaqPage() {
   const categories = Object.keys(faqData) as Category[];
 
+  const allQuestions = Object.values(faqData).flat();
+
   return (
-    <div className="min-h-screen bg-bg-primary text-text-primary">
+    <>
+      <FaqJsonLd questions={allQuestions} />
+      <div className="min-h-screen bg-bg-primary text-text-primary">
       <section className="flex min-h-[30vh] items-center justify-center bg-gradient-to-b from-bg-primary via-bg-surface to-bg-primary">
         <h1 className="font-display text-4xl tracking-wide md:text-5xl lg:text-6xl">
           Frequently Asked Questions
@@ -151,5 +156,6 @@ export default function FaqPage() {
         </div>
       </section>
     </div>
+    </>
   );
 }

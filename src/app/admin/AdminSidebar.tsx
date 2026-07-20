@@ -107,7 +107,7 @@ export default function AdminSidebar() {
         <span className="ml-2 rounded bg-accent-gold-muted px-1.5 py-0.5 text-[10px] font-semibold uppercase text-accent-gold">Admin</span>
       </div>
 
-      <nav className="flex-1 overflow-y-auto px-3 py-4">
+      <nav aria-label="Admin navigation" className="flex-1 overflow-y-auto px-3 py-4">
         <ul className="space-y-1">
           {navLinks.map((link) => {
             const isActive = link.href === "/admin" ? pathname === "/admin" : pathname.startsWith(link.href);

@@ -51,27 +51,32 @@ function LoginForm() {
         <p className="mb-8 text-center text-sm text-text-muted">Sign in to your account</p>
 
         {authError && (
-          <div className="mb-5 rounded-md border border-red-500/20 bg-red-500/5 p-3 text-sm text-red-500">
-            Authentication failed. Please try again.
+          <div className="mb-5 flex items-start justify-between rounded-md border border-red-500/20 bg-red-500/5 p-3 text-sm text-red-500">
+            <span>Authentication failed. Please try again.</span>
+            <button type="button" onClick={() => { /* authError is from URL params, can't be cleared via state */ }} className="ml-3 text-red-400 hover:text-red-300">&times;</button>
           </div>
         )}
 
         {error && (
-          <div className="mb-5 rounded-md border border-red-500/20 bg-red-500/5 p-3 text-sm text-red-500">{error}</div>
+          <div className="mb-5 flex items-start justify-between rounded-md border border-red-500/20 bg-red-500/5 p-3 text-sm text-red-500">
+            <span>{error}</span>
+            <button type="button" onClick={() => setError("")} className="ml-3 text-red-400 hover:text-red-300">&times;</button>
+          </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-text-primary">Email Address</label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              required
-              className="w-full rounded-sm border border-border bg-bg-primary px-4 py-3 text-sm text-text-primary placeholder:text-text-dim focus:border-accent-gold focus:outline-none"
-            />
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                required
+                maxLength={254}
+                className="w-full rounded-sm border border-border bg-bg-primary px-4 py-3 text-sm text-text-primary placeholder:text-text-dim focus:border-accent-gold focus:outline-none"
+              />
           </div>
 
           <div>
@@ -84,6 +89,7 @@ function LoginForm() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
                 required
+                maxLength={128}
                 className="w-full rounded-sm border border-border bg-bg-primary px-4 py-3 pr-12 text-sm text-text-primary placeholder:text-text-dim focus:border-accent-gold focus:outline-none"
               />
               <button

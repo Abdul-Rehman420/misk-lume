@@ -81,7 +81,7 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
       </div>
 
       <div className="mx-auto max-w-7xl px-4 -mt-32 relative z-10 pb-20">
-        <nav className="mb-8 flex items-center gap-2 text-xs text-text-dim">
+        <nav aria-label="Breadcrumb" className="mb-8 flex items-center gap-2 text-xs text-text-dim">
           <Link href="/" className="transition-colors hover:text-accent-gold">Home</Link>
           <span>/</span>
           <Link href="/collections" className="transition-colors hover:text-accent-gold">Collections</Link>

@@ -5,28 +5,58 @@ import { rateLimit, rateLimiters } from "@/lib/rate-limit";
 
 function generateOrderNumber(): string {
   const timestamp = Date.now().toString(36).toUpperCase();
-  const random = Math.random().toString(36).substring(2, 6).toUpperCase();
+  const buf = new Uint32Array(2);
+  crypto.getRandomValues(buf);
+  const random = buf[0].toString(36).substring(0, 4).toUpperCase();
   return `ML-${timestamp}-${random}`;
 }
 
 export async function POST(request: NextRequest) {
   try {
     const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "anonymous";
-    const rl = rateLimit(`${rateLimiters.orders.prefix}:${ip}`, rateLimiters.orders.limit, rateLimiters.orders.windowMs);
+    const rl = await rateLimit(`${rateLimiters.orders.prefix}:${ip}`, rateLimiters.orders.limit, rateLimiters.orders.windowMs);
     if (!rl.success) {
       return NextResponse.json({ error: "Too many requests. Please try again later." }, { status: 429 });
     }
 
     const body = await request.json();
-    const { user_id, items, shipping_address, payment_method, discount_code } = body;
+    const { items, shipping_address, payment_method, discount_code } = body;
 
     if (!items || !Array.isArray(items) || items.length === 0) {
       return NextResponse.json({ error: "Cart is empty" }, { status: 400 });
     }
 
+    for (const item of items) {
+      if (!item.product_id || typeof item.product_id !== "string") {
+        return NextResponse.json({ error: "Each item must have a valid product_id" }, { status: 400 });
+      }
+      if (!item.quantity || typeof item.quantity !== "number" || !Number.isInteger(item.quantity) || item.quantity < 1 || item.quantity > 99) {
+        return NextResponse.json({ error: "Each item must have a quantity between 1 and 99" }, { status: 400 });
+      }
+    }
+
     const supabase = await createClient();
 
-    // Validate stock and calculate totals
+    // C1: Authenticate user — verify the email matches the authenticated session
+    let authenticatedEmail: string | null = null;
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user?.email) {
+        authenticatedEmail = user.email;
+      }
+    } catch {
+      // Auth unavailable — fall back to request body data (guest checkout)
+    }
+
+    const userEmail = shipping_address?.email || "";
+    const userId = authenticatedEmail ? userEmail : (body.user_id || null);
+
+    if (authenticatedEmail && userEmail !== authenticatedEmail) {
+      return NextResponse.json({ error: "Email does not match authenticated user" }, { status: 403 });
+    }
+
+    // H1: Fast-path stock check (best-effort, not authoritative)
+    // The authoritative atomic check is the DB trigger in migration 010
     let subtotal = 0;
     const validatedItems = [];
 
@@ -92,7 +122,7 @@ export async function POST(request: NextRequest) {
       .from("orders")
       .insert({
         order_number: orderNumber,
-        user_id: user_id || null,
+        user_id: userId,
         status: "processing",
         subtotal,
         shipping_cost: shippingCost,
@@ -117,31 +147,32 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Failed to create order" }, { status: 500 });
     }
 
-    // Create order items
+    // H1: Create order items — trigger decrements stock atomically (migration 010)
+    // If stock is insufficient, the trigger raises an exception and the insert fails
     const orderItems = validatedItems.map((item) => ({
       ...item,
       order_id: order.id,
     }));
 
-    const { error: itemsError } = await supabase.from("order_items").insert(orderItems);
+    let itemsError;
+    try {
+      const result = await supabase.from("order_items").insert(orderItems);
+      itemsError = result.error;
+    } catch {
+      itemsError = { message: "Stock validation failed" };
+    }
+
     if (itemsError) {
+      await supabase.from("orders").delete().eq("id", order.id);
+      if (itemsError.message?.includes?.("Insufficient stock") || itemsError.message === "Stock validation failed") {
+        return NextResponse.json({ error: "Insufficient stock for one or more items. Please update your cart." }, { status: 409 });
+      }
       return NextResponse.json({ error: "Failed to create order items" }, { status: 500 });
     }
 
-    // Update discount usage
+    // Update discount usage atomically
     if (discount_code && discountAmount > 0) {
-      const { data: dc } = await supabase
-        .from("discount_codes")
-        .select("used_count")
-        .eq("code", discount_code.toUpperCase())
-        .single();
-
-      if (dc) {
-        await supabase
-          .from("discount_codes")
-          .update({ used_count: (dc.used_count || 0) + 1 })
-          .eq("code", discount_code.toUpperCase());
-      }
+      await supabase.rpc("increment_discount_usage", { code_text: discount_code.toUpperCase() });
     }
 
     // Send confirmation email

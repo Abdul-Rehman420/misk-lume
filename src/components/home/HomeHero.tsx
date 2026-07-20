@@ -8,7 +8,7 @@ export default function HomeHero() {
   return (
     <HeroParallax>
       <section className="relative flex min-h-screen items-center justify-center overflow-hidden">
-        <Image src="https://images.unsplash.com/photo-1541643600914-78b084683601?w=1920&q=80" alt="Luxury perfume bottle" fill priority sizes="100vw" className="object-cover" />
+        <Image src="https://images.unsplash.com/photo-1541643600914-78b084683601?w=1920&q=80" alt="Misk Lume signature perfume bottle with gold accents on dark background" fill priority sizes="100vw" className="object-cover" />
         <div className="absolute inset-0 bg-overlay hero-grain" />
         <div className="relative z-10 flex max-w-3xl flex-col items-center px-6 text-center">
           <span className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-gold">New Collection 2026</span>

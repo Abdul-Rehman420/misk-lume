@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import ProductCard from "@/components/ui/ProductCard";
+import Button from "@/components/ui/Button";
 import Link from "next/link";
 
 interface UserProfile {
@@ -95,14 +96,6 @@ export default function AccountPage() {
   }, [supabase]);
 
   const displayName = profile?.full_name?.split(" ")[0] || "Guest";
-  const displayOrders = orders.length > 0 ? orders : [
-    { id: "ML-2024-0847", order_number: "ML-2024-0847", status: "shipped", total: 12500, created_at: "2024-12-28", order_items: [{ product_name: "Noir Oud EDP", product_image: "/images/noir-oud.jpg", quantity: 1, size_ml: 12, unit_price: 4500, total_price: 4500 }, { product_name: "Rose Attar", product_image: "/images/rose-attar.jpg", quantity: 1, size_ml: 6, unit_price: 8000, total_price: 8000 }] },
-    { id: "ML-2024-0831", order_number: "ML-2024-0831", status: "delivered", total: 9400, created_at: "2024-12-15", order_items: [{ product_name: "Amber Woods EDT", product_image: "/images/amber-woods.jpg", quantity: 2, size_ml: 12, unit_price: 4700, total_price: 9400 }] },
-  ];
-  const displayWishlist = wishlist.length > 0 ? wishlist : [
-    { products: { name: "Noir Oud EDP", slug: "noir-oud", price: 8500, gender: "Unisex", image_url: "/images/noir-oud.jpg", rating: 4.8, review_count: 124 } },
-    { products: { name: "Rose Velvet Parfum", slug: "rose-velvet-parfum", price: 7200, gender: "Women", image_url: "/images/rose-velvet.jpg", rating: 4.6, review_count: 89 } },
-  ];
 
   return (
     <div className="min-h-screen bg-bg-primary px-4 py-24 sm:px-6 lg:px-8">
@@ -110,7 +103,7 @@ export default function AccountPage() {
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
           {/* Sidebar */}
           <aside className="lg:col-span-1">
-            <nav className="sticky top-24 space-y-1">
+            <nav aria-label="Account navigation" className="sticky top-24 space-y-1">
               {navItems.map((item) => (
                 <button
                   key={item.id}
@@ -159,18 +152,14 @@ export default function AccountPage() {
             </p>
 
             {/* Stat Cards */}
-            <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="rounded-md border border-border bg-bg-surface p-6 text-center">
-                <p className="text-3xl font-semibold text-accent-gold">{orders.length || 7}</p>
+                <p className="text-3xl font-semibold text-accent-gold">{orders.length}</p>
                 <p className="mt-1 text-sm text-text-muted">Total Orders</p>
               </div>
               <div className="rounded-md border border-border bg-bg-surface p-6 text-center">
-                <p className="text-3xl font-semibold text-accent-gold">{wishlist.length || 4}</p>
+                <p className="text-3xl font-semibold text-accent-gold">{wishlist.length}</p>
                 <p className="mt-1 text-sm text-text-muted">Wishlist Items</p>
-              </div>
-              <div className="rounded-md border border-border bg-bg-surface p-6 text-center">
-                <p className="text-3xl font-semibold text-accent-gold">1,250</p>
-                <p className="mt-1 text-sm text-text-muted">Points Earned</p>
               </div>
             </div>
 
@@ -178,38 +167,47 @@ export default function AccountPage() {
             {(activeTab === "overview" || activeTab === "orders") && (
               <div className="mt-12">
                 <h2 className="font-display text-xl font-medium text-text-primary">Recent Orders</h2>
-                <div className="mt-4 space-y-4">
-                  {displayOrders.map((order) => (
-                    <div key={order.id} className="rounded-md border border-border bg-bg-surface p-5">
-                      <div className="flex flex-wrap items-center justify-between gap-3">
-                        <div className="flex items-center gap-4">
-                          <span className="text-sm font-medium text-text-primary">{order.order_number || order.id}</span>
-                          <span className="text-xs text-text-dim">{new Date(order.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                        </div>
-                        <span className={`rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-wider ${statusStyles[order.status] || "bg-bg-elevated text-text-muted"}`}>
-                          {order.status}
-                        </span>
-                      </div>
-                      <div className="mt-4 flex items-center gap-4">
-                        {order.order_items.map((item, i) => (
-                          <div key={i} className="flex items-center gap-3">
-                            <div className="h-12 w-12 overflow-hidden rounded-md bg-bg-elevated">
-                              <Image src={item.product_image} alt={item.product_name} width={48} height={48} className="h-full w-full object-cover" />
-                            </div>
-                            <div>
-                              <p className="text-sm text-text-primary">{item.product_name}</p>
-                              {item.quantity > 1 && <p className="text-xs text-text-dim">Qty: {item.quantity}</p>}
-                            </div>
+                {orders.length === 0 ? (
+                  <div className="mt-4 rounded-md border border-border bg-bg-surface p-12 text-center">
+                    <p className="text-text-muted">No orders yet</p>
+                    <Link href="/shop" className="mt-4 inline-block">
+                      <Button variant="outline">Start Shopping</Button>
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="mt-4 space-y-4">
+                    {orders.map((order) => (
+                      <div key={order.id} className="rounded-md border border-border bg-bg-surface p-5">
+                        <div className="flex flex-wrap items-center justify-between gap-3">
+                          <div className="flex items-center gap-4">
+                            <span className="text-sm font-medium text-text-primary">{order.order_number || order.id}</span>
+                            <span className="text-xs text-text-dim">{new Date(order.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                           </div>
-                        ))}
+                          <span className={`rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-wider ${statusStyles[order.status] || "bg-bg-elevated text-text-muted"}`}>
+                            {order.status}
+                          </span>
+                        </div>
+                        <div className="mt-4 flex items-center gap-4">
+                          {order.order_items.map((item, i) => (
+                            <div key={i} className="flex items-center gap-3">
+                              <div className="h-12 w-12 overflow-hidden rounded-md bg-bg-elevated">
+                                <Image src={item.product_image} alt={item.product_name} width={48} height={48} className="h-full w-full object-cover" />
+                              </div>
+                              <div>
+                                <p className="text-sm text-text-primary">{item.product_name}</p>
+                                {item.quantity > 1 && <p className="text-xs text-text-dim">Qty: {item.quantity}</p>}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="mt-4 flex items-center justify-between border-t border-border-subtle pt-4">
+                          <span className="text-sm text-text-muted">Total</span>
+                          <span className="text-sm font-semibold text-accent-gold">PKR {order.total.toLocaleString()}</span>
+                        </div>
                       </div>
-                      <div className="mt-4 flex items-center justify-between border-t border-border-subtle pt-4">
-                        <span className="text-sm text-text-muted">Total</span>
-                        <span className="text-sm font-semibold text-accent-gold">PKR {order.total.toLocaleString()}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 
@@ -217,21 +215,30 @@ export default function AccountPage() {
             {(activeTab === "overview" || activeTab === "wishlist") && (
               <div className="mt-12">
                 <h2 className="font-display text-xl font-medium text-text-primary">Your Wishlist</h2>
-                <div className="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                  {displayWishlist.map((item) => (
-                    <ProductCard
-                      key={item.products.slug}
-                      name={item.products.name}
-                      slug={item.products.slug}
-                      price={item.products.price}
-                      salePrice={item.products.sale_price}
-                      gender={item.products.gender}
-                      imageUrl={item.products.image_url}
-                      rating={item.products.rating}
-                      reviewCount={item.products.review_count}
-                    />
-                  ))}
-                </div>
+                {wishlist.length === 0 ? (
+                  <div className="mt-4 rounded-md border border-border bg-bg-surface p-12 text-center">
+                    <p className="text-text-muted">Your wishlist is empty</p>
+                    <Link href="/shop" className="mt-4 inline-block">
+                      <Button variant="outline">Browse Products</Button>
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    {wishlist.map((item) => (
+                      <ProductCard
+                        key={item.products.slug}
+                        name={item.products.name}
+                        slug={item.products.slug}
+                        price={item.products.price}
+                        salePrice={item.products.sale_price}
+                        gender={item.products.gender}
+                        imageUrl={item.products.image_url}
+                        rating={item.products.rating}
+                        reviewCount={item.products.review_count}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </section>

@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Button from "@/components/ui/Button";
+
+export const metadata: Metadata = {
+  title: "404 - Page Not Found | Misk Lume",
+  robots: { index: false },
+};
 
 export default function NotFound() {
   return (

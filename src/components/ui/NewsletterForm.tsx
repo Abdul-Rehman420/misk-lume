@@ -43,6 +43,7 @@ export default function NewsletterForm({ className }: { className?: string }) {
         onChange={(e) => { setEmail(e.target.value); setStatus("idle"); }}
         placeholder="Enter your email"
         required
+        maxLength={254}
         aria-describedby={status === "error" ? "newsletter-error" : undefined}
         className="flex-1 rounded-sm border border-border-subtle bg-bg-elevated px-4 py-3 text-sm text-text-primary placeholder-text-dim transition-colors focus:border-accent-gold focus:outline-none"
       />

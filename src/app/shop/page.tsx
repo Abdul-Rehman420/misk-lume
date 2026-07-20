@@ -101,7 +101,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-12">
-      <nav className="flex items-center gap-2 text-sm text-text-dim">
+      <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm text-text-dim">
         <Link href="/" className="transition-colors hover:text-accent-gold">Home</Link>
         <span>/</span>
         <span className="text-text-primary">All Products</span>
@@ -167,7 +167,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
           )}
 
           {totalPages > 1 && (
-            <nav className="mt-12 flex items-center justify-center gap-2">
+            <nav aria-label="Pagination" className="mt-12 flex items-center justify-center gap-2">
               {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
                 <Link key={p} href={buildPageUrl(p)} className={`flex h-10 w-10 items-center justify-center rounded-sm text-sm font-medium transition-colors ${p === page ? "bg-accent-gold text-bg-primary" : "border border-border-subtle text-text-muted hover:border-accent-gold hover:text-accent-gold"}`}>
                   {p}

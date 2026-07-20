@@ -14,7 +14,7 @@ export default function ReviewCard({
   return (
     <div className="rounded-md border border-accent-gold/5 bg-bg-surface/70 p-6 backdrop-blur-md">
       {/* Stars */}
-      <div className="flex gap-0.5" aria-hidden="true">
+      <div className="flex gap-0.5" role="img" aria-label={`${rating} out of 5 stars`}>
         {Array.from({ length: 5 }).map((_, i) => (
           <svg
             key={i}
@@ -24,6 +24,7 @@ export default function ReviewCard({
             stroke="currentColor"
             strokeWidth={1.5}
             className={`h-4 w-4 ${i < rating ? "text-accent-gold" : "text-text-dim"}`}
+            aria-hidden="true"
           >
             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
           </svg>

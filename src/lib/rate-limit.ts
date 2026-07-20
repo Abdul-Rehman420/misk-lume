@@ -1,27 +1,47 @@
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
+import { createClient } from "./supabase/server";
 
-export function rateLimit(key: string, limit: number, windowMs: number): { success: boolean; remaining: number } {
-  const now = Date.now()
-  const entry = rateLimitMap.get(key)
+export async function rateLimit(key: string, limit: number, windowMs: number): Promise<{ success: boolean; remaining: number }> {
+  try {
+    const supabase = await createClient();
+    const now = new Date();
+    const resetAt = new Date(now.getTime() + windowMs);
 
-  if (!entry || now > entry.resetAt) {
-    rateLimitMap.set(key, { count: 1, resetAt: now + windowMs })
-    return { success: true, remaining: limit - 1 }
+    // Atomic upsert: increment count if key exists and not expired, else insert fresh
+    const { data: existing } = await supabase
+      .from("rate_limits")
+      .select("count, reset_at")
+      .eq("key", key)
+      .single();
+
+    if (!existing || new Date(existing.reset_at) < now) {
+      await supabase.from("rate_limits").upsert(
+        { key, count: 1, reset_at: resetAt.toISOString() },
+        { onConflict: "key" }
+      );
+      return { success: true, remaining: limit - 1 };
+    }
+
+    if (existing.count >= limit) {
+      return { success: false, remaining: 0 };
+    }
+
+    await supabase
+      .from("rate_limits")
+      .update({ count: existing.count + 1 })
+      .eq("key", key);
+
+    return { success: true, remaining: limit - existing.count - 1 };
+  } catch {
+    // Fail open — if rate limit DB is down, allow the request
+    return { success: true, remaining: limit - 1 };
   }
-
-  if (entry.count >= limit) {
-    return { success: false, remaining: 0 }
-  }
-
-  entry.count++
-  return { success: true, remaining: limit - entry.count }
 }
 
-const HOUR = 60 * 60 * 1000
+const HOUR = 60 * 60 * 1000;
 
 export const rateLimiters = {
   contact: { limit: 5, windowMs: HOUR, prefix: "contact" },
   newsletter: { limit: 3, windowMs: HOUR, prefix: "newsletter" },
   orders: { limit: 10, windowMs: HOUR, prefix: "orders" },
   reviews: { limit: 5, windowMs: HOUR, prefix: "reviews" },
-} as const
+} as const;

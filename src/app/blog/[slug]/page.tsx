@@ -43,6 +43,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       title: `${post.title} | Misk Lume Blog`,
       description: post.excerpt,
       openGraph: { title: post.title, description: post.excerpt, images: [{ url: post.image_url || "" }] },
+      twitter: { card: "summary_large_image", title: post.title, description: post.excerpt },
     };
   } catch {
     return { title: "Blog Post | Misk Lume" };
@@ -71,7 +72,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       </div>
 
       <div className="mx-auto max-w-3xl px-4 -mt-32 relative z-10 pb-20">
-        <nav className="mb-8 flex items-center gap-2 text-xs text-text-dim">
+        <nav aria-label="Breadcrumb" className="mb-8 flex items-center gap-2 text-xs text-text-dim">
           <Link href="/" className="transition-colors hover:text-accent-gold">Home</Link>
           <span>/</span>
           <Link href="/blog" className="transition-colors hover:text-accent-gold">Blog</Link>

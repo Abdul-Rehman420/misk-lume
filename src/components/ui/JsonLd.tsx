@@ -1,0 +1,80 @@
+export function OrganizationJsonLd() {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Misk Lume",
+    url: "https://misklume.com",
+    logo: "https://misklume.com/og-image.jpg",
+    description: "Luxury perfumes and attars crafted with rare ingredients from around the world.",
+    contactPoint: {
+      "@type": "ContactPoint",
+      telephone: "+92-300-1234567",
+      contactType: "customer service",
+      email: "info@misklume.com",
+    },
+    address: {
+      "@type": "PostalAddress",
+      addressCountry: "PK",
+    },
+    sameAs: [
+      "https://instagram.com/misklume",
+      "https://facebook.com/misklume",
+    ],
+  };
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />;
+}
+
+export function BreadcrumbJsonLd({ items }: { items: { name: string; url: string }[] }) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: item.name,
+      item: item.url,
+    })),
+  };
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />;
+}
+
+export function ProductJsonLd({ product }: {
+  product: { name: string; description: string; image: string; price: number; currency?: string; sku?: string; brand?: string; availability?: string; rating?: number; reviewCount?: number };
+}) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description: product.description,
+    image: product.image,
+    sku: product.sku,
+    brand: { "@type": "Brand", name: product.brand || "Misk Lume" },
+    offers: {
+      "@type": "Offer",
+      price: product.price,
+      priceCurrency: product.currency || "PKR",
+      availability: product.availability || "https://schema.org/InStock",
+    },
+    ...(product.rating ? {
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: product.rating,
+        reviewCount: product.reviewCount || 0,
+      },
+    } : {}),
+  };
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />;
+}
+
+export function FaqJsonLd({ questions }: { questions: { question: string; answer: string }[] }) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: questions.map((q) => ({
+      "@type": "Question",
+      name: q.question,
+      acceptedAnswer: { "@type": "Answer", text: q.answer },
+    })),
+  };
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />;
+}

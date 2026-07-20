@@ -10,6 +10,8 @@ interface Product {
   product_images?: { image_url: string; is_primary: boolean }[];
 }
 
+const emptyForm = { name: "", slug: "", price: "", gender: "Unisex", category_id: "", stock: "10", is_active: true, description: "" };
+
 const statusStyles: Record<string, string> = {
   Active: "bg-success/15 text-success",
   Draft: "bg-gray-200 text-gray-600",
@@ -24,10 +26,12 @@ export default function ProductsPage() {
   const [statusFilter, setStatusFilter] = useState("All");
   const [deleting, setDeleting] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState(emptyForm);
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
 
-  useEffect(() => {
-    loadProducts();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { loadProducts(); loadCategories(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function loadProducts() {
     try {
@@ -35,6 +39,11 @@ export default function ProductsPage() {
       if (data) setProducts(data);
     } catch { setError("Failed to load products"); }
     setLoading(false);
+  }
+
+  async function loadCategories() {
+    const { data } = await supabase.from('categories').select('id, name').order('name');
+    if (data) setCategories(data);
   }
 
   async function handleDelete(id: string) {
@@ -45,6 +54,27 @@ export default function ProductsPage() {
       setProducts(prev => prev.filter(p => p.id !== id));
     } catch { setError("Failed to delete product"); }
     setDeleting(null);
+  }
+
+  async function handleSave() {
+    setSaving(true);
+    setError(null);
+    try {
+      const slug = form.slug || form.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      const { error: err } = await supabase.from('products').insert({
+        name: form.name, slug, price: parseFloat(form.price) || 0,
+        gender: form.gender, category_id: form.category_id || null,
+        stock: parseInt(form.stock) || 0, is_active: form.is_active,
+        description: form.description,
+      });
+      if (err) throw err;
+      setShowModal(false);
+      setForm(emptyForm);
+      loadProducts();
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Failed to save product");
+    }
+    setSaving(false);
   }
 
   const filtered = products.filter(p => {
@@ -59,11 +89,17 @@ export default function ProductsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-admin-text">Products</h1>
-        <span className="text-sm text-admin-text-muted">{filtered.length} products</span>
+        <div className="flex items-center gap-3">
+          <span className="text-sm text-admin-text-muted">{filtered.length} products</span>
+          <button onClick={() => setShowModal(true)} className="rounded-md bg-accent-gold px-4 py-2 text-sm font-medium text-bg-primary transition-colors hover:bg-accent-gold-hover">Add Product</button>
+        </div>
       </div>
 
       {error && (
-        <div className="rounded-md border border-red-500/20 bg-red-500/5 p-4 text-sm text-red-500">{error}</div>
+        <div className="flex items-start justify-between rounded-md border border-red-500/20 bg-red-500/5 p-4 text-sm text-red-500">
+          <span>{error}</span>
+          <button type="button" onClick={() => setError(null)} className="ml-3 text-red-400 hover:text-red-300">&times;</button>
+        </div>
       )}
 
       <div className="flex items-center gap-4">
@@ -132,6 +168,63 @@ export default function ProductsPage() {
               })}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-overlay p-4" role="dialog" aria-modal="true" aria-label="Add product">
+          <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-md border border-admin-border bg-admin-surface p-6">
+            <h2 className="mb-6 text-lg font-semibold text-admin-text">Add Product</h2>
+            <div className="space-y-4">
+              <div>
+                <label className="mb-1 block text-sm font-medium text-admin-text">Name</label>
+                <input type="text" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} className="w-full rounded-md border border-admin-border bg-admin-bg px-4 py-2 text-sm text-admin-text outline-none focus:border-accent-gold" />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-admin-text">Slug</label>
+                  <input type="text" value={form.slug} onChange={e => setForm(f => ({ ...f, slug: e.target.value }))} className="w-full rounded-md border border-admin-border bg-admin-bg px-4 py-2 text-sm text-admin-text outline-none focus:border-accent-gold" placeholder="auto-generated" />
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-admin-text">Price (PKR)</label>
+                  <input type="number" value={form.price} onChange={e => setForm(f => ({ ...f, price: e.target.value }))} className="w-full rounded-md border border-admin-border bg-admin-bg px-4 py-2 text-sm text-admin-text outline-none focus:border-accent-gold" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-admin-text">Gender</label>
+                  <select value={form.gender} onChange={e => setForm(f => ({ ...f, gender: e.target.value }))} className="w-full rounded-md border border-admin-border bg-admin-bg px-4 py-2 text-sm text-admin-text outline-none focus:border-accent-gold">
+                    <option>Unisex</option><option>Men</option><option>Women</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-admin-text">Stock</label>
+                  <input type="number" value={form.stock} onChange={e => setForm(f => ({ ...f, stock: e.target.value }))} className="w-full rounded-md border border-admin-border bg-admin-bg px-4 py-2 text-sm text-admin-text outline-none focus:border-accent-gold" />
+                </div>
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-admin-text">Category</label>
+                <select value={form.category_id} onChange={e => setForm(f => ({ ...f, category_id: e.target.value }))} className="w-full rounded-md border border-admin-border bg-admin-bg px-4 py-2 text-sm text-admin-text outline-none focus:border-accent-gold">
+                  <option value="">None</option>
+                  {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-admin-text">Description</label>
+                <textarea rows={3} value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} className="w-full resize-none rounded-md border border-admin-border bg-admin-bg px-4 py-2 text-sm text-admin-text outline-none focus:border-accent-gold" />
+              </div>
+              <div className="flex items-center gap-2">
+                <input type="checkbox" id="is_active" checked={form.is_active} onChange={e => setForm(f => ({ ...f, is_active: e.target.checked }))} className="rounded border-admin-border" />
+                <label htmlFor="is_active" className="text-sm text-admin-text">Active</label>
+              </div>
+            </div>
+            <div className="mt-6 flex justify-end gap-3">
+              <button onClick={() => setShowModal(false)} className="rounded-md border border-admin-border px-4 py-2 text-sm text-admin-text transition-colors hover:bg-admin-bg">Cancel</button>
+              <button onClick={handleSave} disabled={saving || !form.name} className="rounded-md bg-accent-gold px-4 py-2 text-sm font-medium text-bg-primary transition-colors hover:bg-accent-gold-hover disabled:opacity-50">
+                {saving ? "Saving..." : "Save Product"}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

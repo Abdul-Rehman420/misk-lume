@@ -86,6 +86,11 @@ export default function CheckoutPage() {
     }
   }
 
+  const maxLengths: Record<string, number> = {
+    firstName: 50, lastName: 50, email: 254, phone: 20,
+    city: 100, address: 200, postalCode: 20,
+  };
+
   function input(field: string, label: string, type = "text", placeholder = "") {
     const errorId = `${field}-error`;
     return (
@@ -98,6 +103,7 @@ export default function CheckoutPage() {
           onChange={(e) => update(field, e.target.value)}
           placeholder={placeholder}
           required
+          maxLength={maxLengths[field] || 255}
           aria-describedby={errors[field] ? errorId : undefined}
           aria-invalid={!!errors[field]}
           className={`w-full rounded-sm border bg-bg-primary px-4 py-3 text-sm text-text-primary outline-none transition-colors placeholder:text-text-dim focus:border-accent-gold ${errors[field] ? "border-red-500" : "border-border"}`}
@@ -129,7 +135,10 @@ export default function CheckoutPage() {
         <h1 className="mb-10 font-display text-3xl font-medium text-text-primary">Checkout</h1>
 
         {error && (
-          <div className="mb-6 rounded-md border border-red-500/20 bg-red-500/5 p-4 text-sm text-red-500">{error}</div>
+          <div className="mb-6 flex items-start justify-between rounded-md border border-red-500/20 bg-red-500/5 p-4 text-sm text-red-500">
+            <span>{error}</span>
+            <button type="button" onClick={() => setError("")} className="ml-3 text-red-400 hover:text-red-300">&times;</button>
+          </div>
         )}
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
@@ -149,8 +158,9 @@ export default function CheckoutPage() {
                 {input("address", "Address", "text", "House #123, Street 4, Block B")}
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                   <div>
-                    <label className="mb-1.5 block text-sm font-medium text-text-primary">Province</label>
+                    <label htmlFor="checkout-province" className="mb-1.5 block text-sm font-medium text-text-primary">Province</label>
                     <select
+                      id="checkout-province"
                       value={form.province}
                       onChange={(e) => update("province", e.target.value)}
                       className={`w-full rounded-sm border bg-bg-primary px-4 py-3 text-sm text-text-primary outline-none transition-colors focus:border-accent-gold ${errors.province ? "border-red-500" : "border-border"}`}
@@ -172,6 +182,7 @@ export default function CheckoutPage() {
                 value={form.deliveryInstructions}
                 onChange={(e) => update("deliveryInstructions", e.target.value)}
                 placeholder="e.g. Leave at the front gate, call before delivery..."
+                maxLength={500}
                 className="w-full resize-none rounded-sm border border-border bg-bg-primary px-4 py-3 text-sm text-text-primary outline-none transition-colors placeholder:text-text-dim focus:border-accent-gold"
               />
             </div>

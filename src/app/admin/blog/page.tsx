@@ -13,12 +13,17 @@ const statusStyles: Record<string, string> = {
   Draft: "bg-gray-200 text-gray-600",
 };
 
+const emptyForm = { title: "", slug: "", category: "Journal", content: "", excerpt: "", is_published: false };
+
 export default function BlogPage() {
   const supabase = createClient();
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState(emptyForm);
 
   useEffect(() => { loadPosts(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -48,6 +53,26 @@ export default function BlogPage() {
     } catch { setError("Failed to update post"); }
   }
 
+  async function handleSave() {
+    setSaving(true);
+    setError(null);
+    try {
+      const slug = form.slug || form.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      const { error: err } = await supabase.from('blog_posts').insert({
+        title: form.title, slug, category: form.category, content: form.content,
+        excerpt: form.excerpt, is_published: form.is_published,
+        published_at: form.is_published ? new Date().toISOString() : null,
+      });
+      if (err) throw err;
+      setShowModal(false);
+      setForm(emptyForm);
+      loadPosts();
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Failed to create post");
+    }
+    setSaving(false);
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -55,11 +80,15 @@ export default function BlogPage() {
           <h1 className="text-2xl font-bold text-admin-text">Blog Posts</h1>
           <p className="text-sm text-admin-text-muted">Manage your blog content and articles.</p>
         </div>
-
-        {error && (
-          <div className="rounded-md border border-red-500/20 bg-red-500/5 p-4 text-sm text-red-500">{error}</div>
-        )}
+        <button onClick={() => setShowModal(true)} className="rounded-md bg-accent-gold px-4 py-2 text-sm font-medium text-bg-primary transition-colors hover:bg-accent-gold-hover">New Post</button>
       </div>
+
+      {error && (
+        <div className="flex items-start justify-between rounded-md border border-red-500/20 bg-red-500/5 p-4 text-sm text-red-500">
+          <span>{error}</span>
+          <button type="button" onClick={() => setError(null)} className="ml-3 text-red-400 hover:text-red-300">&times;</button>
+        </div>
+      )}
 
       {loading ? (
         <div className="flex items-center justify-center py-20"><div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-gold border-t-transparent" /></div>
@@ -104,6 +133,50 @@ export default function BlogPage() {
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-overlay p-4" role="dialog" aria-modal="true" aria-label="New blog post">
+          <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-md border border-admin-border bg-admin-surface p-6">
+            <h2 className="mb-6 text-lg font-semibold text-admin-text">New Blog Post</h2>
+            <div className="space-y-4">
+              <div>
+                <label className="mb-1 block text-sm font-medium text-admin-text">Title</label>
+                <input type="text" value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} className="w-full rounded-md border border-admin-border bg-admin-bg px-4 py-2 text-sm text-admin-text outline-none focus:border-accent-gold" />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-admin-text">Slug</label>
+                  <input type="text" value={form.slug} onChange={e => setForm(f => ({ ...f, slug: e.target.value }))} className="w-full rounded-md border border-admin-border bg-admin-bg px-4 py-2 text-sm text-admin-text outline-none focus:border-accent-gold" placeholder="auto-generated" />
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-admin-text">Category</label>
+                  <select value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))} className="w-full rounded-md border border-admin-border bg-admin-bg px-4 py-2 text-sm text-admin-text outline-none focus:border-accent-gold">
+                    <option>Journal</option><option>Guides</option><option>Fragrance Notes</option><option>News</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-admin-text">Excerpt</label>
+                <textarea rows={2} value={form.excerpt} onChange={e => setForm(f => ({ ...f, excerpt: e.target.value }))} className="w-full resize-none rounded-md border border-admin-border bg-admin-bg px-4 py-2 text-sm text-admin-text outline-none focus:border-accent-gold" />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-admin-text">Content (HTML)</label>
+                <textarea rows={6} value={form.content} onChange={e => setForm(f => ({ ...f, content: e.target.value }))} className="w-full resize-none rounded-md border border-admin-border bg-admin-bg px-4 py-2 text-sm text-admin-text outline-none focus:border-accent-gold" />
+              </div>
+              <div className="flex items-center gap-2">
+                <input type="checkbox" id="publish" checked={form.is_published} onChange={e => setForm(f => ({ ...f, is_published: e.target.checked }))} className="rounded border-admin-border" />
+                <label htmlFor="publish" className="text-sm text-admin-text">Publish immediately</label>
+              </div>
+            </div>
+            <div className="mt-6 flex justify-end gap-3">
+              <button onClick={() => setShowModal(false)} className="rounded-md border border-admin-border px-4 py-2 text-sm text-admin-text transition-colors hover:bg-admin-bg">Cancel</button>
+              <button onClick={handleSave} disabled={saving || !form.title} className="rounded-md bg-accent-gold px-4 py-2 text-sm font-medium text-bg-primary transition-colors hover:bg-accent-gold-hover disabled:opacity-50">
+                {saving ? "Saving..." : "Create Post"}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

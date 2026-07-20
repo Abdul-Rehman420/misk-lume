@@ -89,29 +89,32 @@ export default function RegisterPage() {
         <p className="mb-8 text-center text-sm text-text-muted">Join the Misk Lume ritual</p>
 
         {error && (
-          <div className="mb-5 rounded-md border border-red-500/20 bg-red-500/5 p-3 text-sm text-red-500">{error}</div>
+          <div className="mb-5 flex items-start justify-between rounded-md border border-red-500/20 bg-red-500/5 p-3 text-sm text-red-500">
+            <span>{error}</span>
+            <button type="button" onClick={() => setError("")} className="ml-3 text-red-400 hover:text-red-300">&times;</button>
+          </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label htmlFor="fullName" className="mb-1.5 block text-sm font-medium text-text-primary">Full Name</label>
-            <input id="fullName" type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Your full name" required className="w-full rounded-sm border border-border bg-bg-primary px-4 py-3 text-sm text-text-primary placeholder:text-text-dim focus:border-accent-gold focus:outline-none" />
+            <input id="fullName" type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Your full name" required maxLength={100} className="w-full rounded-sm border border-border bg-bg-primary px-4 py-3 text-sm text-text-primary placeholder:text-text-dim focus:border-accent-gold focus:outline-none" />
           </div>
 
           <div>
             <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-text-primary">Email Address</label>
-            <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" required className="w-full rounded-sm border border-border bg-bg-primary px-4 py-3 text-sm text-text-primary placeholder:text-text-dim focus:border-accent-gold focus:outline-none" />
+            <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" required maxLength={254} className="w-full rounded-sm border border-border bg-bg-primary px-4 py-3 text-sm text-text-primary placeholder:text-text-dim focus:border-accent-gold focus:outline-none" />
           </div>
 
           <div>
             <label htmlFor="phone" className="mb-1.5 block text-sm font-medium text-text-primary">Phone Number <span className="text-text-dim">(optional)</span></label>
-            <input id="phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="03001234567" className="w-full rounded-sm border border-border bg-bg-primary px-4 py-3 text-sm text-text-primary placeholder:text-text-dim focus:border-accent-gold focus:outline-none" />
+            <input id="phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="03001234567" maxLength={15} className="w-full rounded-sm border border-border bg-bg-primary px-4 py-3 text-sm text-text-primary placeholder:text-text-dim focus:border-accent-gold focus:outline-none" />
           </div>
 
           <div>
             <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-text-primary">Password</label>
             <div className="relative">
-              <input id="password" type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Create a strong password" required className="w-full rounded-sm border border-border bg-bg-primary px-4 py-3 pr-12 text-sm text-text-primary placeholder:text-text-dim focus:border-accent-gold focus:outline-none" />
+              <input id="password" type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Create a strong password" required maxLength={128} className="w-full rounded-sm border border-border bg-bg-primary px-4 py-3 pr-12 text-sm text-text-primary placeholder:text-text-dim focus:border-accent-gold focus:outline-none" />
               <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-text-dim transition-colors hover:text-text-muted" aria-label={showPassword ? "Hide password" : "Show password"}>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
               </button>
@@ -129,7 +132,7 @@ export default function RegisterPage() {
           <div>
             <label htmlFor="confirmPassword" className="mb-1.5 block text-sm font-medium text-text-primary">Confirm Password</label>
             <div className="relative">
-              <input id="confirmPassword" type={showConfirmPassword ? "text" : "password"} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Confirm your password" required className="w-full rounded-sm border border-border bg-bg-primary px-4 py-3 pr-12 text-sm text-text-primary placeholder:text-text-dim focus:border-accent-gold focus:outline-none" />
+              <input id="confirmPassword" type={showConfirmPassword ? "text" : "password"} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Confirm your password" required maxLength={128} className="w-full rounded-sm border border-border bg-bg-primary px-4 py-3 pr-12 text-sm text-text-primary placeholder:text-text-dim focus:border-accent-gold focus:outline-none" />
               <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-text-dim transition-colors hover:text-text-muted" aria-label={showConfirmPassword ? "Hide password" : "Show password"}>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
               </button>

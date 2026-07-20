@@ -6,6 +6,7 @@ interface ButtonProps {
   className?: string;
   type?: "button" | "submit" | "reset";
   disabled?: boolean;
+  loading?: boolean;
   onClick?: () => void;
 }
 
@@ -28,6 +29,7 @@ export default function Button({
   size = "md",
   fullWidth = false,
   children,
+  loading = false,
   className = "",
   type = "button",
   disabled = false,
@@ -36,13 +38,18 @@ export default function Button({
   return (
     <button
       type={type}
-      disabled={disabled}
+      disabled={disabled || loading}
       onClick={onClick}
       className={`inline-flex min-h-[44px] items-center justify-center gap-2 rounded-sm font-semibold uppercase tracking-wider transition-all duration-200 ${variantStyles[variant]} ${sizeStyles[size]} ${
         fullWidth ? "w-full" : ""
-      } ${disabled ? "pointer-events-none opacity-50" : ""} ${className}`}
+      } ${disabled || loading ? "pointer-events-none opacity-50" : ""} ${className}`}
     >
-      {children}
+      {loading ? (
+        <span className="flex items-center gap-2">
+          <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+          <span>Loading</span>
+        </span>
+      ) : children}
     </button>
   );
 }

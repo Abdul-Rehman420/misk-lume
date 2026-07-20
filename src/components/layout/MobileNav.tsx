@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 
 const navLinks = [
@@ -41,6 +41,7 @@ interface MobileNavProps {
 }
 
 export default function MobileNav({ open, onClose }: MobileNavProps) {
+  const panelRef = useRef<HTMLDivElement>(null);
   const handleClose = useCallback(() => onClose(), [onClose]);
 
   useEffect(() => {
@@ -63,6 +64,25 @@ export default function MobileNav({ open, onClose }: MobileNavProps) {
     return () => window.removeEventListener("keydown", handleKey);
   }, [open, handleClose]);
 
+  useEffect(() => {
+    if (!open) return;
+    const panel = panelRef.current;
+    if (!panel) return;
+    const focusable = panel.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
+    );
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    function trap(e: KeyboardEvent) {
+      if (e.key !== "Tab") return;
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last?.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first?.focus(); }
+    }
+    panel.addEventListener("keydown", trap);
+    first?.focus();
+    return () => panel.removeEventListener("keydown", trap);
+  }, [open]);
+
   return (
     <div
       className={`fixed inset-0 z-[var(--z-overlay)] lg:hidden ${open ? "pointer-events-auto" : "pointer-events-none"}`}
@@ -81,6 +101,7 @@ export default function MobileNav({ open, onClose }: MobileNavProps) {
 
       {/* Panel */}
       <div
+        ref={panelRef}
         className={`absolute inset-y-0 left-0 flex w-full flex-col bg-bg-primary transition-transform duration-300 ease-in-out ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
@@ -105,7 +126,7 @@ export default function MobileNav({ open, onClose }: MobileNavProps) {
         </div>
 
         {/* Links */}
-        <nav className="flex flex-1 flex-col items-center justify-center gap-8">
+        <nav aria-label="Mobile navigation" className="flex flex-1 flex-col items-center justify-center gap-8">
           {navLinks.map((link, i) => (
             <Link
               key={link.href}
