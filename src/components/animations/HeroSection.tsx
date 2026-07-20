@@ -1,15 +1,20 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import HeroParallax from "./HeroParallax";
 
 export default function HeroSection() {
   return (
     <HeroParallax>
       <section className="hero-grain relative flex min-h-screen items-center justify-center overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url('https://images.unsplash.com/photo-1541643600914-78b084683601?w=1920&q=80')" }}
+        <Image
+          src="https://images.unsplash.com/photo-1541643600914-78b084683601?w=1920&q=80"
+          alt="Luxury perfume collection"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-bg-primary/60 via-bg-primary/40 to-bg-primary" />
         <div className="relative z-10 mx-auto max-w-4xl px-4 text-center">

@@ -14,7 +14,7 @@ export default function ReviewCard({
   return (
     <div className="rounded-md border border-accent-gold/5 bg-bg-surface/70 p-6 backdrop-blur-md">
       {/* Stars */}
-      <div className="flex gap-0.5">
+      <div className="flex gap-0.5" aria-hidden="true">
         {Array.from({ length: 5 }).map((_, i) => (
           <svg
             key={i}

@@ -35,12 +35,15 @@ export default function NewsletterForm({ className }: { className?: string }) {
 
   return (
     <form onSubmit={handleSubmit} className={className}>
+      <label htmlFor="newsletter-email" className="sr-only">Email address</label>
       <input
+        id="newsletter-email"
         type="email"
         value={email}
         onChange={(e) => { setEmail(e.target.value); setStatus("idle"); }}
         placeholder="Enter your email"
         required
+        aria-describedby={status === "error" ? "newsletter-error" : undefined}
         className="flex-1 rounded-sm border border-border-subtle bg-bg-elevated px-4 py-3 text-sm text-text-primary placeholder-text-dim transition-colors focus:border-accent-gold focus:outline-none"
       />
       <button
@@ -51,7 +54,7 @@ export default function NewsletterForm({ className }: { className?: string }) {
         {loading ? "Subscribing..." : "Subscribe"}
       </button>
       {status === "error" && (
-        <p className="mt-2 text-xs text-red-500">Something went wrong. Please try again.</p>
+        <p id="newsletter-error" role="alert" className="mt-2 text-xs text-red-500">Something went wrong. Please try again.</p>
       )}
     </form>
   );

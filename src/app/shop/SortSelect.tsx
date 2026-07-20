@@ -16,6 +16,7 @@ export default function SortSelect({ currentSort }: { currentSort?: string }) {
 
   return (
     <select
+      aria-label="Sort products"
       className="rounded-sm border border-border-subtle bg-bg-elevated px-3 py-2 text-sm text-text-primary focus:border-accent-gold focus:outline-none"
       defaultValue={currentSort || ""}
       onChange={(e) => handleChange(e.target.value)}

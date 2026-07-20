@@ -1,3 +1,4 @@
+import Image from "next/image";
 import ProductCard from "@/components/ui/ProductCard";
 import SectionHeader from "@/components/ui/SectionHeader";
 import { getProducts } from "@/lib/supabase/queries";
@@ -68,7 +69,7 @@ export default async function AttarPage() {
   } catch {}
 
   return (
-    <main className="min-h-screen bg-bg-primary">
+    <div className="min-h-screen bg-bg-primary">
       {/* Hero */}
       <section className="relative flex min-h-[50vh] items-center justify-center bg-gradient-to-b from-bg-primary via-bg-surface to-bg-primary px-4">
         <div className="text-center">
@@ -86,7 +87,7 @@ export default async function AttarPage() {
       <section className="px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-6xl items-center gap-12 md:grid-cols-2">
           <div className="relative aspect-[4/3] overflow-hidden rounded-md bg-bg-elevated">
-            <img src="/images/attar-heritage.jpg" alt="Traditional attar making" className="h-full w-full object-cover" />
+            <Image src="/images/attar-heritage.jpg" alt="Traditional attar making" fill sizes="(max-width: 768px) 100vw, 50vw" className="h-full w-full object-cover" />
           </div>
           <div className="flex flex-col gap-5">
             <span className="text-xs font-semibold uppercase tracking-[0.2em] text-accent-gold">Heritage</span>
@@ -144,6 +145,6 @@ export default async function AttarPage() {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

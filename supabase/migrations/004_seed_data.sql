@@ -354,15 +354,15 @@ insert into public.settings (key, value) values
   ('currency',           '"PKR"'),
   ('currency_symbol',    '"PKR"'),
   ('shipping_cost',      '200'),
-  ('free_shipping_min',  '5000'),
+  ('free_shipping_min',  '8000'),
   ('bank_name',          '"Meezan Bank"'),
   ('bank_account_title', '"Misk Lume (Pvt) Ltd"'),
   ('bank_account_no',    '"0123-0101-2345678-01"'),
   ('bank_iban',          '"PK90MEZN0001230101234567801"'),
-  ('email_contact',      '"hello@mislume.com"'),
+  ('email_contact',      '"hello@misklume.com"'),
   ('phone_contact',      '"+92 300 1234567"'),
   ('address',            '"Lahore, Pakistan"'),
-  ('social_instagram',   '"@mislume"'),
+  ('social_instagram',   '"@misklume"'),
   ('social_facebook',    '"MiskLume"'),
   ('maintenance_mode',   'false');
 

@@ -77,15 +77,17 @@ export default function CartPage() {
                     <div className="flex items-center gap-0">
                       <button
                         onClick={() => updateQuantity(item.id, -1)}
+                        aria-label={`Decrease quantity of ${item.name}`}
                         className="flex h-9 w-9 items-center justify-center rounded-l-sm border border-border text-text-muted transition-colors hover:border-accent-gold hover:text-accent-gold"
                       >
                         &minus;
                       </button>
-                      <span className="flex h-9 w-10 items-center justify-center border-y border-border bg-bg-surface text-sm text-text-primary">
+                      <span className="flex h-9 w-10 items-center justify-center border-y border-border bg-bg-surface text-sm text-text-primary" aria-label={`Quantity: ${item.quantity}`}>
                         {item.quantity}
                       </span>
                       <button
                         onClick={() => updateQuantity(item.id, 1)}
+                        aria-label={`Increase quantity of ${item.name}`}
                         className="flex h-9 w-9 items-center justify-center rounded-r-sm border border-border text-text-muted transition-colors hover:border-accent-gold hover:text-accent-gold"
                       >
                         +

@@ -2,6 +2,10 @@ import { Resend } from 'resend'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
+function escapeHtml(str: string): string {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;')
+}
+
 export async function sendOrderConfirmation(order: {
   email: string
   orderNumber: string
@@ -9,7 +13,7 @@ export async function sendOrderConfirmation(order: {
   total: number
 }) {
   const itemRows = order.items
-    .map(item => `<tr><td style="padding:8px 12px;border-bottom:1px solid #e5e5e5">${item.name}</td><td style="padding:8px 12px;border-bottom:1px solid #e5e5e5;text-align:center">${item.quantity}</td><td style="padding:8px 12px;border-bottom:1px solid #e5e5e5;text-align:right">PKR ${item.price.toLocaleString()}</td></tr>`)
+    .map(item => `<tr><td style="padding:8px 12px;border-bottom:1px solid #e5e5e5">${escapeHtml(item.name)}</td><td style="padding:8px 12px;border-bottom:1px solid #e5e5e5;text-align:center">${item.quantity}</td><td style="padding:8px 12px;border-bottom:1px solid #e5e5e5;text-align:right">PKR ${item.price.toLocaleString()}</td></tr>`)
     .join('')
 
   await resend.emails.send({
@@ -52,11 +56,11 @@ export async function sendContactEmail(data: {
     html: `
       <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:40px 20px">
         <h2 style="font-size:20px;color:#1a1a1a;margin:0 0 16px">New Contact Form Submission</h2>
-        <p style="font-size:14px;color:#666;margin:0 0 4px"><strong>From:</strong> ${data.name}</p>
-        <p style="font-size:14px;color:#666;margin:0 0 16px"><strong>Email:</strong> ${data.email}</p>
-        <p style="font-size:14px;color:#666;margin:0 0 4px"><strong>Subject:</strong> ${data.subject}</p>
+        <p style="font-size:14px;color:#666;margin:0 0 4px"><strong>From:</strong> ${escapeHtml(data.name)}</p>
+        <p style="font-size:14px;color:#666;margin:0 0 16px"><strong>Email:</strong> ${escapeHtml(data.email)}</p>
+        <p style="font-size:14px;color:#666;margin:0 0 4px"><strong>Subject:</strong> ${escapeHtml(data.subject)}</p>
         <div style="background:#f9f6f0;padding:16px;border-radius:4px;margin-top:16px">
-          <p style="font-size:14px;color:#1a1a1a;margin:0;white-space:pre-wrap">${data.message}</p>
+          <p style="font-size:14px;color:#1a1a1a;margin:0;white-space:pre-wrap">${escapeHtml(data.message)}</p>
         </div>
       </div>
     `,

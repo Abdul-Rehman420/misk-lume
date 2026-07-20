@@ -1,8 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sendContactEmail } from "@/lib/email";
+import { rateLimit, rateLimiters } from "@/lib/rate-limit";
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "anonymous";
+    const rl = rateLimit(`${rateLimiters.contact.prefix}:${ip}`, rateLimiters.contact.limit, rateLimiters.contact.windowMs);
+    if (!rl.success) {
+      return NextResponse.json({ error: "Too many requests. Please try again later." }, { status: 429 });
+    }
     const body = await request.json();
     const { name, email, subject, message } = body;
 

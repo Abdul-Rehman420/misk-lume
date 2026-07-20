@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import ProductCard from "@/components/ui/ProductCard";
 import Link from "next/link";
@@ -104,7 +105,7 @@ export default function AccountPage() {
   ];
 
   return (
-    <main className="min-h-screen bg-bg-primary px-4 py-24 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-bg-primary px-4 py-24 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
           {/* Sidebar */}
@@ -193,7 +194,7 @@ export default function AccountPage() {
                         {order.order_items.map((item, i) => (
                           <div key={i} className="flex items-center gap-3">
                             <div className="h-12 w-12 overflow-hidden rounded-md bg-bg-elevated">
-                              <img src={item.product_image} alt={item.product_name} className="h-full w-full object-cover" />
+                              <Image src={item.product_image} alt={item.product_name} width={48} height={48} className="h-full w-full object-cover" />
                             </div>
                             <div>
                               <p className="text-sm text-text-primary">{item.product_name}</p>
@@ -236,6 +237,6 @@ export default function AccountPage() {
           </section>
         </div>
       </div>
-    </main>
+    </div>
   );
 }

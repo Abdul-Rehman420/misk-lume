@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 
 interface SearchModalProps {
@@ -11,7 +11,10 @@ interface SearchModalProps {
 export default function SearchModal({ open, onClose }: SearchModalProps) {
   const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+
+  const handleClose = useCallback(() => onClose(), [onClose]);
 
   useEffect(() => {
     if (open) {
@@ -23,11 +26,18 @@ export default function SearchModal({ open, onClose }: SearchModalProps) {
   useEffect(() => {
     if (!open) return;
     function handleKey(e: KeyboardEvent) {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") handleClose();
+      if (e.key === "Tab" && containerRef.current) {
+        const focusable = containerRef.current.querySelectorAll<HTMLElement>("input, button, [href]");
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last?.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first?.focus(); }
+      }
     }
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [open, onClose]);
+  }, [open, handleClose]);
 
   useEffect(() => {
     if (open) {
@@ -48,7 +58,11 @@ export default function SearchModal({ open, onClose }: SearchModalProps) {
 
   return (
     <div
+      ref={containerRef}
       className={`fixed inset-0 z-[var(--z-overlay)] ${open ? "pointer-events-auto" : "pointer-events-none"}`}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Search fragrances"
       aria-hidden={!open}
     >
       <div
@@ -63,10 +77,11 @@ export default function SearchModal({ open, onClose }: SearchModalProps) {
           <form onSubmit={handleSubmit} className="relative">
             <input
               ref={inputRef}
-              type="text"
+              type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search fragrances..."
+              aria-label="Search fragrances"
               className="w-full border-b-2 border-border bg-transparent py-4 pr-12 text-lg text-text-primary placeholder-text-dim transition-colors focus:border-accent-gold focus:outline-none"
             />
             <button

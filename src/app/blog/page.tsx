@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import FeaturedCard from "@/components/ui/FeaturedCard";
 import SectionHeader from "@/components/ui/SectionHeader";
@@ -52,7 +53,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
   }
 
   return (
-    <main className="min-h-screen bg-bg-primary">
+    <div className="min-h-screen bg-bg-primary">
       {/* Hero */}
       <section className="relative flex min-h-[50vh] items-center justify-center bg-gradient-to-b from-bg-primary via-bg-surface to-bg-primary px-4">
         <div className="text-center">
@@ -114,7 +115,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
             {gridPosts.map((post) => (
               <Link key={post.slug} href={`/blog/${post.slug}`} className="group overflow-hidden rounded-md border border-border-subtle bg-bg-primary transition-all duration-300 hover:border-border">
                 <div className="relative aspect-[16/10] bg-bg-elevated">
-                  <img src={post.image_url} alt={post.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                  <Image src={post.image_url} alt={post.title} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
                 </div>
                 <div className="p-5">
                   {post.category && <span className="inline-block rounded-full border border-accent-gold px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-accent-gold">{post.category}</span>}
@@ -131,6 +132,6 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 
       {/* Newsletter */}
       <BlogNewsletter />
-    </main>
+    </div>
   );
 }

@@ -87,17 +87,22 @@ export default function CheckoutPage() {
   }
 
   function input(field: string, label: string, type = "text", placeholder = "") {
+    const errorId = `${field}-error`;
     return (
       <div>
-        <label className="mb-1.5 block text-sm font-medium text-text-primary">{label}</label>
+        <label htmlFor={`checkout-${field}`} className="mb-1.5 block text-sm font-medium text-text-primary">{label}</label>
         <input
+          id={`checkout-${field}`}
           type={type}
           value={(form as Record<string, string>)[field] || ""}
           onChange={(e) => update(field, e.target.value)}
           placeholder={placeholder}
+          required
+          aria-describedby={errors[field] ? errorId : undefined}
+          aria-invalid={!!errors[field]}
           className={`w-full rounded-sm border bg-bg-primary px-4 py-3 text-sm text-text-primary outline-none transition-colors placeholder:text-text-dim focus:border-accent-gold ${errors[field] ? "border-red-500" : "border-border"}`}
         />
-        {errors[field] && <p className="mt-1 text-xs text-red-500">{errors[field]}</p>}
+        {errors[field] && <p id={errorId} className="mt-1 text-xs text-red-500">{errors[field]}</p>}
       </div>
     );
   }

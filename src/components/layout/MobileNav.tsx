@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import Link from "next/link";
 
 const navLinks = [
@@ -41,6 +41,8 @@ interface MobileNavProps {
 }
 
 export default function MobileNav({ open, onClose }: MobileNavProps) {
+  const handleClose = useCallback(() => onClose(), [onClose]);
+
   useEffect(() => {
     if (open) {
       document.body.style.overflow = "hidden";
@@ -52,9 +54,21 @@ export default function MobileNav({ open, onClose }: MobileNavProps) {
     };
   }, [open]);
 
+  useEffect(() => {
+    if (!open) return;
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === "Escape") handleClose();
+    }
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [open, handleClose]);
+
   return (
     <div
       className={`fixed inset-0 z-[var(--z-overlay)] lg:hidden ${open ? "pointer-events-auto" : "pointer-events-none"}`}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Navigation menu"
       aria-hidden={!open}
     >
       {/* Backdrop */}

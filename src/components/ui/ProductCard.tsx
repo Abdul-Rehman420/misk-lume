@@ -111,7 +111,7 @@ export default function ProductCard({
         </div>
         {rating !== undefined && (
           <div className="mt-2 flex items-center gap-1.5">
-            <div className="flex gap-0.5">
+            <div className="flex gap-0.5" aria-hidden="true">
               {Array.from({ length: 5 }).map((_, i) => (
                 <svg
                   key={i}

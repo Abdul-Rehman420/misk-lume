@@ -1,8 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { rateLimit, rateLimiters } from "@/lib/rate-limit";
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "anonymous";
+    const rl = rateLimit(`${rateLimiters.reviews.prefix}:${ip}`, rateLimiters.reviews.limit, rateLimiters.reviews.windowMs);
+    if (!rl.success) {
+      return NextResponse.json({ error: "Too many requests. Please try again later." }, { status: 429 });
+    }
     const body = await request.json();
     const { product_id, rating, title, text } = body;
 

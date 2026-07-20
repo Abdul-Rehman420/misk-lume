@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 
 interface Product {
@@ -103,7 +104,7 @@ export default function ProductsPage() {
                   <tr key={product.id} className="border-t border-admin-border transition-colors hover:bg-admin-bg/50">
                     <td className="px-4 py-3">
                       {img ? (
-                        <img src={img} alt={product.name} className="h-10 w-10 rounded-md object-cover" />
+                        <Image src={img} alt={product.name} width={40} height={40} className="h-10 w-10 rounded-md object-cover" />
                       ) : (
                         <div className="flex h-10 w-10 items-center justify-center rounded-md bg-accent-gold/20 text-xs font-bold text-accent-gold">{product.name.charAt(0)}</div>
                       )}

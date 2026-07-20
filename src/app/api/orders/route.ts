@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { sendOrderConfirmation } from "@/lib/email";
+import { rateLimit, rateLimiters } from "@/lib/rate-limit";
 
 function generateOrderNumber(): string {
   const timestamp = Date.now().toString(36).toUpperCase();
@@ -10,6 +11,12 @@ function generateOrderNumber(): string {
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "anonymous";
+    const rl = rateLimit(`${rateLimiters.orders.prefix}:${ip}`, rateLimiters.orders.limit, rateLimiters.orders.windowMs);
+    if (!rl.success) {
+      return NextResponse.json({ error: "Too many requests. Please try again later." }, { status: 429 });
+    }
+
     const body = await request.json();
     const { user_id, items, shipping_address, payment_method, discount_code } = body;
 
@@ -93,10 +100,15 @@ export async function POST(request: NextRequest) {
         total,
         payment_method: payment_method || "cod",
         payment_status: "pending",
-        shipping_name: shipping_address?.name || null,
+        shipping_first_name: shipping_address?.name?.split(' ')[0] || null,
+        shipping_last_name: shipping_address?.name?.split(' ').slice(1).join(' ') || null,
+        shipping_email: shipping_address?.email || null,
         shipping_address: shipping_address?.address || null,
         shipping_city: shipping_address?.city || null,
         shipping_phone: shipping_address?.phone || null,
+        shipping_province: shipping_address?.province || null,
+        shipping_postal_code: shipping_address?.postalCode || null,
+        delivery_instructions: shipping_address?.instructions || null,
       })
       .select()
       .single();

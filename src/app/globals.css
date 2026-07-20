@@ -11,7 +11,7 @@
   --color-accent-gold-muted: rgba(201, 162, 75, 0.15);
   --color-text-primary: #F5F1E8;
   --color-text-muted: #A8A29A;
-  --color-text-dim: #6B6560;
+  --color-text-dim: #8A8279;
   --color-success: #4A7C59;
   --color-error: #8B3A3A;
   --color-border: rgba(201, 162, 75, 0.15);
@@ -129,6 +129,39 @@ h1, h2, h3, h4, h5, h6 {
 .text-gold { color: var(--color-accent-gold); }
 .text-muted { color: var(--color-text-muted); }
 .text-dim { color: var(--color-text-dim); }
+
+/* Focus visible ring for keyboard navigation */
+*:focus-visible {
+  outline: 2px solid var(--color-accent-gold);
+  outline-offset: 2px;
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Skip to content link */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  z-index: 99999;
+  padding: 1rem 1.5rem;
+  background: var(--color-accent-gold);
+  color: var(--color-bg-primary);
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 0 0 var(--radius-md) 0;
+}
+.skip-link:focus {
+  left: 0;
+  top: 0;
+}
 
 /* Gold shimmer animation */
 @keyframes goldShimmer {

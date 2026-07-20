@@ -52,8 +52,14 @@ export default function ShopSidebar() {
           <div className="absolute h-full rounded-full bg-accent-gold/40" style={{ left: "0%", width: `${((maxPrice - 1000) / 9000) * 100}%` }} />
         </div>
         <div className="mt-4 flex gap-3">
-          <input type="number" value={minPrice} onChange={e => { const v = Number(e.target.value); if (v >= 0) updateParams("minPrice", String(v)); }} className="w-full rounded-sm border border-border-subtle bg-bg-elevated px-3 py-2 text-sm text-text-primary focus:border-accent-gold focus:outline-none" placeholder="Min" />
-          <input type="number" value={maxPrice} onChange={e => { const v = Number(e.target.value); if (v >= 0) updateParams("maxPrice", String(v)); }} className="w-full rounded-sm border border-border-subtle bg-bg-elevated px-3 py-2 text-sm text-text-primary focus:border-accent-gold focus:outline-none" placeholder="Max" />
+          <div className="w-full">
+            <label htmlFor="price-min" className="sr-only">Minimum price</label>
+            <input id="price-min" type="number" value={minPrice} onChange={e => { const v = Number(e.target.value); if (v >= 0) updateParams("minPrice", String(v)); }} className="w-full rounded-sm border border-border-subtle bg-bg-elevated px-3 py-2 text-sm text-text-primary focus:border-accent-gold focus:outline-none" placeholder="Min" />
+          </div>
+          <div className="w-full">
+            <label htmlFor="price-max" className="sr-only">Maximum price</label>
+            <input id="price-max" type="number" value={maxPrice} onChange={e => { const v = Number(e.target.value); if (v >= 0) updateParams("maxPrice", String(v)); }} className="w-full rounded-sm border border-border-subtle bg-bg-elevated px-3 py-2 text-sm text-text-primary focus:border-accent-gold focus:outline-none" placeholder="Max" />
+          </div>
         </div>
       </div>
 
