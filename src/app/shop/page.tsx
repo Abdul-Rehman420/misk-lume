@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import ProductCard from "@/components/ui/ProductCard";
-import StaggerChildren from "@/components/animations/StaggerChildren";
+import ShopProductGrid from "@/components/shop/ShopProductGrid";
 import ShopSidebar from "./ShopSidebar";
 import SortSelect from "./SortSelect";
 import { getShopProducts, getShopProductsCount } from "@/lib/supabase/queries";
@@ -142,7 +142,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
             </Suspense>
           </div>
 
-          <StaggerChildren className="mt-8 grid grid-cols-2 gap-6 md:grid-cols-3">
+          <ShopProductGrid className="mt-8 grid grid-cols-2 gap-6 md:grid-cols-3">
             {sortedProducts.map((product) => (
               <ProductCard
                 key={product.slug}
@@ -157,7 +157,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
                 reviewCount={product.review_count}
               />
             ))}
-          </StaggerChildren>
+          </ShopProductGrid>
 
           {sortedProducts.length === 0 && (
             <div className="mt-12 text-center">
