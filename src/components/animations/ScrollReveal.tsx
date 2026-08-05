@@ -1,10 +1,7 @@
 "use client";
 
-import { useRef, useEffect, ReactNode } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
+import { ReactNode } from "react";
+import { motion } from "framer-motion";
 
 interface ScrollRevealProps {
   children: ReactNode;
@@ -21,42 +18,22 @@ export default function ScrollReveal({
   duration = 0.8,
   className = "",
 }: ScrollRevealProps) {
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const fromVars = {
-      opacity: 0,
-      y: direction === "up" ? 40 : direction === "down" ? -40 : 0,
-      x: direction === "left" ? 40 : direction === "right" ? -40 : 0,
-    };
-
-    gsap.fromTo(el, fromVars, {
-      opacity: 1,
-      y: 0,
-      x: 0,
-      duration,
-      delay,
-      ease: "power3.out",
-      scrollTrigger: {
-        trigger: el,
-        start: "top 85%",
-        toggleActions: "play none none none",
-      },
-    });
-
-    return () => {
-      ScrollTrigger.getAll().forEach((t) => {
-        if (t.trigger === el) t.kill();
-      });
-    };
-  }, [direction, delay, duration]);
+  const offset = {
+    up: { y: 40 },
+    down: { y: -40 },
+    left: { x: 40 },
+    right: { x: -40 },
+  }[direction];
 
   return (
-    <div ref={ref} className={className}>
+    <motion.div
+      className={className}
+      initial={{ opacity: 0, ...offset }}
+      whileInView={{ opacity: 1, x: 0, y: 0 }}
+      viewport={{ once: true, amount: 0.15 }}
+      transition={{ duration, delay, ease: "easeOut" }}
+    >
       {children}
-    </div>
+    </motion.div>
   );
 }

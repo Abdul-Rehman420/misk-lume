@@ -10,42 +10,28 @@ interface CollectionPageProps {
   params: Promise<{ slug: string }>;
 }
 
-const fallbackCollections: Record<string, {
+interface CollectionDetail {
   name: string; slug: string; description: string; image_url: string;
   products: { name: string; slug: string; price: number; image_url: string; gender: string; rating: number; review_count: number; categories: { name: string; slug: string } }[];
-}> = {
-  "signature-set": {
-    name: "The Signature Set", slug: "signature-set",
-    description: "Our most iconic fragrances curated into one luxurious collection. Perfect for those discovering Misk Lume for the first time.",
-    image_url: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=1200&q=80",
-    products: [
-      { name: "Noir Oud", slug: "noir-oud", price: 4500, image_url: "https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?w=500&q=80", gender: "Unisex", rating: 5, review_count: 128, categories: { name: "Unisex", slug: "unisex" } },
-      { name: "Velvet Rose", slug: "velvet-rose", price: 3800, image_url: "https://images.unsplash.com/photo-1541643600914-78b084683641?w=500&q=80", gender: "Women", rating: 4.8, review_count: 94, categories: { name: "Women", slug: "women" } },
-    ],
-  },
-  "oud-royalty": {
-    name: "Oud Royalty", slug: "oud-royalty",
-    description: "A collection of our finest oud-based fragrances, crafted for those who appreciate the world's most precious aromatic ingredient.",
-    image_url: "https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?w=1200&q=80",
-    products: [
-      { name: "Noir Oud", slug: "noir-oud", price: 4500, image_url: "https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?w=500&q=80", gender: "Unisex", rating: 5, review_count: 128, categories: { name: "Unisex", slug: "unisex" } },
-    ],
-  },
-};
+}
 
 export async function generateMetadata({ params }: CollectionPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const collection = fallbackCollections[slug];
-  return {
-    title: `${collection?.name || "Collection"} | Misk Lume`,
-    description: collection?.description,
-  };
+  try {
+    const collection = await getCollectionBySlug(slug);
+    return {
+      title: `${collection?.name || "Collection"} | Misk Lume`,
+      description: collection?.description,
+    };
+  } catch {
+    return { title: "Collection | Misk Lume" };
+  }
 }
 
 export default async function CollectionPage({ params }: CollectionPageProps) {
   const { slug } = await params;
 
-  let collection = fallbackCollections[slug] || null;
+  let collection: CollectionDetail | null = null;
 
   try {
     const dbCollection = await getCollectionBySlug(slug);

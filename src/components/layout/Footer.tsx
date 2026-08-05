@@ -1,18 +1,19 @@
 import Link from "next/link";
 
 const shopLinks = [
-  { label: "All Perfumes", href: "/shop" },
-  { label: "Best Sellers", href: "/shop/best-sellers" },
+  { label: "Men", href: "/shop?gender=men" },
+  { label: "Women", href: "/shop?gender=women" },
+  { label: "Unisex", href: "/shop?gender=unisex" },
+  { label: "Attar", href: "/attar" },
   { label: "New Arrivals", href: "/shop/new-arrivals" },
-  { label: "Attar Collection", href: "/attar" },
-  { label: "Gift Sets", href: "/gift-sets" },
+  { label: "Best Sellers", href: "/shop/best-sellers" },
 ];
 
 const companyLinks = [
-  { label: "Our Story", href: "/about" },
+  { label: "About Us", href: "/about" },
   { label: "Blog", href: "/blog" },
-  { label: "Sustainability", href: "/sustainability" },
-  { label: "Contact Us", href: "/contact" },
+  { label: "Contact", href: "/contact" },
+  { label: "FAQ", href: "/faq" },
 ];
 
 const policyLinks = [
@@ -119,8 +120,8 @@ export default function Footer() {
               </span>
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-text-muted">
-              Luxurious fragrances crafted with rare ingredients from around the
-              world. Each scent tells a story of elegance and timeless beauty.
+              Handcrafted, oil-based fragrances distilled in small batches. Each
+              bottle is a ritual.
             </p>
             <div className="mt-6 flex items-center gap-3">
               <a

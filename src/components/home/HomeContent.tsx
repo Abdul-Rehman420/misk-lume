@@ -3,17 +3,14 @@
 import { ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import dynamic from "next/dynamic";
 import SectionHeader from "@/components/ui/SectionHeader";
 import ProductCard from "@/components/ui/ProductCard";
-import FeaturedCard from "@/components/ui/FeaturedCard";
 import ReviewCard from "@/components/ui/ReviewCard";
 import Button from "@/components/ui/Button";
+import SectionReveal from "@/components/animations/SectionReveal";
+import ScrollReveal from "@/components/animations/ScrollReveal";
+import StaggerChildren from "@/components/animations/StaggerChildren";
 import NewsletterForm from "@/components/ui/NewsletterForm";
-
-const SectionReveal = dynamic(() => import("@/components/animations/SectionReveal"), { ssr: false });
-const ScrollReveal = dynamic(() => import("@/components/animations/ScrollReveal"), { ssr: false });
-const StaggerChildren = dynamic(() => import("@/components/animations/StaggerChildren"), { ssr: false });
 
 interface Category {
   name: string;
@@ -49,6 +46,22 @@ interface BlogPost {
   published_at: string;
 }
 
+function formatDate(date: string) {
+  return new Date(date).toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+function StarIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current">
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+    </svg>
+  );
+}
+
 export default function HomeContent({
   categories,
   featuredProducts,
@@ -63,16 +76,16 @@ export default function HomeContent({
   return (
     <>
       {/* Categories */}
-      <SectionReveal className="mx-auto max-w-7xl px-6 py-24">
-        <SectionHeader label="Shop by Category" title="Find Your Scent" />
+      <SectionReveal className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
+        <SectionHeader label="Collections" title="Shop by Category" />
         <StaggerChildren className="mt-12 grid grid-cols-2 gap-6 lg:grid-cols-4">
           {categories.map((cat) => (
-            <Link key={cat.name} href={cat.href} className="group relative aspect-square overflow-hidden rounded-md">
-              <Image src={cat.image} alt={cat.name} fill sizes="(max-width: 640px) 50vw, 25vw" className="object-cover transition-transform duration-500 group-hover:scale-110" />
-              <div className="absolute inset-0 bg-gradient-to-t from-bg-primary/80 to-transparent" />
-              <div className="absolute bottom-0 left-0 p-6">
+            <Link key={cat.name} href={cat.href} className="group relative block aspect-[3/4] overflow-hidden rounded-md bg-bg-elevated">
+              <Image src={cat.image} alt={cat.name} fill sizes="(max-width: 640px) 50vw, 25vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+              <div className="absolute inset-0 flex flex-col justify-end p-6">
                 <h3 className="font-display text-xl font-medium text-text-primary">{cat.name}</h3>
-                {cat.count && <p className="mt-1 text-xs text-text-muted">{cat.count}</p>}
+                {cat.count && <p className="mt-1 text-sm text-text-muted">{cat.count}</p>}
               </div>
             </Link>
           ))}
@@ -81,94 +94,118 @@ export default function HomeContent({
 
       {/* Featured Products */}
       <SectionReveal className="bg-bg-surface py-24">
-        <div className="mx-auto max-w-7xl px-6">
-          <SectionHeader label="Featured" title="Signature Collection" />
-          <StaggerChildren className="mt-12 grid grid-cols-2 gap-6 lg:grid-cols-4">
-            {featuredProducts.map((product) => (
-              <ProductCard
-                key={product.slug}
-                name={product.name}
-                slug={product.slug}
-                price={product.price}
-                salePrice={product.sale_price}
-                gender={product.gender}
-                imageUrl={product.image_url}
-                badge={product.badge}
-                rating={product.rating}
-                reviewCount={product.review_count}
-              />
-            ))}
-          </StaggerChildren>
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <SectionHeader label="Curated for You" title="Featured Fragrances" />
+          {featuredProducts.length > 0 ? (
+            <StaggerChildren className="mt-12 grid grid-cols-2 gap-6 lg:grid-cols-4">
+              {featuredProducts.map((product) => (
+                <ProductCard
+                  key={product.slug}
+                  name={product.name}
+                  slug={product.slug}
+                  price={product.price}
+                  salePrice={product.sale_price}
+                  gender={product.gender}
+                  imageUrl={product.image_url}
+                  badge={product.badge}
+                  rating={product.rating}
+                  reviewCount={product.review_count}
+                />
+              ))}
+            </StaggerChildren>
+          ) : (
+            <p className="mt-12 text-center text-sm text-text-muted">No featured products yet. New fragrances will appear here.</p>
+          )}
           <div className="mt-12 flex justify-center">
-            <Link href="/shop"><Button variant="outline">View All Products</Button></Link>
+            <Link href="/shop">
+              <Button variant="outline">View All Products</Button>
+            </Link>
           </div>
         </div>
       </SectionReveal>
 
-      {/* Best Sellers */}
-      <ScrollReveal>
-        <section className="mx-auto max-w-7xl px-6 py-24">
-          <SectionHeader label="Best Sellers" title="Loved by Many" />
-          <div className="mt-12 flex flex-col gap-12">
-            <FeaturedCard label="#1 Best Seller" name="Noir Oud" description="Our iconic signature — a rich blend of aged oud, smoky vetiver, and warm amber. A fragrance that commands attention and leaves an unforgettable trail." price="PKR 4,500" imageUrl="https://images.unsplash.com/photo-1541643600914-78b084683601?w=800&q=80" href="/product/noir-oud" />
-            <FeaturedCard label="Editor's Pick" name="Velvet Rose" description="A luminous fusion of Damask rose, pink pepper, and creamy sandalwood. Elegant, feminine, and utterly intoxicating." price="PKR 3,800" imageUrl="https://images.unsplash.com/photo-1587017539504-67cfbddac569?w=800&q=80" href="/product/velvet-rose" reverse />
-          </div>
-        </section>
-      </ScrollReveal>
-
       {/* Discount Banner */}
-      <ScrollReveal direction="left">
-        <section className="mx-auto max-w-4xl px-6 py-12">
-          <div className="rounded-md border border-accent-gold/20 bg-accent-gold/5 px-8 py-10 text-center">
-            <h2 className="font-display text-2xl font-medium text-text-primary">First Order? <span className="text-accent-gold">15% Off</span></h2>
-            <p className="mt-3 text-sm text-text-muted">Use code <span className="font-semibold tracking-wider text-accent-gold">RITUAL15</span> at checkout</p>
+      <ScrollReveal>
+        <section className="relative overflow-hidden border-y border-border bg-[linear-gradient(135deg,#1a1510_0%,#0B0B0B_100%)] px-4 py-20 text-center">
+          <div className="absolute left-1/2 top-1/2 h-[400px] w-[400px] -translate-x-1/2 -translate-y-1/2 bg-[radial-gradient(circle,rgba(201,162,75,0.08)_0%,transparent_70%)]" />
+          <div className="relative mx-auto max-w-4xl">
+            <h2 className="font-display text-3xl font-medium text-text-primary md:text-4xl">
+              First Order? <span className="text-accent-gold">15% Off</span>
+            </h2>
+            <p className="mt-4 text-sm text-text-muted">
+              Use code <strong className="font-semibold tracking-wider text-accent-gold">RITUAL15</strong> at checkout. New members only.
+            </p>
+            <Link href="/shop" className="mt-8 inline-block">
+              <Button variant="primary" size="lg">Shop Now</Button>
+            </Link>
           </div>
         </section>
       </ScrollReveal>
 
       {/* About */}
-      <ScrollReveal direction="right">
-        <section className="mx-auto max-w-7xl px-6 py-24">
-          <div className="grid items-center gap-12 md:grid-cols-2">
-            <div className="relative aspect-square overflow-hidden rounded-md bg-bg-elevated">
-              <Image src="https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?w=800&q=80" alt="Misk Lume craftsmanship" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
+      <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
+        <div className="grid items-center gap-16 md:grid-cols-2">
+          <ScrollReveal direction="left">
+            <div className="relative aspect-[4/5] overflow-hidden rounded-md bg-bg-elevated">
+              <Image src="https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=800&q=80" alt="Misk Lume craftsmanship" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
             </div>
-            <div className="flex flex-col gap-4">
+          </ScrollReveal>
+          <ScrollReveal direction="right">
+            <div className="flex flex-col gap-6">
               <span className="text-xs font-semibold uppercase tracking-[0.2em] text-accent-gold">Our Story</span>
-              <h2 className="font-display text-3xl font-medium text-text-primary">Born from <span className="italic text-accent-gold">Obsession</span></h2>
-              <p className="max-w-md text-sm leading-relaxed text-text-muted">Misk Lume was born from a singular vision — to create fragrances that transcend the ordinary. Every bottle is a testament to our relentless pursuit of perfection.</p>
-              <p className="max-w-md text-sm leading-relaxed text-text-muted">We source the finest ingredients from across the globe, blending tradition with innovation to craft scents that resonate on an emotional level.</p>
-              <div className="mt-4"><Link href="/about"><Button variant="outline">Read More</Button></Link></div>
+              <h2 className="font-display text-3xl font-medium text-text-primary">
+                Born from <em className="italic text-accent-gold">Obsession</em>
+              </h2>
+              <p className="max-w-md text-sm leading-relaxed text-text-muted">
+                Misk Lume was founded on a single conviction: perfume should be a ritual, not a reflex. Every fragrance in our collection is handcrafted in small batches, using pure oil-based formulations that respect both the art of perfumery and the skin it graces.
+              </p>
+              <p className="max-w-md text-sm leading-relaxed text-text-muted">
+                We source rare ingredients from oud forests to rose fields, distilling them with patience and precision. No shortcuts. No synthetics masking inferior base notes. Just honest, concentrated fragrance.
+              </p>
+              <div className="mt-2">
+                <Link href="/about">
+                  <Button variant="outline">Read More</Button>
+                </Link>
+              </div>
             </div>
-          </div>
-        </section>
-      </ScrollReveal>
+          </ScrollReveal>
+        </div>
+      </section>
 
       {/* Why Choose Us */}
       <SectionReveal className="bg-bg-surface py-24">
-        <div className="mx-auto max-w-7xl px-6">
-          <SectionHeader label="Quality Promise" title="Why Choose Us" />
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <SectionHeader label="The Difference" title="Why Choose Misk Lume" />
           <StaggerChildren className="mt-12 grid gap-8 md:grid-cols-3">
-            <div className="flex flex-col items-center text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full border border-accent-gold/20 bg-accent-gold/5">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6 text-accent-gold"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+            <div className="flex flex-col items-center px-6 py-10 text-center">
+              <div className="mb-6 h-12 w-12 text-accent-gold">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1} className="h-full w-full">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
               </div>
-              <h3 className="mt-5 font-display text-lg font-medium text-text-primary">100% Pure Oil</h3>
-              <p className="mt-2 max-w-xs text-sm text-text-muted">Every fragrance is crafted with pure essential oils, free from synthetic fillers and compromises.</p>
+              <h3 className="font-display text-lg font-medium text-text-primary">100% Pure Oil</h3>
+              <p className="mt-3 max-w-xs text-sm leading-relaxed text-text-muted">Every fragrance is formulated with pure essential oils and absolutes. No alcohol base, no filler, no compromise on concentration or longevity.</p>
             </div>
-            <div className="flex flex-col items-center text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full border border-accent-gold/20 bg-accent-gold/5">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6 text-accent-gold"><rect x="2" y="7" width="20" height="14" rx="2" /><path d="M2 12h20" /><path d="M2 7V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v2" /></svg>
+            <div className="flex flex-col items-center px-6 py-10 text-center">
+              <div className="mb-6 h-12 w-12 text-accent-gold">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1} className="h-full w-full">
+                  <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                  <path d="M2 17l10 5 10-5" />
+                  <path d="M2 12l10 5 10-5" />
+                </svg>
               </div>
-              <h3 className="mt-5 font-display text-lg font-medium text-text-primary">High Concentration</h3>
-              <p className="mt-2 max-w-xs text-sm text-text-muted">With up to 40% concentration, our fragrances deliver depth and longevity that outlast the ordinary.</p>
+              <h3 className="font-display text-lg font-medium text-text-primary">High Concentration</h3>
+              <p className="mt-3 max-w-xs text-sm leading-relaxed text-text-muted">Our oil-based perfumes carry 3-5x the concentration of typical alcohol-based sprays. A single application carries you through the entire day.</p>
             </div>
-            <div className="flex flex-col items-center text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full border border-accent-gold/20 bg-accent-gold/5">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6 text-accent-gold"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+            <div className="flex flex-col items-center px-6 py-10 text-center">
+              <div className="mb-6 h-12 w-12 text-accent-gold">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1} className="h-full w-full">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M12 6v6l4 2" />
+                </svg>
               </div>
-              <h3 className="mt-5 font-display text-lg font-medium text-text-primary">Small Batch Ritual</h3>
-              <p className="mt-2 max-w-xs text-sm text-text-muted">Each batch is carefully curated in limited quantities, ensuring unmatched quality and exclusivity.</p>
+              <h3 className="font-display text-lg font-medium text-text-primary">Small Batch Ritual</h3>
+              <p className="mt-3 max-w-xs text-sm leading-relaxed text-text-muted">Each batch is limited and numbered. When it's gone, we move to the next season's distillation. Exclusivity isn't a marketing tactic — it's our process.</p>
             </div>
           </StaggerChildren>
         </div>
@@ -176,31 +213,44 @@ export default function HomeContent({
 
       {/* Reviews */}
       <ScrollReveal>
-        <section className="mx-auto max-w-7xl px-6 py-24">
-          <SectionHeader label="Testimonials" title="What Our Clients Say" />
-          <StaggerChildren className="mt-12 grid gap-6 md:grid-cols-3">
-            {reviews.map((review, i) => (
-              <ReviewCard key={i} rating={review.rating} text={review.text} author={review.author} date={review.date} />
-            ))}
-          </StaggerChildren>
+        <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
+          <SectionHeader label="Testimonials" title="What They Say" />
+          {reviews.length === 0 ? (
+            <p className="mt-12 text-center text-sm text-text-muted">No reviews yet. Shop our fragrances and be the first to share your experience.</p>
+          ) : (
+            <StaggerChildren className="mt-12 grid gap-6 md:grid-cols-3">
+              {reviews.map((review, i) => (
+                <div key={i} className="rounded-md border border-border-subtle bg-bg-surface p-8">
+                  <div className="mb-4 flex gap-0.5 text-accent-gold">
+                    {Array.from({ length: 5 }).map((_, s) => (
+                      <StarIcon key={s} />
+                    ))}
+                  </div>
+                  <p className="mb-6 text-sm italic leading-relaxed text-text-muted">"{review.text}"</p>
+                  <p className="text-sm font-semibold text-text-primary">{review.author}</p>
+                  <p className="mt-1 text-xs text-text-dim">{review.date}</p>
+                </div>
+              ))}
+            </StaggerChildren>
+          )}
         </section>
       </ScrollReveal>
 
       {/* Blog Teaser */}
       <SectionReveal className="bg-bg-surface py-24">
-        <div className="mx-auto max-w-7xl px-6">
-          <SectionHeader label="Journal" title="From Our Blog" />
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <SectionHeader label="Journal" title="From the Blog" />
           <StaggerChildren className="mt-12 grid gap-6 md:grid-cols-3">
             {blogPosts.map((post) => (
-              <Link key={post.slug} href={`/blog/${post.slug}`} className="group rounded-md border border-border-subtle bg-bg-surface overflow-hidden transition-all duration-300 hover:border-border hover:shadow-lg">
-                <div className="relative aspect-[16/10] overflow-hidden">
+              <Link key={post.slug} href={`/blog/${post.slug}`} className="group overflow-hidden rounded-md border border-border-subtle bg-bg-surface transition-all duration-300 hover:border-border">
+                <div className="relative aspect-[16/9] overflow-hidden bg-bg-elevated">
                   <Image src={post.image_url} alt={post.title} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-transform duration-500 group-hover:scale-105" />
                 </div>
                 <div className="p-6">
-                  <span className="text-xs text-text-dim">{post.published_at ? new Date(post.published_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : ''}</span>
-                  <h3 className="mt-2 font-display text-lg font-medium text-text-primary transition-colors group-hover:text-accent-gold">{post.title}</h3>
-                  <p className="mt-2 text-sm text-text-muted">{post.excerpt}</p>
-                  <span className="mt-4 inline-block text-sm font-medium text-accent-gold">Read More →</span>
+                  {post.published_at && <p className="mb-2 text-xs text-text-dim">{formatDate(post.published_at)}</p>}
+                  <h3 className="font-display text-lg font-medium leading-tight text-text-primary transition-colors group-hover:text-accent-gold">{post.title}</h3>
+                  <p className="mt-3 text-sm leading-relaxed text-text-muted">{post.excerpt}</p>
+                  <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-accent-gold">Read More →</span>
                 </div>
               </Link>
             ))}
@@ -209,13 +259,13 @@ export default function HomeContent({
       </SectionReveal>
 
       {/* Newsletter */}
-      <ScrollReveal direction="up">
-        <section className="relative overflow-hidden py-24">
-          <div className="absolute inset-0 bg-gradient-to-br from-bg-primary via-bg-surface to-bg-primary" />
-          <div className="relative mx-auto max-w-xl px-6 text-center">
-            <SectionHeader label="Newsletter" title="Stay Informed" />
-            <p className="mt-6 text-sm text-text-muted">Be the first to know about new releases, exclusive offers, and the stories behind our craft.</p>
-            <NewsletterForm className="mt-8 flex gap-3" />
+      <ScrollReveal>
+        <section className="bg-gradient-to-b from-bg-primary via-bg-surface to-bg-primary px-4 py-20 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-xl text-center">
+            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-accent-gold">The Ritual</span>
+            <h2 className="mt-3 font-display text-3xl font-medium text-text-primary">Stay Informed</h2>
+            <p className="mt-3 text-sm text-text-muted">Get the latest fragrance guides, new arrivals, and exclusive offers delivered to your inbox.</p>
+            <NewsletterForm className="mt-8 flex flex-col gap-3 sm:flex-row" />
           </div>
         </section>
       </ScrollReveal>

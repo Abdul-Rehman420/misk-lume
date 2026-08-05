@@ -10,18 +10,6 @@ interface ShopPageProps {
   searchParams: Promise<{ gender?: string; category?: string; search?: string; sort?: string; page?: string; sizes?: string; minPrice?: string; maxPrice?: string }>;
 }
 
-const fallbackProducts = [
-  { name: "Noir Oud", slug: "noir-oud", price: 4500, gender: "Men", image_url: "https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?w=500&q=80", badge: "new" as const, rating: 5, review_count: 128 },
-  { name: "Velvet Rose", slug: "velvet-rose", price: 3800, gender: "Women", image_url: "https://images.unsplash.com/photo-1587017539504-67cfbddac569?w=500&q=80", rating: 4, review_count: 94 },
-  { name: "Amber Savage", slug: "amber-savage", price: 3200, sale_price: 4000, gender: "Unisex", image_url: "https://images.unsplash.com/photo-1595425926237-29e265f1e8b3?w=500&q=80", badge: "sale" as const, rating: 4, review_count: 76 },
-  { name: "Saffron Ember", slug: "saffron-ember", price: 5200, gender: "Men", image_url: "https://images.unsplash.com/photo-1615634260168-c54ea80a010c?w=500&q=80", rating: 5, review_count: 63 },
-  { name: "Cedarwood Atlas", slug: "cedarwood-atlas", price: 2800, gender: "Men", image_url: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=500&q=80", rating: 4, review_count: 51 },
-  { name: "Iris Dusk", slug: "iris-dusk", price: 4200, gender: "Women", image_url: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=500&q=80", rating: 5, review_count: 87 },
-  { name: "Tobacco Roi", slug: "tobacco-roi", price: 3500, gender: "Men", image_url: "https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?w=500&q=80", rating: 4, review_count: 42 },
-  { name: "Musk Absolute", slug: "musk-absolute", price: 3000, gender: "Unisex", image_url: "https://images.unsplash.com/photo-1587017539504-67cfbddac569?w=500&q=80", rating: 4, review_count: 68 },
-  { name: "Jasmine Noir", slug: "jasmine-noir", price: 4800, gender: "Women", image_url: "https://images.unsplash.com/photo-1595425926237-29e265f1e8b3?w=500&q=80", badge: "new" as const, rating: 5, review_count: 35 },
-];
-
 const ITEMS_PER_PAGE = 12;
 
 export default async function ShopPage({ searchParams }: ShopPageProps) {
@@ -36,8 +24,12 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
   const sizes = params.sizes?.split(",").filter(Boolean) || [];
   const offset = (page - 1) * ITEMS_PER_PAGE;
 
-  let products = fallbackProducts;
-  let totalCount = fallbackProducts.length;
+  let products: {
+    name: string; slug: string; price: number; sale_price?: number; gender: string;
+    image_url: string; badge?: "new" | "sale" | "out-of-stock"; rating: number; review_count: number;
+    sizes?: { size_ml: number; price: number }[];
+  }[] = [];
+  let totalCount = 0;
 
   try {
     const [dbProducts, count] = await Promise.all([
@@ -161,8 +153,10 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
 
           {sortedProducts.length === 0 && (
             <div className="mt-12 text-center">
-              <p className="text-text-muted">No products match your filters</p>
-              <Link href="/shop" className="mt-4 inline-block text-sm text-accent-gold hover:text-accent-gold-hover">Clear all filters</Link>
+              <p className="text-text-muted">{activeFilters ? "No products match your filters" : "No products yet. Check back soon."}</p>
+              {activeFilters && (
+                <Link href="/shop" className="mt-4 inline-block text-sm text-accent-gold hover:text-accent-gold-hover">Clear all filters</Link>
+              )}
             </div>
           )}
 

@@ -1,10 +1,7 @@
 "use client";
 
-import { useRef, useEffect, ReactNode } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
+import { ReactNode, Children } from "react";
+import { motion } from "framer-motion";
 
 interface StaggerChildrenProps {
   children: ReactNode;
@@ -17,41 +14,29 @@ export default function StaggerChildren({
   stagger = 0.1,
   className = "",
 }: StaggerChildrenProps) {
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const childrenElements = el.children;
-
-    gsap.fromTo(
-      childrenElements,
-      { opacity: 0, y: 30 },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 0.6,
-        stagger,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: el,
-          start: "top 85%",
-          toggleActions: "play none none none",
-        },
-      }
-    );
-
-    return () => {
-      ScrollTrigger.getAll().forEach((t) => {
-        if (t.trigger === el) t.kill();
-      });
-    };
-  }, [stagger]);
-
   return (
-    <div ref={ref} className={className}>
-      {children}
-    </div>
+    <motion.div
+      className={className}
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, amount: 0.15 }}
+      variants={{
+        hidden: {},
+        show: {
+          transition: { staggerChildren: stagger },
+        },
+      }}
+    >
+      {Children.map(children, (child) => (
+        <motion.div
+          variants={{
+            hidden: { opacity: 0, y: 30 },
+            show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+          }}
+        >
+          {child}
+        </motion.div>
+      ))}
+    </motion.div>
   );
 }

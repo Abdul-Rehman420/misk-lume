@@ -2,15 +2,7 @@ import Image from "next/image";
 import ProductCard from "@/components/ui/ProductCard";
 import SectionHeader from "@/components/ui/SectionHeader";
 import { getProducts } from "@/lib/supabase/queries";
-
-const fallbackAttarProducts = [
-  { name: "Saffron Ember Attar", slug: "saffron-ember-attar", price: 5200, gender: "Unisex", image_url: "/images/attar-saffron.jpg", badge: "new" as const, description: "A warm, smoky attar blending Persian saffron with rich amber and a whisper of leather." },
-  { name: "Musk Absolute Attar", slug: "musk-absolute-attar", price: 5800, gender: "Unisex", image_url: "/images/attar-musk.jpg", description: "Pure white musk distilled to its essence — clean, soft, and deeply intimate." },
-  { name: "Oud Al Misk Attar", slug: "oud-al-misk-attar", price: 7500, gender: "Unisex", image_url: "/images/attar-oud-misk.jpg", description: "Our signature blend of Cambodian oud and deer musk, aged for three years in sandalwood." },
-  { name: "Cedarwood Atlas Attar", slug: "cedarwood-atlas-attar", price: 4200, gender: "Men", image_url: "/images/attar-cedar.jpg", description: "Earthy Atlas cedarwood meets vetiver and a touch of black pepper for a grounding scent." },
-  { name: "Tobacco Roi Attar", slug: "tobacco-roi-attar", price: 4800, gender: "Men", image_url: "/images/attar-tobacco.jpg", description: "Rich tobacco leaf infused with honeyed dates and a smoky vanilla finish." },
-  { name: "Iris Dusk Attar", slug: "iris-dusk-attar", price: 3400, sale_price: 4000, gender: "Women", image_url: "/images/attar-iris.jpg", badge: "sale" as const, description: "Delicate iris root blended with powdery violet and a hint of cold suede." },
-];
+import { cloudinaryUrl } from "@/lib/images";
 
 const ritualSteps = [
   {
@@ -50,7 +42,10 @@ const ritualSteps = [
 ];
 
 export default async function AttarPage() {
-  let attarProducts = fallbackAttarProducts;
+  let attarProducts: {
+    name: string; slug: string; price: number; sale_price?: number; gender: string;
+    image_url: string; badge?: "new" | "sale" | "out-of-stock"; description: string;
+  }[] = [];
 
   try {
     const dbProducts = await getProducts({ category: "attar", limit: 20 });
@@ -87,7 +82,7 @@ export default async function AttarPage() {
       <section className="px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-6xl items-center gap-12 md:grid-cols-2">
           <div className="relative aspect-[4/3] overflow-hidden rounded-md bg-bg-elevated">
-            <Image src="/images/attar-heritage.jpg" alt="Traditional attar making" fill sizes="(max-width: 768px) 100vw, 50vw" className="h-full w-full object-cover" />
+            <Image src={cloudinaryUrl("https://images.unsplash.com/photo-1541643600914-78b084683601", 800)} alt="Traditional attar making" fill sizes="(max-width: 768px) 100vw, 50vw" className="h-full w-full object-cover" />
           </div>
           <div className="flex flex-col gap-5">
             <span className="text-xs font-semibold uppercase tracking-[0.2em] text-accent-gold">Heritage</span>
@@ -109,22 +104,26 @@ export default async function AttarPage() {
       <section className="bg-bg-surface px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
           <SectionHeader label="Our Attars" title="Pure Oil Collection" />
-          <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {attarProducts.map((attar) => (
-              <div key={attar.slug} className="flex flex-col">
-                <ProductCard
-                  name={attar.name}
-                  slug={attar.slug}
-                  price={attar.price}
-                  salePrice={attar.sale_price}
-                  gender={attar.gender}
-                  imageUrl={attar.image_url}
-                  badge={attar.badge}
-                />
-                {attar.description && <p className="mt-3 px-1 text-xs leading-relaxed text-text-dim">{attar.description}</p>}
-              </div>
-            ))}
-          </div>
+          {attarProducts.length > 0 ? (
+            <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {attarProducts.map((attar) => (
+                <div key={attar.slug} className="flex flex-col">
+                  <ProductCard
+                    name={attar.name}
+                    slug={attar.slug}
+                    price={attar.price}
+                    salePrice={attar.sale_price}
+                    gender={attar.gender}
+                    imageUrl={attar.image_url}
+                    badge={attar.badge}
+                  />
+                  {attar.description && <p className="mt-3 px-1 text-xs leading-relaxed text-text-dim">{attar.description}</p>}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="mt-12 text-center text-sm text-text-muted">No attars available yet. New oils will appear here.</p>
+          )}
         </div>
       </section>
 

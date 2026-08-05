@@ -5,18 +5,19 @@ import SectionHeader from "@/components/ui/SectionHeader";
 import Button from "@/components/ui/Button";
 import BlogNewsletter from "./BlogNewsletter";
 import { getBlogPosts } from "@/lib/supabase/queries";
+import { cloudinaryUrl } from "@/lib/images";
 
 interface BlogPageProps {
   searchParams: Promise<{ category?: string }>;
 }
 
 const fallbackPosts = [
-  { title: "Understanding Fragrance Notes: Top, Heart & Base", excerpt: "A beginner's guide to the architecture of perfume and how scent evolves on your skin over time.", image_url: "/images/blog-fragrance-notes.jpg", slug: "fragrance-notes", category: "Ingredients", published_at: "2025-01-12" },
-  { title: "The Art of Layering: Building Your Signature Scent", excerpt: "Master the technique of combining fragrances to create a unique olfactory identity.", image_url: "/images/blog-layering.jpg", slug: "layering-scents", category: "Rituals", published_at: "2025-01-08" },
-  { title: "Choosing the Perfect Winter Fragrance", excerpt: "Discover rich, warming scents that complement the colder months.", image_url: "/images/blog-winter.jpg", slug: "winter-fragrance", category: "Fragrance Guides", published_at: "2025-01-03" },
-  { title: "From Concept to Bottle: Our Design Process", excerpt: "A behind-the-scenes look at how Misk Lume creates each fragrance.", image_url: "/images/blog-design-process.jpg", slug: "design-process", category: "Behind the Scenes", published_at: "2024-12-28" },
-  { title: "The Rare World of Oud: Why It's Called Liquid Gold", excerpt: "Explore the centuries-old tradition of oud harvesting.", image_url: "/images/blog-oud.jpg", slug: "rare-oud", category: "Ingredients", published_at: "2024-12-20" },
-  { title: "Day vs Night: Selecting Fragrances for Every Occasion", excerpt: "Learn the subtle differences between daytime freshness and evening intensity.", image_url: "/images/blog-day-night.jpg", slug: "day-vs-night", category: "Fragrance Guides", published_at: "2024-12-15" },
+  { title: "Understanding Fragrance Notes: Top, Heart & Base", excerpt: "A beginner's guide to the architecture of perfume and how scent evolves on your skin over time.", image_url: cloudinaryUrl("https://images.unsplash.com/photo-1615634260168-c54ea80a010c", 600), slug: "fragrance-notes", category: "Ingredients", published_at: "2025-01-12" },
+  { title: "The Art of Layering: Building Your Signature Scent", excerpt: "Master the technique of combining fragrances to create a unique olfactory identity.", image_url: cloudinaryUrl("https://images.unsplash.com/photo-1541643600914-78b084683601", 600), slug: "layering-scents", category: "Rituals", published_at: "2025-01-08" },
+  { title: "Choosing the Perfect Winter Fragrance", excerpt: "Discover rich, warming scents that complement the colder months.", image_url: cloudinaryUrl("https://images.unsplash.com/photo-1595425926237-29e265f1e8b3", 600), slug: "winter-fragrance", category: "Fragrance Guides", published_at: "2025-01-03" },
+  { title: "From Concept to Bottle: Our Design Process", excerpt: "A behind-the-scenes look at how Misk Lume creates each fragrance.", image_url: cloudinaryUrl("https://images.unsplash.com/photo-1588405748880-12d1d2a59f75", 600), slug: "design-process", category: "Behind the Scenes", published_at: "2024-12-28" },
+  { title: "The Rare World of Oud: Why It's Called Liquid Gold", excerpt: "Explore the centuries-old tradition of oud harvesting.", image_url: cloudinaryUrl("https://images.unsplash.com/photo-1615634260169-c994b9a33e3e", 600), slug: "rare-oud", category: "Ingredients", published_at: "2024-12-20" },
+  { title: "Day vs Night: Selecting Fragrances for Every Occasion", excerpt: "Learn the subtle differences between daytime freshness and evening intensity.", image_url: cloudinaryUrl("https://images.unsplash.com/photo-1523293182086-7651a899d37f", 600), slug: "day-vs-night", category: "Fragrance Guides", published_at: "2024-12-15" },
 ];
 
 const fallbackCategories = ["All", "Fragrance Guides", "Ingredients", "Rituals", "Behind the Scenes"];
@@ -25,7 +26,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
   const params = await searchParams;
   const activeCategory = params.category || "All";
 
-  let posts = fallbackPosts;
+  let posts = activeCategory === "All" ? fallbackPosts : fallbackPosts.filter((p) => p.category === activeCategory);
   let categories = fallbackCategories;
 
   try {
@@ -34,7 +35,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
       posts = dbPosts.map((p) => ({
         title: p.title,
         excerpt: p.excerpt,
-        image_url: p.image_url || "/images/blog-default.jpg",
+        image_url: p.image_url || cloudinaryUrl("https://images.unsplash.com/photo-1588405748880-12d1d2a59f75", 600),
         slug: p.slug,
         category: p.category,
         published_at: p.published_at,

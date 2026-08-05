@@ -4,7 +4,7 @@ export function OrganizationJsonLd() {
     "@type": "Organization",
     name: "Misk Lume",
     url: "https://misklume.com",
-    logo: "https://misklume.com/og-image.jpg",
+    logo: "https://res.cloudinary.com/dktcck0jj/image/fetch/f_auto,q_auto,w_1200/https%3A%2F%2Fimages.unsplash.com%2Fphoto-1615634260169-c994b9a33e3e",
     description: "Luxury perfumes and attars crafted with rare ingredients from around the world.",
     contactPoint: {
       "@type": "ContactPoint",

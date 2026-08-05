@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import gsap from "gsap";
+import { motion } from "framer-motion";
 import MobileNav from "./MobileNav";
 import SearchModal from "./SearchModal";
 import { useCart } from "@/lib/context/CartContext";
@@ -107,26 +107,27 @@ function MenuIcon({ className }: { className?: string }) {
 }
 
 function NavLink({ href, label }: { href: string; label: string }) {
-  const spanRef = useRef<HTMLSpanElement>(null);
-
-  const handleEnter = useCallback(() => {
-    gsap.to(spanRef.current, { width: "100%", duration: 0.3, ease: "power2.out" });
-  }, []);
-
-  const handleLeave = useCallback(() => {
-    gsap.to(spanRef.current, { width: 0, duration: 0.25, ease: "power2.in" });
-  }, []);
-
   return (
-    <Link
-      href={href}
-      onMouseEnter={handleEnter}
-      onMouseLeave={handleLeave}
-      className="group relative text-sm font-medium uppercase tracking-wider text-text-primary transition-colors hover:text-accent-gold"
+    <motion.span
+      className="group relative inline-block"
+      initial="rest"
+      whileHover="hover"
+      animate="rest"
     >
-      {label}
-      <span ref={spanRef} className="absolute -bottom-1 left-0 h-px w-0 bg-accent-gold" />
-    </Link>
+      <Link
+        href={href}
+        className="text-sm font-medium uppercase tracking-wider text-text-primary transition-colors hover:text-accent-gold"
+      >
+        {label}
+      </Link>
+      <motion.span
+        className="absolute -bottom-1 left-0 h-px bg-accent-gold"
+        variants={{
+          rest: { width: 0 },
+          hover: { width: "100%", transition: { duration: 0.3, ease: "easeOut" } },
+        }}
+      />
+    </motion.span>
   );
 }
 

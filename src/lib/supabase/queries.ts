@@ -48,7 +48,7 @@ export async function getCategories() {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('categories')
-    .select('*')
+    .select('*, products(count)')
     .eq('is_active', true)
     .order('sort_order')
 

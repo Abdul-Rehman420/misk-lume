@@ -102,12 +102,14 @@ ul, ol {
   list-style: none;
 }
 
-button {
-  font-family: inherit;
-  cursor: pointer;
-  border: none;
-  background: none;
-  color: inherit;
+@layer base {
+  button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: inherit;
+  }
 }
 
 input, select, textarea {
@@ -197,7 +199,22 @@ h1, h2, h3, h4, h5, h6 {
   50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
 }
 
+/* Admin area uses a light theme — undo the storefront's dark element colors */
+.admin-area { color: var(--color-admin-text); }
+.admin-area h1, .admin-area h2, .admin-area h3,
+.admin-area h4, .admin-area h5, .admin-area h6 {
+  color: var(--color-admin-text);
+}
+
 /* Film grain overlay */
+.direction-rtl {
+  direction: rtl;
+}
+
+.direction-ltr {
+  direction: ltr;
+}
+
 .hero-grain::after {
   content: '';
   position: absolute;

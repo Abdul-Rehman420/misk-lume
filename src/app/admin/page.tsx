@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
-interface KpiData { label: string; value: string; change: string; up: boolean }
+interface KpiData { label: string; value: string }
 interface OrderRow { id: string; order_number: string; customer: string; products: string; total: number; status: string; date: string }
 interface TopProduct { name: string; units: number; revenue: string; color: string }
 interface Activity { color: string; description: string; time: string }
@@ -14,6 +14,7 @@ const statusStyles: Record<string, string> = {
   shipped: "bg-blue-500/15 text-blue-400",
   delivered: "bg-success/15 text-success",
   cancelled: "bg-error/15 text-error",
+  refunded: "bg-orange-500/15 text-orange-500",
 };
 
 const productColors = ["bg-accent-gold", "bg-amber-700", "bg-rose-700", "bg-blue-700", "bg-emerald-700"];
@@ -29,12 +30,11 @@ export default function AdminDashboard() {
   useEffect(() => {
     async function load() {
       try {
-        const [ordersRes, customersRes, revenueRes, recentOrdersRes, productsRes] = await Promise.all([
-          supabase.from('orders').select('id, total, status, created_at, order_items(product_name, quantity), profiles(full_name)'),
+        const [ordersRes, customersRes, revenueRes, recentOrdersRes] = await Promise.all([
+          supabase.from('orders').select('id, total, status, created_at, order_items(product_name, quantity, total_price), profiles(full_name)'),
           supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('role', 'customer'),
           supabase.from('orders').select('total'),
           supabase.from('orders').select('id, order_number, total, status, created_at, order_items(product_name, quantity), profiles(full_name)').order('created_at', { ascending: false }).limit(5),
-          supabase.from('products').select('name, review_count, price').eq('is_active', true).order('review_count', { ascending: false }).limit(3),
         ]);
 
         const totalRevenue = revenueRes.data?.reduce((s, o) => s + (o.total || 0), 0) || 0;
@@ -42,10 +42,10 @@ export default function AdminDashboard() {
         const avgOrderValue = totalOrders ? Math.round(totalRevenue / totalOrders) : 0;
 
         setKpis([
-          { label: "Total Revenue", value: `PKR ${totalRevenue.toLocaleString()}`, change: totalOrders > 0 ? "+" : "0", up: true },
-          { label: "Total Orders", value: String(totalOrders), change: "+8.3%", up: true },
-          { label: "Active Customers", value: String(customersRes.count || 0), change: "+15.2%", up: true },
-          { label: "Avg. Order Value", value: `PKR ${avgOrderValue.toLocaleString()}`, change: avgOrderValue > 0 ? "+" : "0", up: avgOrderValue > 0 },
+          { label: "Total Revenue", value: `PKR ${totalRevenue.toLocaleString()}` },
+          { label: "Total Orders", value: String(totalOrders) },
+          { label: "Active Customers", value: String(customersRes.count || 0) },
+          { label: "Avg. Order Value", value: `PKR ${avgOrderValue.toLocaleString()}` },
         ]);
 
         setOrders((recentOrdersRes.data || []).map(o => {
@@ -61,12 +61,26 @@ export default function AdminDashboard() {
           };
         }));
 
-        setTopProducts((productsRes.data || []).map((p, i) => ({
-          name: p.name,
-          units: p.review_count || 0,
-          revenue: `PKR ${((p.price || 0) * (p.review_count || 1)).toLocaleString()}`,
-          color: productColors[i % productColors.length],
-        })));
+        const productMap = new Map<string, { units: number; revenue: number }>();
+        (ordersRes.data || []).forEach(o => {
+          (o.order_items || []).forEach((i: { product_name: string; quantity: number; total_price: number }) => {
+            const cur = productMap.get(i.product_name) || { units: 0, revenue: 0 };
+            cur.units += i.quantity || 0;
+            cur.revenue += i.total_price || 0;
+            productMap.set(i.product_name, cur);
+          });
+        });
+
+        setTopProducts(Array.from(productMap.entries())
+          .map(([name, v]) => ({ name, ...v }))
+          .sort((a, b) => b.revenue - a.revenue)
+          .slice(0, 3)
+          .map((p, i) => ({
+            name: p.name,
+            units: p.units,
+            revenue: `PKR ${p.revenue.toLocaleString()}`,
+            color: productColors[i % productColors.length],
+          })));
       } catch { setError("Failed to load dashboard data"); }
       setLoading(false);
     }
@@ -96,9 +110,6 @@ export default function AdminDashboard() {
           <div key={kpi.label} className="rounded-md border border-admin-border bg-admin-surface p-6">
             <p className="text-sm text-admin-text-muted">{kpi.label}</p>
             <p className="mt-1 text-2xl font-bold text-admin-text">{kpi.value}</p>
-            <p className={`mt-2 text-xs font-medium ${kpi.up ? "text-success" : "text-error"}`}>
-              {kpi.up ? "↑" : "↓"} {kpi.change}
-            </p>
           </div>
         ))}
       </div>
@@ -153,7 +164,7 @@ export default function AdminDashboard() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-medium text-admin-text">{product.name}</p>
-                  <p className="text-xs text-admin-text-muted">{product.units} reviews</p>
+                  <p className="text-xs text-admin-text-muted">{product.units} sold</p>
                 </div>
                 <p className="whitespace-nowrap text-sm font-medium text-admin-text">{product.revenue}</p>
               </div>

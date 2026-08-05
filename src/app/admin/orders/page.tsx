@@ -15,9 +15,10 @@ const statusStyles: Record<string, string> = {
   shipped: "bg-blue-500/15 text-blue-400",
   delivered: "bg-success/15 text-success",
   cancelled: "bg-error/15 text-error",
+  refunded: "bg-orange-500/15 text-orange-500",
 };
 
-const statusOptions = ["pending", "processing", "shipped", "delivered", "cancelled"];
+const statusOptions = ["pending", "processing", "shipped", "delivered", "cancelled", "refunded"];
 
 export default function OrdersPage() {
   const supabase = createClient();

@@ -4,29 +4,16 @@ import { getFeaturedProducts, getCategories, getBlogPosts } from "@/lib/supabase
 import { createClient } from "@/lib/supabase/server";
 
 const fallbackCategories = [
-  { name: "Men", image: "https://images.unsplash.com/photo-1587017539504-67cfbddac569?w=600&q=80", href: "/shop?gender=men", count: "24 Fragrances" },
-  { name: "Women", image: "https://images.unsplash.com/photo-1595425926237-29e265f1e8b3?w=600&q=80", href: "/shop?gender=women", count: "31 Fragrances" },
-  { name: "Unisex", image: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=600&q=80", href: "/shop?gender=unisex", count: "18 Fragrances" },
-  { name: "Attar", image: "https://images.unsplash.com/photo-1615634260168-c54ea80a010c?w=600&q=80", href: "/attar", count: "12 Oils" },
-];
-
-const fallbackFeatured = [
-  { name: "Noir Oud", slug: "noir-oud", price: 4500, gender: "Men", image_url: "https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?w=500&q=80", badge: "new" as const, rating: 5, review_count: 128, categories: { name: "Men", slug: "men" } },
-  { name: "Velvet Rose", slug: "velvet-rose", price: 3800, gender: "Women", image_url: "https://images.unsplash.com/photo-1587017539504-67cfbddac569?w=500&q=80", rating: 4, review_count: 94, categories: { name: "Women", slug: "women" } },
-  { name: "Amber Savage", slug: "amber-savage", price: 3200, sale_price: 4000, gender: "Unisex", image_url: "https://images.unsplash.com/photo-1595425926237-29e265f1e8b3?w=500&q=80", badge: "sale" as const, rating: 4, review_count: 76, categories: { name: "Unisex", slug: "unisex" } },
-  { name: "Saffron Ember", slug: "saffron-ember", price: 5200, gender: "Men", image_url: "https://images.unsplash.com/photo-1615634260168-c54ea80a010c?w=500&q=80", rating: 5, review_count: 63, categories: { name: "Men", slug: "men" } },
-];
-
-const fallbackReviews = [
-  { rating: 5, text: "Noir Oud is unlike anything I've ever experienced. The longevity is incredible — 12 hours and still getting compliments. Worth every rupee.", author: "Ahmed R.", date: "June 2026" },
-  { rating: 5, text: "Velvet Rose has become my signature scent. The rose and oud blend is perfectly balanced. My husband bought this for me and I'm obsessed.", author: "Fatima K.", date: "May 2026" },
-  { rating: 4, text: "The packaging alone feels luxurious. Saffron Ember is bold, warm, and sophisticated. Misk Lume has set a new standard for Pakistani perfumery.", author: "Bilal M.", date: "April 2026" },
+  { name: "Men", image: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=600&q=80", href: "/shop?gender=men", count: "24 Fragrances" },
+  { name: "Women", image: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=600&q=80", href: "/shop?gender=women", count: "31 Fragrances" },
+  { name: "Unisex", image: "https://images.unsplash.com/photo-1594035910387-fbd1b6c24581?w=600&q=80", href: "/shop?gender=unisex", count: "18 Fragrances" },
+  { name: "Attar", image: "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=600&q=80", href: "/attar", count: "12 Oils" },
 ];
 
 const fallbackBlogPosts = [
-  { title: "The Art of Layering Fragrances", excerpt: "Master the technique of combining scents to create a unique olfactory signature that's entirely your own.", image_url: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=600&q=80", slug: "layering-fragrances", published_at: "2026-07-10" },
-  { title: "Oud: The Liquid Gold of Perfumery", excerpt: "Discover why oud has been treasured for centuries and what makes our sourcing process different.", image_url: "https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?w=600&q=80", slug: "oud-liquid-gold", published_at: "2026-06-28" },
-  { title: "Your Guide to Attar Oils", excerpt: "Everything you need to know about traditional attar oils, from application techniques to storage.", image_url: "https://images.unsplash.com/photo-1615634260168-c54ea80a010c?w=600&q=80", slug: "attar-oils-guide", published_at: "2026-06-15" },
+  { title: "The History of Oud: From Ancient Temples to Modern Perfumery", excerpt: "A journey through centuries of one of the world's most prized fragrance ingredients...", image_url: "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=600&q=80", slug: "history-of-oud", published_at: "2026-07-10" },
+  { title: "Why Oil-Based Perfume Lasts Longer Than Alcohol Sprays", excerpt: "The science behind oil-based formulation and why concentration matters...", image_url: "https://images.unsplash.com/photo-1594035910387-fbd1b6c24581?w=600&q=80", slug: "oil-based-longevity", published_at: "2026-06-28" },
+  { title: "Building Your Signature Scent: A Guide to Fragrance Layering", excerpt: "How to combine oils and build a fragrance identity that's uniquely yours...", image_url: "https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?w=600&q=80", slug: "signature-scent-guide", published_at: "2026-06-15" },
 ];
 
 function formatCategoryHref(cat: { name: string; slug?: string }) {
@@ -37,19 +24,27 @@ function formatCategoryHref(cat: { name: string; slug?: string }) {
 
 export default async function Home() {
   let categories = fallbackCategories;
-  let featuredProducts = fallbackFeatured;
+  let featuredProducts: {
+    name: string; slug: string; price: number; sale_price?: number; gender: string;
+    image_url: string; badge?: "new" | "sale"; rating: number; review_count: number;
+    categories: { name: string; slug: string } | { name: string; slug: string }[] | null;
+  }[] = [];
   let blogPosts = fallbackBlogPosts;
-  let reviews = fallbackReviews;
+  let reviews: { rating: number; text: string; author: string; date: string }[] = [];
 
   try {
     const dbCategories = await getCategories();
     if (dbCategories && dbCategories.length > 0) {
-      categories = dbCategories.map((c) => ({
-        name: c.name,
-        image: c.image_url || fallbackCategories.find((f) => f.name.toLowerCase() === c.name.toLowerCase())?.image || "",
-        href: formatCategoryHref(c),
-        count: `${c.name}`,
-      }));
+      categories = dbCategories.map((c) => {
+        const productCount = (c.products as { count?: number }[] | null)?.[0]?.count ?? 0;
+        const countLabel = c.name.toLowerCase() === "attar" ? "Oils" : "Fragrances";
+        return {
+          name: c.name,
+          image: c.image_url || fallbackCategories.find((f) => f.name.toLowerCase() === c.name.toLowerCase())?.image || "",
+          href: formatCategoryHref(c),
+          count: productCount > 0 ? `${productCount} ${countLabel}` : "",
+        };
+      });
     }
   } catch {}
 
@@ -88,7 +83,7 @@ export default async function Home() {
     const supabase = await createClient();
     const { data: dbReviews } = await supabase
       .from('reviews')
-      .select('rating, text, profiles(full_name)')
+      .select('rating, text, created_at, profiles(full_name)')
       .eq('is_approved', true)
       .order('created_at', { ascending: false })
       .limit(3);
@@ -98,7 +93,7 @@ export default async function Home() {
         rating: r.rating,
         text: r.text,
         author: (r.profiles as { full_name?: string } | null)?.full_name || "Anonymous",
-        date: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
+        date: new Date(r.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
       }));
     }
   } catch {}
