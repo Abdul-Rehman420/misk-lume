@@ -77,6 +77,7 @@ export default function AdminNotifications() {
         className="relative flex h-9 w-9 items-center justify-center rounded-md text-admin-text-muted transition-colors hover:bg-admin-bg hover:text-admin-text"
         aria-label="Notifications"
         aria-expanded={open}
+        suppressHydrationWarning
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

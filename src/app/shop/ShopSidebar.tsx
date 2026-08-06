@@ -3,7 +3,11 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useTransition } from "react";
 
-const genders = ["Men", "Women", "Unisex"] as const;
+const genders = [
+  { label: "Men", value: "men" },
+  { label: "Women", value: "women" },
+  { label: "Unisex", value: "unisex" },
+] as const;
 const sizes = ["6ml", "12ml", "25ml"] as const;
 
 export default function ShopSidebar() {
@@ -11,7 +15,7 @@ export default function ShopSidebar() {
   const searchParams = useSearchParams();
   const [, startTransition] = useTransition();
 
-  const selectedGenders = searchParams.get("gender")?.split(",").filter(Boolean) || [];
+  const selectedGenders = (searchParams.get("gender")?.toLowerCase().split(",").filter(Boolean)) || [];
   const selectedSizes = searchParams.get("sizes")?.split(",").filter(Boolean) || [];
   const minPrice = Number(searchParams.get("minPrice") || "1000");
   const maxPrice = Number(searchParams.get("maxPrice") || "10000");
@@ -37,9 +41,9 @@ export default function ShopSidebar() {
         <legend className="text-sm font-semibold uppercase tracking-wider text-text-primary">Gender</legend>
         <div className="mt-4 space-y-3">
           {genders.map((g) => (
-            <label key={g} className="flex cursor-pointer items-center gap-3">
-              <input type="checkbox" checked={selectedGenders.includes(g)} onChange={() => toggleMultiParam("gender", selectedGenders, g)} className="h-4 w-4 rounded-sm border border-border-subtle bg-bg-elevated accent-accent-gold" />
-              <span className="text-sm text-text-muted">{g}</span>
+            <label key={g.value} className="flex cursor-pointer items-center gap-3">
+              <input type="checkbox" checked={selectedGenders.includes(g.value)} onChange={() => toggleMultiParam("gender", selectedGenders, g.value)} className="h-4 w-4 rounded-sm border border-border-subtle bg-bg-elevated accent-accent-gold" />
+              <span className="text-sm text-text-muted">{g.label}</span>
             </label>
           ))}
         </div>

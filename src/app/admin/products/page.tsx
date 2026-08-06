@@ -8,11 +8,11 @@ import { uploadImageToCloudinary } from "@/lib/images";
 interface Product {
   id: string; name: string; slug: string; price: number; is_active: boolean;
   categories?: { name: string } | null; stock_quantity?: number; category_id?: string;
-  description?: string; gender?: string;
+  description?: string; gender?: string; is_bestseller?: boolean; sort_order?: number;
   product_images?: { id: string; image_url: string; is_primary: boolean }[];
 }
 
-const emptyForm = { name: "", slug: "", price: "", gender: "unisex", category_id: "", stock: "10", is_active: true, description: "", image_url: "" };
+const emptyForm = { name: "", slug: "", price: "", gender: "unisex", category_id: "", stock: "10", is_active: true, is_bestseller: false, sort_order: "0", description: "", image_url: "" };
 
 const statusStyles: Record<string, string> = {
   Active: "bg-success/15 text-success",
@@ -28,6 +28,8 @@ export default function ProductsPage() {
   const [statusFilter, setStatusFilter] = useState("All");
   const [deleting, setDeleting] = useState<string | null>(null);
   const [toggling, setToggling] = useState<string | null>(null);
+  const [bestSellerToggling, setBestSellerToggling] = useState<string | null>(null);
+  const [movingId, setMovingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -40,7 +42,7 @@ export default function ProductsPage() {
 
   async function loadProducts() {
     try {
-      const { data } = await supabase.from('products').select('*, categories(name), product_images(image_url, is_primary)').order('created_at', { ascending: false });
+      const { data } = await supabase.from('products').select('*, categories(name), product_images(image_url, is_primary)').order('sort_order', { ascending: true }).order('created_at', { ascending: false });
       if (data) setProducts(data);
     } catch { setError("Failed to load products"); }
     setLoading(false);
@@ -70,6 +72,34 @@ export default function ProductsPage() {
     setToggling(null);
   }
 
+  async function toggleBestSeller(id: string, current: boolean) {
+    setBestSellerToggling(id);
+    try {
+      await supabase.from('products').update({ is_bestseller: !current }).eq('id', id);
+      setProducts(prev => prev.map(p => p.id === id ? { ...p, is_bestseller: !current } : p));
+    } catch { setError("Failed to update product"); }
+    setBestSellerToggling(null);
+  }
+
+  async function moveProduct(id: string, direction: -1 | 1) {
+    const sorted = [...products].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
+    const from = sorted.findIndex(p => p.id === id);
+    const to = from + direction;
+    if (from < 0 || to < 0 || to >= sorted.length) return;
+    setMovingId(id);
+    try {
+      const reordered = [...sorted];
+      [reordered[from], reordered[to]] = [reordered[to], reordered[from]];
+      for (let i = 0; i < reordered.length; i++) {
+        if ((reordered[i].sort_order ?? 0) !== i + 1) {
+          await supabase.from('products').update({ sort_order: i + 1 }).eq('id', reordered[i].id);
+        }
+      }
+      setProducts(reordered.map((p, i) => ({ ...p, sort_order: i + 1 })));
+    } catch { setError("Failed to reorder product"); }
+    setMovingId(null);
+  }
+
   function openAdd() {
     setEditingId(null);
     setForm(emptyForm);
@@ -97,7 +127,8 @@ export default function ProductsPage() {
     setForm({
       name: p.name, slug: p.slug, price: String(p.price), gender: p.gender || "unisex",
       category_id: p.category_id || "", stock: String(p.stock_quantity ?? 0),
-      is_active: p.is_active, description: p.description || "", image_url: img,
+      is_active: p.is_active, is_bestseller: p.is_bestseller ?? false,
+      sort_order: String(p.sort_order ?? 0), description: p.description || "", image_url: img,
     });
     setShowModal(true);
   }
@@ -111,6 +142,7 @@ export default function ProductsPage() {
         name: form.name, slug, price: parseFloat(form.price) || 0,
         gender: form.gender, category_id: form.category_id || null,
         stock_quantity: parseInt(form.stock) || 0, is_active: form.is_active,
+        is_bestseller: form.is_bestseller, sort_order: parseInt(form.sort_order) || 0,
         description: form.description,
       };
 
@@ -120,6 +152,8 @@ export default function ProductsPage() {
         const { error: err } = await supabase.from('products').update(payload).eq('id', editingId);
         if (err) throw err;
       } else {
+        const { data: maxRow } = await supabase.from('products').select('sort_order').order('sort_order', { ascending: false }).limit(1).maybeSingle();
+        payload.sort_order = (maxRow?.sort_order ?? 0) + 1;
         const { data, error: err } = await supabase.from('products').insert(payload).select().single();
         if (err) throw err;
         productId = data.id;
@@ -160,7 +194,7 @@ export default function ProductsPage() {
         <h1 className="text-2xl font-bold text-admin-text">Products</h1>
         <div className="flex items-center gap-3">
           <span className="text-sm text-admin-text-muted">{filtered.length} products</span>
-          <button onClick={openAdd} className="rounded-md bg-accent-gold px-4 py-2 text-sm font-medium text-bg-primary transition-colors hover:bg-accent-gold-hover">Add Product</button>
+          <button onClick={openAdd} className="rounded-md bg-accent-gold px-4 py-2 text-sm font-medium text-bg-primary transition-colors hover:bg-accent-gold-hover" suppressHydrationWarning>Add Product</button>
         </div>
       </div>
 
@@ -174,13 +208,13 @@ export default function ProductsPage() {
       <div className="flex items-center gap-4">
         <div className="relative flex-1">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-admin-text-muted"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
-          <input type="text" placeholder="Search products..." value={search} onChange={e => setSearch(e.target.value)} className="w-full rounded-md border border-admin-border bg-admin-surface py-2 pl-10 pr-4 text-sm text-admin-text outline-none transition-colors focus:border-accent-gold" />
+          <input type="text" placeholder="Search products..." value={search} onChange={e => setSearch(e.target.value)} className="w-full rounded-md border border-admin-border bg-admin-surface py-2 pl-10 pr-4 text-sm text-admin-text outline-none transition-colors focus:border-accent-gold" suppressHydrationWarning />
         </div>
-        <select value={categoryFilter} onChange={e => setCategoryFilter(e.target.value)} className="rounded-md border border-admin-border bg-admin-surface px-4 py-2 text-sm text-admin-text outline-none transition-colors focus:border-accent-gold">
+        <select value={categoryFilter} onChange={e => setCategoryFilter(e.target.value)} className="rounded-md border border-admin-border bg-admin-surface px-4 py-2 text-sm text-admin-text outline-none transition-colors focus:border-accent-gold" suppressHydrationWarning>
           <option value="All">All Categories</option>
           {categories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
         </select>
-        <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="rounded-md border border-admin-border bg-admin-surface px-4 py-2 text-sm text-admin-text outline-none transition-colors focus:border-accent-gold">
+        <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="rounded-md border border-admin-border bg-admin-surface px-4 py-2 text-sm text-admin-text outline-none transition-colors focus:border-accent-gold" suppressHydrationWarning>
           <option>All Status</option><option>Active</option><option>Draft</option>
         </select>
       </div>
@@ -229,6 +263,15 @@ export default function ProductsPage() {
                         </a>
                         <button onClick={() => startEdit(product)} className="flex h-8 w-8 items-center justify-center rounded-md text-admin-text-muted transition-colors hover:bg-admin-bg hover:text-admin-text" title="Edit product">
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" /></svg>
+                        </button>
+                        <button onClick={() => toggleBestSeller(product.id, product.is_bestseller ?? false)} disabled={bestSellerToggling === product.id} className={`flex h-8 w-8 items-center justify-center rounded-md transition-colors disabled:opacity-50 ${product.is_bestseller ? "text-accent-gold hover:bg-accent-gold/10" : "text-admin-text-muted hover:bg-admin-bg hover:text-admin-text"}`} title={product.is_bestseller ? "Remove from Best Sellers" : "Add to Best Sellers"} aria-label={product.is_bestseller ? `Remove ${product.name} from Best Sellers` : `Add ${product.name} to Best Sellers`}>
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={product.is_bestseller ? "currentColor" : "none"} stroke="currentColor" strokeWidth={1.5} strokeLinejoin="round" className="h-4 w-4"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                        </button>
+                        <button onClick={() => moveProduct(product.id, -1)} disabled={movingId !== null} className="flex h-8 w-8 items-center justify-center rounded-md text-admin-text-muted transition-colors hover:bg-admin-bg hover:text-admin-text disabled:opacity-50" title="Move up" aria-label={`Move ${product.name} up`}>
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><polyline points="18 15 12 9 6 15" /></svg>
+                        </button>
+                        <button onClick={() => moveProduct(product.id, 1)} disabled={movingId !== null} className="flex h-8 w-8 items-center justify-center rounded-md text-admin-text-muted transition-colors hover:bg-admin-bg hover:text-admin-text disabled:opacity-50" title="Move down" aria-label={`Move ${product.name} down`}>
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><polyline points="6 9 12 15 18 9" /></svg>
                         </button>
                         <button onClick={() => toggleActive(product.id, product.is_active)} disabled={toggling === product.id} className="flex h-8 w-8 items-center justify-center rounded-md text-admin-text-muted transition-colors hover:bg-admin-bg hover:text-admin-text disabled:opacity-50" title={product.is_active ? "Deactivate" : "Activate"} aria-label={product.is_active ? `Deactivate ${product.name}` : `Activate ${product.name}`}>
                           {product.is_active ? (
@@ -282,6 +325,11 @@ export default function ProductsPage() {
                 </div>
               </div>
               <div>
+                <label className="mb-1 block text-sm font-medium text-admin-text">Sort Order</label>
+                <input type="number" value={form.sort_order} onChange={e => setForm(f => ({ ...f, sort_order: e.target.value }))} className="w-full rounded-md border border-admin-border bg-admin-bg px-4 py-2 text-sm text-admin-text outline-none focus:border-accent-gold" />
+                <p className="mt-1 text-xs text-admin-text-muted">Lower numbers appear first in the shop. Use the up/down arrows on the list to reorder.</p>
+              </div>
+              <div>
                 <label className="mb-1 block text-sm font-medium text-admin-text">Category</label>
                 <select value={form.category_id} onChange={e => setForm(f => ({ ...f, category_id: e.target.value }))} className="w-full rounded-md border border-admin-border bg-admin-bg px-4 py-2 text-sm text-admin-text outline-none focus:border-accent-gold">
                   <option value="">None</option>
@@ -322,9 +370,15 @@ export default function ProductsPage() {
                 <label className="mb-1 block text-sm font-medium text-admin-text">Description</label>
                 <textarea rows={3} value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} className="w-full resize-none rounded-md border border-admin-border bg-admin-bg px-4 py-2 text-sm text-admin-text outline-none focus:border-accent-gold" />
               </div>
-              <div className="flex items-center gap-2">
-                <input type="checkbox" id="is_active" checked={form.is_active} onChange={e => setForm(f => ({ ...f, is_active: e.target.checked }))} className="rounded border-admin-border" />
-                <label htmlFor="is_active" className="text-sm text-admin-text">Active</label>
+              <div className="flex items-center gap-6">
+                <div className="flex items-center gap-2">
+                  <input type="checkbox" id="is_active" checked={form.is_active} onChange={e => setForm(f => ({ ...f, is_active: e.target.checked }))} className="rounded border-admin-border" />
+                  <label htmlFor="is_active" className="text-sm text-admin-text">Active</label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input type="checkbox" id="is_bestseller" checked={form.is_bestseller} onChange={e => setForm(f => ({ ...f, is_bestseller: e.target.checked }))} className="rounded border-admin-border" />
+                  <label htmlFor="is_bestseller" className="text-sm text-admin-text">Best Seller</label>
+                </div>
               </div>
             </div>
             <div className="mt-6 flex justify-end gap-3">

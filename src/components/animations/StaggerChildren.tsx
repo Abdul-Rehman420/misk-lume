@@ -7,18 +7,22 @@ interface StaggerChildrenProps {
   children: ReactNode;
   stagger?: number;
   className?: string;
+  eager?: boolean;
 }
 
 export default function StaggerChildren({
   children,
   stagger = 0.1,
   className = "",
+  eager = false,
 }: StaggerChildrenProps) {
   return (
     <motion.div
       className={className}
       initial="hidden"
-      whileInView="show"
+      {...(eager
+        ? { animate: "show" as const }
+        : { whileInView: "show" as const })}
       viewport={{ once: true, amount: 0.15 }}
       variants={{
         hidden: {},

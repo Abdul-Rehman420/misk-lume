@@ -1,6 +1,6 @@
 import HomeHero from "@/components/home/HomeHero";
 import HomeContent from "@/components/home/HomeContent";
-import { getFeaturedProducts, getCategories, getBlogPosts } from "@/lib/supabase/queries";
+import { getBestSellerProducts, getFeaturedProducts, getCategories, getBlogPosts } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 import { normalizeBadge } from "@/lib/badge";
 
@@ -25,7 +25,7 @@ function formatCategoryHref(cat: { name: string; slug?: string }) {
 
 export default async function Home() {
   let categories = fallbackCategories;
-  let featuredProducts: {
+  let bestSellers: {
     id: string; name: string; slug: string; price: number; sale_price?: number; gender: string;
     image_url: string; badge?: "new" | "sale" | "out-of-stock"; rating: number; review_count: number;
     categories: { name: string; slug: string } | { name: string; slug: string }[] | null;
@@ -33,8 +33,9 @@ export default async function Home() {
   let blogPosts = fallbackBlogPosts;
   let reviews: { rating: number; text: string; author: string; date: string }[] = [];
 
-  const [dbCategories, featured, posts, dbReviews] = await Promise.allSettled([
+  const [dbCategories, bestSellersRes, featuredRes, posts, dbReviews] = await Promise.allSettled([
     getCategories(),
+    getBestSellerProducts(4),
     getFeaturedProducts(4),
     getBlogPosts({ limit: 3 }),
     (async () => {
@@ -62,8 +63,15 @@ export default async function Home() {
     });
   }
 
-  if (featured.status === "fulfilled" && featured.value && featured.value.length > 0) {
-    featuredProducts = featured.value.map((p) => ({
+  const bestSellerSource =
+    bestSellersRes.status === "fulfilled" && bestSellersRes.value && bestSellersRes.value.length > 0
+      ? bestSellersRes.value
+      : featuredRes.status === "fulfilled" && featuredRes.value
+        ? featuredRes.value
+        : [];
+
+  if (bestSellerSource.length > 0) {
+    bestSellers = bestSellerSource.map((p) => ({
       id: p.id,
       name: p.name,
       slug: p.slug,
@@ -100,7 +108,7 @@ export default async function Home() {
   return (
     <>
       <HomeHero />
-      <HomeContent categories={categories} featuredProducts={featuredProducts} reviews={reviews} blogPosts={blogPosts} />
+      <HomeContent categories={categories} bestSellers={bestSellers} reviews={reviews} blogPosts={blogPosts} />
     </>
   );
 }

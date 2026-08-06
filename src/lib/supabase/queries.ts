@@ -44,6 +44,20 @@ export async function getFeaturedProducts(limit = 4) {
   return data
 }
 
+export async function getBestSellerProducts(limit = 4) {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('products')
+    .select('*, categories(name, slug), product_images(image_url, is_primary)')
+    .eq('is_active', true)
+    .eq('is_bestseller', true)
+    .order('rating', { ascending: false })
+    .limit(limit)
+
+  if (error) throw error
+  return data
+}
+
 export async function getCategories() {
   const supabase = await createClient()
   const { data, error } = await supabase
@@ -150,14 +164,19 @@ export async function getShopProducts(filters?: {
     .eq('is_active', true)
 
   if (filters?.category) query = query.eq('categories.slug', filters.category)
-  if (filters?.gender) query = query.eq('gender', filters.gender)
+  if (filters?.gender) {
+    const genders = filters.gender.split(",").map((g: string) => g.trim().toLowerCase()).filter(Boolean)
+    if (genders.length === 1) query = query.eq('gender', genders[0])
+    else if (genders.length > 1) query = query.in('gender', genders)
+  }
   if (filters?.search) query = query.or(`name.ilike.%${filters.search}%,description.ilike.%${filters.search}%`)
   if (filters?.minPrice) query = query.gte('price', filters.minPrice)
   if (filters?.maxPrice) query = query.lte('price', filters.maxPrice)
   if (filters?.sort === 'price_asc') query = query.order('price', { ascending: true })
   else if (filters?.sort === 'price_desc') query = query.order('price', { ascending: false })
   else if (filters?.sort === 'rating') query = query.order('rating', { ascending: false })
-  else query = query.order('created_at', { ascending: false })
+  else if (filters?.sort === 'newest') query = query.order('created_at', { ascending: false })
+  else query = query.order('sort_order', { ascending: true })
 
   if (filters?.limit) query = query.limit(filters.limit)
   if (filters?.offset) query = query.range(filters.offset, (filters.offset || 0) + (filters.limit || 12) - 1)
@@ -189,7 +208,11 @@ export async function getShopProductsCount(filters?: {
   let query = supabase.from('products').select('id', { count: 'exact', head: true }).eq('is_active', true)
 
   if (filters?.category) query = query.eq('categories.slug', filters.category)
-  if (filters?.gender) query = query.eq('gender', filters.gender)
+  if (filters?.gender) {
+    const genders = filters.gender.split(",").map((g: string) => g.trim().toLowerCase()).filter(Boolean)
+    if (genders.length === 1) query = query.eq('gender', genders[0])
+    else if (genders.length > 1) query = query.in('gender', genders)
+  }
   if (filters?.search) query = query.or(`name.ilike.%${filters.search}%,description.ilike.%${filters.search}%`)
   if (filters?.minPrice) query = query.gte('price', filters.minPrice)
   if (filters?.maxPrice) query = query.lte('price', filters.maxPrice)

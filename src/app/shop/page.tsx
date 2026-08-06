@@ -21,7 +21,7 @@ const ITEMS_PER_PAGE = 12;
 
 export default async function ShopPage({ searchParams }: ShopPageProps) {
   const params = await searchParams;
-  const gender = params.gender || undefined;
+  const gender = params.gender ? params.gender.toLowerCase() : undefined;
   const category = params.category || undefined;
   const search = params.search || undefined;
   const sort = params.sort || undefined;
@@ -112,7 +112,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
         <div className="mt-4 flex flex-wrap items-center gap-2">
           {gender && gender.split(",").map(g => (
             <span key={g} className="inline-flex items-center gap-1 rounded-full border border-accent-gold/30 bg-accent-gold/5 px-3 py-1 text-xs text-accent-gold">
-              {g} <Link href={buildFilterUrl({ gender: gender.split(",").filter(x => x !== g).join(",") || undefined })} className="ml-1">&times;</Link>
+              {g.charAt(0).toUpperCase() + g.slice(1)} <Link href={buildFilterUrl({ gender: gender.split(",").filter(x => x !== g).join(",") || undefined })} className="ml-1">&times;</Link>
             </span>
           ))}
           {category && (

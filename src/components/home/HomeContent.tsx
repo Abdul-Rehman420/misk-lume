@@ -1,11 +1,9 @@
 "use client";
 
-import { ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import SectionHeader from "@/components/ui/SectionHeader";
 import ProductCard from "@/components/ui/ProductCard";
-import ReviewCard from "@/components/ui/ReviewCard";
 import Button from "@/components/ui/Button";
 import SectionReveal from "@/components/animations/SectionReveal";
 import ScrollReveal from "@/components/animations/ScrollReveal";
@@ -19,7 +17,7 @@ interface Category {
   count: string;
 }
 
-interface FeaturedProduct {
+interface BestSeller {
   id: string;
   name: string;
   slug: string;
@@ -65,12 +63,12 @@ function StarIcon() {
 
 export default function HomeContent({
   categories,
-  featuredProducts,
+  bestSellers,
   reviews,
   blogPosts,
 }: {
   categories: Category[];
-  featuredProducts: FeaturedProduct[];
+  bestSellers: BestSeller[];
   reviews: Review[];
   blogPosts: BlogPost[];
 }) {
@@ -93,13 +91,13 @@ export default function HomeContent({
         </StaggerChildren>
       </SectionReveal>
 
-      {/* Featured Products */}
+      {/* Best Sellers */}
       <SectionReveal className="bg-bg-surface py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <SectionHeader label="Curated for You" title="Featured Fragrances" />
-          {featuredProducts.length > 0 ? (
+          <SectionHeader label="Most Loved" title="Best Sellers" />
+          {bestSellers.length > 0 ? (
             <StaggerChildren className="mt-12 grid grid-cols-2 gap-6 lg:grid-cols-4">
-              {featuredProducts.map((product) => (
+              {bestSellers.map((product) => (
                 <ProductCard
                   key={product.slug}
                   productId={product.id}
@@ -116,7 +114,7 @@ export default function HomeContent({
               ))}
             </StaggerChildren>
           ) : (
-            <p className="mt-12 text-center text-sm text-text-muted">No featured products yet. New fragrances will appear here.</p>
+            <p className="mt-12 text-center text-sm text-text-muted">No best sellers yet. New fragrances will appear here.</p>
           )}
           <div className="mt-12 flex justify-center">
             <Link href="/shop">
@@ -207,7 +205,7 @@ export default function HomeContent({
                 </svg>
               </div>
               <h3 className="font-display text-lg font-medium text-text-primary">Small Batch Ritual</h3>
-              <p className="mt-3 max-w-xs text-sm leading-relaxed text-text-muted">Each batch is limited and numbered. When it's gone, we move to the next season's distillation. Exclusivity isn't a marketing tactic — it's our process.</p>
+              <p className="mt-3 max-w-xs text-sm leading-relaxed text-text-muted">Each batch is limited and numbered. When it&apos;s gone, we move to the next season&apos;s distillation. Exclusivity isn&apos;t a marketing tactic &mdash; it&apos;s our process.</p>
             </div>
           </StaggerChildren>
         </div>
@@ -228,7 +226,7 @@ export default function HomeContent({
                       <StarIcon key={s} />
                     ))}
                   </div>
-                  <p className="mb-6 text-sm italic leading-relaxed text-text-muted">"{review.text}"</p>
+                  <p className="mb-6 text-sm italic leading-relaxed text-text-muted">&ldquo;{review.text}&rdquo;</p>
                   <p className="text-sm font-semibold text-text-primary">{review.author}</p>
                   <p className="mt-1 text-xs text-text-dim">{review.date}</p>
                 </div>

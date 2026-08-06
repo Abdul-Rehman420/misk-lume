@@ -46,6 +46,7 @@ export default function AdminUserMenu() {
         className="flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold text-bg-primary transition-opacity hover:opacity-90"
         aria-label="Account menu"
         aria-expanded={open}
+        suppressHydrationWarning
       >
         {initial}
       </button>
