@@ -7,6 +7,7 @@ import ProductCard from "@/components/ui/ProductCard";
 import Button from "@/components/ui/Button";
 
 interface WishlistProduct {
+  id: string;
   name: string;
   slug: string;
   price: number;
@@ -37,7 +38,7 @@ export default function WishlistPage() {
       }
       const { data } = await supabase
         .from("wishlist")
-        .select("id, products(name, slug, price, sale_price, gender, image_url, rating, review_count, categories(name, slug))")
+        .select("id, products(id, name, slug, price, sale_price, gender, image_url, rating, review_count, categories(name, slug))")
         .eq("user_id", user.id);
       if (data) setItems(data as unknown as WishlistItem[]);
       setLoading(false);
@@ -84,6 +85,7 @@ export default function WishlistPage() {
             {items.map((item) => (
               <div key={item.id} className="group relative">
                 <ProductCard
+                  productId={item.products.id}
                   name={item.products.name}
                   slug={item.products.slug}
                   price={item.products.price}

@@ -1,5 +1,11 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import Button from "@/components/ui/Button";
+
+export const metadata: Metadata = {
+  title: "Sustainability | Misk Lume",
+  description: "Misk Lume's commitment to ethical sourcing, conscious packaging, and small-batch production — luxury and responsibility in every bottle.",
+};
 
 export default function SustainabilityPage() {
   return (

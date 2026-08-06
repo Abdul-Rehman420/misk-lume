@@ -1,8 +1,15 @@
 import Image from "next/image";
+import type { Metadata } from "next";
 import ProductCard from "@/components/ui/ProductCard";
 import SectionHeader from "@/components/ui/SectionHeader";
 import { getProducts } from "@/lib/supabase/queries";
 import { cloudinaryUrl } from "@/lib/images";
+import { normalizeBadge } from "@/lib/badge";
+
+export const metadata: Metadata = {
+  title: "Attar Oils | Misk Lume",
+  description: "Discover Misk Lume's collection of pure oil-based attars, crafted from rare natural ingredients for exceptional longevity.",
+};
 
 const ritualSteps = [
   {
@@ -43,7 +50,7 @@ const ritualSteps = [
 
 export default async function AttarPage() {
   let attarProducts: {
-    name: string; slug: string; price: number; sale_price?: number; gender: string;
+    id: string; name: string; slug: string; price: number; sale_price?: number; gender: string;
     image_url: string; badge?: "new" | "sale" | "out-of-stock"; description: string;
   }[] = [];
 
@@ -51,13 +58,14 @@ export default async function AttarPage() {
     const dbProducts = await getProducts({ category: "attar", limit: 20 });
     if (dbProducts && dbProducts.length > 0) {
       attarProducts = dbProducts.map((p) => ({
+        id: p.id,
         name: p.name,
         slug: p.slug,
         price: p.price,
         sale_price: p.sale_price,
         gender: p.gender,
         image_url: p.image_url || p.product_images?.[0]?.image_url || "",
-        badge: p.badge,
+        badge: normalizeBadge(p.badge),
         description: p.short_description || p.description?.slice(0, 120) || "",
       }));
     }
@@ -109,6 +117,7 @@ export default async function AttarPage() {
               {attarProducts.map((attar) => (
                 <div key={attar.slug} className="flex flex-col">
                   <ProductCard
+                    productId={attar.id}
                     name={attar.name}
                     slug={attar.slug}
                     price={attar.price}

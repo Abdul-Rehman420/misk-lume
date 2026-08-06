@@ -33,6 +33,7 @@ interface Order {
 
 interface WishlistItem {
   products: {
+    id: string;
     name: string;
     slug: string;
     price: number;
@@ -81,7 +82,7 @@ export default function AccountPage() {
         const [profileRes, ordersRes, wishlistRes] = await Promise.all([
           supabase.from('profiles').select('full_name, email, role').eq('id', user.id).single(),
           supabase.from('orders').select('*, order_items(*)').eq('user_id', user.id).order('created_at', { ascending: false }),
-          supabase.from('wishlist').select('products(name, slug, price, sale_price, gender, image_url, rating, review_count, categories(name, slug))').eq('user_id', user.id),
+          supabase.from('wishlist').select('products(id, name, slug, price, sale_price, gender, image_url, rating, review_count, categories(name, slug))').eq('user_id', user.id),
         ]);
 
         if (profileRes.data) setProfile(profileRes.data as UserProfile);
@@ -227,6 +228,7 @@ export default function AccountPage() {
                     {wishlist.map((item) => (
                       <ProductCard
                         key={item.products.slug}
+                        productId={item.products.id}
                         name={item.products.name}
                         slug={item.products.slug}
                         price={item.products.price}

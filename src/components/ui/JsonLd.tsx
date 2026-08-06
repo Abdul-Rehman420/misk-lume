@@ -24,20 +24,6 @@ export function OrganizationJsonLd() {
   return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />;
 }
 
-export function BreadcrumbJsonLd({ items }: { items: { name: string; url: string }[] }) {
-  const schema = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: items.map((item, i) => ({
-      "@type": "ListItem",
-      position: i + 1,
-      name: item.name,
-      item: item.url,
-    })),
-  };
-  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />;
-}
-
 export function ProductJsonLd({ product }: {
   product: { name: string; description: string; image: string; price: number; currency?: string; sku?: string; brand?: string; availability?: string; rating?: number; reviewCount?: number };
 }) {

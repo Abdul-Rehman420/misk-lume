@@ -38,18 +38,19 @@ export async function POST(request: NextRequest) {
     const supabase = await createClient();
 
     // C1: Authenticate user — verify the email matches the authenticated session
-    let authenticatedEmail: string | null = null;
+    let user: { id: string; email?: string } | null = null;
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user?.email) {
-        authenticatedEmail = user.email;
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (authUser) {
+        user = authUser;
       }
     } catch {
       // Auth unavailable — fall back to request body data (guest checkout)
     }
 
+    const authenticatedEmail = user?.email || null;
     const userEmail = shipping_address?.email || "";
-    const userId = authenticatedEmail ? userEmail : (body.user_id || null);
+    const userId = user?.id || null;
 
     if (authenticatedEmail && userEmail !== authenticatedEmail) {
       return NextResponse.json({ error: "Email does not match authenticated user" }, { status: 403 });

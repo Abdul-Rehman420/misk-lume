@@ -1,5 +1,11 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import Button from "@/components/ui/Button";
+
+export const metadata: Metadata = {
+  title: "Order Confirmed | Misk Lume",
+  robots: { index: false },
+};
 
 export default function CheckoutSuccessPage() {
   return (

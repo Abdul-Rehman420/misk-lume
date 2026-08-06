@@ -29,10 +29,6 @@ export default function ReviewsPage() {
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadReviews();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
   async function loadReviews() {
     try {
       const { data } = await supabase.from('reviews').select('*, products(name), profiles(full_name)').order('created_at', { ascending: false });
@@ -40,6 +36,10 @@ export default function ReviewsPage() {
     } catch { setError("Failed to load reviews"); }
     setLoading(false);
   }
+
+  useEffect(() => {
+    loadReviews(); // eslint-disable-line react-hooks/set-state-in-effect
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function toggleApproval(id: string, current: boolean) {
     setUpdatingId(id);
@@ -109,10 +109,10 @@ export default function ReviewsPage() {
                   </td>
                   <td className="whitespace-nowrap px-4 py-3">
                     <div className="flex items-center gap-2">
-                      <button onClick={() => toggleApproval(review.id, review.is_approved)} disabled={updatingId === review.id} className={`flex h-8 w-8 items-center justify-center rounded-md transition-colors ${review.is_approved ? "text-success hover:bg-success/10" : "text-admin-text-muted hover:bg-admin-bg hover:text-admin-text"} disabled:opacity-50`} title={review.is_approved ? "Unapprove" : "Approve"}>
+                      <button onClick={() => toggleApproval(review.id, review.is_approved)} disabled={updatingId === review.id} className={`flex h-8 w-8 items-center justify-center rounded-md transition-colors ${review.is_approved ? "text-success hover:bg-success/10" : "text-admin-text-muted hover:bg-admin-bg hover:text-admin-text"} disabled:opacity-50`} title={review.is_approved ? "Unapprove" : "Approve"} aria-label={review.is_approved ? `Unapprove review of ${review.products?.name || "product"}` : `Approve review of ${review.products?.name || "product"}`}>
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="h-4 w-4"><polyline points="20 6 9 17 4 12" /></svg>
                       </button>
-                      <button onClick={() => deleteReview(review.id)} disabled={updatingId === review.id} className="flex h-8 w-8 items-center justify-center rounded-md text-admin-text-muted transition-colors hover:bg-error/10 hover:text-error disabled:opacity-50">
+                      <button onClick={() => deleteReview(review.id)} disabled={updatingId === review.id} className="flex h-8 w-8 items-center justify-center rounded-md text-admin-text-muted transition-colors hover:bg-error/10 hover:text-error disabled:opacity-50" aria-label={`Delete review of ${review.products?.name || "product"}`}>
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="h-4 w-4"><polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
                       </button>
                     </div>

@@ -1,5 +1,11 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import Button from "@/components/ui/Button";
+
+export const metadata: Metadata = {
+  title: "Gift Sets | Misk Lume",
+  description: "Curated fragrance collections, beautifully packaged for gifting.",
+};
 
 export default function GiftSetsPage() {
   return (

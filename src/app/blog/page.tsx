@@ -1,11 +1,17 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { Metadata } from "next";
 import FeaturedCard from "@/components/ui/FeaturedCard";
 import SectionHeader from "@/components/ui/SectionHeader";
 import Button from "@/components/ui/Button";
 import BlogNewsletter from "./BlogNewsletter";
 import { getBlogPosts } from "@/lib/supabase/queries";
 import { cloudinaryUrl } from "@/lib/images";
+
+export const metadata: Metadata = {
+  title: "Journal | Misk Lume",
+  description: "Stories, guides, and insights from the world of luxury fragrance.",
+};
 
 interface BlogPageProps {
   searchParams: Promise<{ category?: string }>;

@@ -4,9 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Button from "@/components/ui/Button";
 import { useCart } from "@/lib/context/CartContext";
-
-const SHIPPING_COST = 200;
-const FREE_SHIPPING_THRESHOLD = 8000;
+import { SHIPPING_COST, FREE_SHIPPING_THRESHOLD } from "@/lib/shipping";
 
 export default function CartPage() {
   const { items, updateQuantity, removeItem } = useCart();

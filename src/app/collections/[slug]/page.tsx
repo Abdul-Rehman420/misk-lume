@@ -12,7 +12,7 @@ interface CollectionPageProps {
 
 interface CollectionDetail {
   name: string; slug: string; description: string; image_url: string;
-  products: { name: string; slug: string; price: number; image_url: string; gender: string; rating: number; review_count: number; categories: { name: string; slug: string } }[];
+  products: { id: string; name: string; slug: string; price: number; image_url: string; gender: string; rating: number; review_count: number; categories: { name: string; slug: string } }[];
 }
 
 export async function generateMetadata({ params }: CollectionPageProps): Promise<Metadata> {
@@ -43,7 +43,8 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
         image_url: dbCollection.image_url || "",
         products: (dbCollection.collection_products || [])
           .filter((cp: { products?: { name: string; slug: string; price: number } }) => cp.products)
-          .map((cp: { products: { name: string; slug: string; price: number; image_url?: string; gender?: string; rating?: number; review_count?: number; categories?: { name: string; slug: string } } }) => ({
+          .map((cp: { products: { id: string; name: string; slug: string; price: number; image_url?: string; gender?: string; rating?: number; review_count?: number; categories?: { name: string; slug: string } } }) => ({
+            id: cp.products.id,
             name: cp.products.name,
             slug: cp.products.slug,
             price: cp.products.price,
@@ -88,6 +89,7 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
             {collection.products.map((product) => (
               <ProductCard
                 key={product.slug}
+                productId={product.id}
                 name={product.name}
                 slug={product.slug}
                 price={product.price}

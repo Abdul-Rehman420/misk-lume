@@ -6,6 +6,7 @@ import ProductActions from "@/components/product/ProductActions";
 import ProductReviews from "@/components/product/ProductReviews";
 import { getProductBySlug, getProductReviews, getRelatedProducts } from "@/lib/supabase/queries";
 import { ProductJsonLd } from "@/components/ui/JsonLd";
+import { normalizeBadge } from "@/lib/badge";
 import type { Metadata } from "next";
 
 interface ProductPageProps {
@@ -42,7 +43,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   let product: ProductDetail | null = null;
   let reviews: { rating: number; text: string; author: string; date: string }[] = [];
   let relatedProducts: {
-    name: string; slug: string; price: number; sale_price?: number; gender: string;
+    id: string; name: string; slug: string; price: number; sale_price?: number; gender: string;
     image_url: string; badge?: "new" | "sale" | "out-of-stock"; rating: number; review_count: number;
     categories: { name: string; slug: string };
   }[] = [];
@@ -63,13 +64,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
       const dbRelated = await getRelatedProducts(dbProduct.id);
       if (dbRelated && dbRelated.length > 0) {
         relatedProducts = dbRelated.map((p) => ({
+          id: p.id,
           name: p.name,
           slug: p.slug,
           price: p.price,
           sale_price: p.sale_price,
           gender: p.gender,
           image_url: p.image_url || "",
-          badge: p.badge,
+          badge: normalizeBadge(p.badge),
           rating: p.rating,
           review_count: p.review_count,
           categories: p.categories,
@@ -179,6 +181,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             {relatedProducts.map((p) => (
               <ProductCard
                 key={p.slug}
+                productId={p.id}
                 name={p.name}
                 slug={p.slug}
                 price={p.price}

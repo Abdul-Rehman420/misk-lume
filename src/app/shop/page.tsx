@@ -1,10 +1,17 @@
 import { Suspense } from "react";
 import Link from "next/link";
+import type { Metadata } from "next";
 import ProductCard from "@/components/ui/ProductCard";
 import ShopProductGrid from "@/components/shop/ShopProductGrid";
 import ShopSidebar from "./ShopSidebar";
 import SortSelect from "./SortSelect";
 import { getShopProducts, getShopProductsCount } from "@/lib/supabase/queries";
+import { normalizeBadge } from "@/lib/badge";
+
+export const metadata: Metadata = {
+  title: "Shop All Fragrances | Misk Lume",
+  description: "Browse the full Misk Lume collection of luxury perfumes, attars, and oils. Free shipping on orders over PKR 8,000.",
+};
 
 interface ShopPageProps {
   searchParams: Promise<{ gender?: string; category?: string; search?: string; sort?: string; page?: string; sizes?: string; minPrice?: string; maxPrice?: string }>;
@@ -25,7 +32,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
   const offset = (page - 1) * ITEMS_PER_PAGE;
 
   let products: {
-    name: string; slug: string; price: number; sale_price?: number; gender: string;
+    id: string; name: string; slug: string; price: number; sale_price?: number; gender: string;
     image_url: string; badge?: "new" | "sale" | "out-of-stock"; rating: number; review_count: number;
     sizes?: { size_ml: number; price: number }[];
   }[] = [];
@@ -39,13 +46,14 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
 
     if (dbProducts && dbProducts.length > 0) {
       let mapped = dbProducts.map((p) => ({
+        id: p.id,
         name: p.name,
         slug: p.slug,
         price: p.price,
         sale_price: p.sale_price,
         gender: p.gender,
         image_url: p.product_images?.find((img: { is_primary?: boolean }) => img.is_primary)?.image_url || p.image_url || "",
-        badge: p.badge,
+        badge: normalizeBadge(p.badge),
         rating: p.rating,
         review_count: p.review_count,
         sizes: p.product_sizes?.map((s: { size_ml: number; price: number }) => ({ size_ml: s.size_ml, price: s.price })) || [],
@@ -62,7 +70,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
 
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
 
-  let sortedProducts = [...products];
+  const sortedProducts = [...products];
   if (sort === "price_asc") sortedProducts.sort((a, b) => a.price - b.price);
   else if (sort === "price_desc") sortedProducts.sort((a, b) => b.price - a.price);
   else if (sort === "rating") sortedProducts.sort((a, b) => (b.rating || 0) - (a.rating || 0));
@@ -98,6 +106,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
         <span>/</span>
         <span className="text-text-primary">All Products</span>
       </nav>
+      <h1 className="sr-only">Shop All Fragrances</h1>
 
       {activeFilters && (
         <div className="mt-4 flex flex-wrap items-center gap-2">
@@ -138,6 +147,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
             {sortedProducts.map((product) => (
               <ProductCard
                 key={product.slug}
+                productId={product.id}
                 name={product.name}
                 slug={product.slug}
                 price={product.price}

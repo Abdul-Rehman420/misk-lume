@@ -1,7 +1,12 @@
-import Link from "next/link";
+import type { Metadata } from "next";
 import AdminSidebar from "./AdminSidebar";
 import AdminNotifications from "./AdminNotifications";
 import AdminUserMenu from "./AdminUserMenu";
+
+export const metadata: Metadata = {
+  title: "Admin | Misk Lume",
+  robots: { index: false },
+};
 
 export default function AdminLayout({
   children,

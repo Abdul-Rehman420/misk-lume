@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import FaqAccordion from "./FaqAccordion";
 import { FaqJsonLd } from "@/components/ui/JsonLd";
+import { SHIPPING_COST, FREE_SHIPPING_THRESHOLD } from "@/lib/shipping";
 
 export const metadata: Metadata = {
   title: "FAQ | Misk Lume",
@@ -46,7 +47,7 @@ const faqData = {
     {
       question: "Is there a shipping fee?",
       answer:
-        "A flat rate of PKR 200 applies to all orders. Orders above PKR 8,000 qualify for free shipping.",
+        `A flat rate of PKR ${SHIPPING_COST} applies to all orders. Orders above PKR ${FREE_SHIPPING_THRESHOLD.toLocaleString()} qualify for free shipping.`,
     },
     {
       question: "Do you ship internationally?",

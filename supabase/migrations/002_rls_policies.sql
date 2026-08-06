@@ -65,7 +65,10 @@ create policy "Users can insert their own profile"
 create policy "Users can update their own profile"
   on public.profiles for update
   using (auth.uid() = id)
-  with check (auth.uid() = id);
+  with check (
+    auth.uid() = id
+    and role = (select p.role from public.profiles p where p.id = auth.uid())
+  );
 
 create policy "Admins can update any profile"
   on public.profiles for update
@@ -224,9 +227,9 @@ create policy "Users can view their own orders"
   on public.orders for select
   using (auth.uid() = user_id or public.is_admin());
 
-create policy "Authenticated users can create orders"
+create policy "Users can create their own orders"
   on public.orders for insert
-  with check (auth.role() = 'authenticated');
+  with check (auth.uid() = user_id);
 
 create policy "Users can update their own pending orders"
   on public.orders for update
@@ -301,9 +304,12 @@ create policy "Approved reviews are publicly readable"
   on public.reviews for select
   using (is_approved = true or auth.uid() = user_id or public.is_admin());
 
-create policy "Authenticated users can create reviews"
+create policy "Users can create reviews as themselves"
   on public.reviews for insert
-  with check (auth.role() = 'authenticated');
+  with check (
+    auth.uid() = user_id
+    and is_approved = false
+  );
 
 create policy "Users can update their own unapproved reviews"
   on public.reviews for update

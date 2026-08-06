@@ -248,10 +248,13 @@ create trigger on_order_item_insert
 
 -- ============================================================================
 -- 10. Restore stock on order cancellation
+-- SECURITY DEFINER so cancellation (by customer or admin) can update products
+-- regardless of RLS on the calling session.
 -- ============================================================================
 create or replace function public.restore_stock_on_cancellation()
 returns trigger
 language plpgsql
+security definer set search_path = ''
 as $$
 begin
   if new.status = 'cancelled' and old.status != 'cancelled' then

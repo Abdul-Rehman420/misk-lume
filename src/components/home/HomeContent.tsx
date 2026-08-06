@@ -20,13 +20,14 @@ interface Category {
 }
 
 interface FeaturedProduct {
+  id: string;
   name: string;
   slug: string;
   price: number;
   sale_price?: number | undefined;
   gender: string;
   image_url: string;
-  badge?: "new" | "sale" | undefined;
+  badge?: "new" | "sale" | "out-of-stock" | undefined;
   rating: number;
   review_count: number;
 }
@@ -101,6 +102,7 @@ export default function HomeContent({
               {featuredProducts.map((product) => (
                 <ProductCard
                   key={product.slug}
+                  productId={product.id}
                   name={product.name}
                   slug={product.slug}
                   price={product.price}

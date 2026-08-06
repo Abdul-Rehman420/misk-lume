@@ -51,6 +51,7 @@ export default function ProductActions({
     for (let i = 0; i < quantity; i++) {
       addItem({
         id: `${productId}-${selectedSize?.size_ml || "default"}`,
+        productId,
         name,
         slug,
         size: selectedSize ? `${selectedSize.size_ml}ml` : "Standard",

@@ -1,9 +1,13 @@
 -- ============================================================================
 -- H1: Make stock decrement trigger safe — only decrement if stock >= quantity
+-- SECURITY DEFINER: the trigger fires from a customer session, but RLS forbids
+-- customers from updating products, so without definer rights the UPDATE would
+-- affect 0 rows and every order would report "Insufficient stock".
 -- ============================================================================
 create or replace function public.decrement_stock_on_order()
 returns trigger
 language plpgsql
+security definer set search_path = ''
 as $$
 begin
   update public.products

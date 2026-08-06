@@ -6,9 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
 import { useCart } from "@/lib/context/CartContext";
-
-const SHIPPING_COST = 200;
-const FREE_SHIPPING_THRESHOLD = 8000;
+import { SHIPPING_COST, FREE_SHIPPING_THRESHOLD } from "@/lib/shipping";
 
 const provinces = [
   "Punjab", "Sindh", "KPK", "Balochistan",
@@ -68,7 +66,7 @@ export default function CheckoutPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          items: items.map((item) => ({ product_id: item.id.split("-")[0], size_ml: parseInt(item.size) || null, quantity: item.quantity, price: item.price })),
+          items: items.map((item) => ({ product_id: item.productId || item.id.replace(/-(?:default|\d+)$/, ""), size_ml: parseInt(item.size) || null, quantity: item.quantity, price: item.price })),
           shipping_address: { name: `${form.firstName} ${form.lastName}`.trim(), email: form.email, phone: form.phone, city: form.city, address: form.address, province: form.province, postalCode: form.postalCode, instructions: form.deliveryInstructions },
           payment_method: paymentMethod,
         }),
