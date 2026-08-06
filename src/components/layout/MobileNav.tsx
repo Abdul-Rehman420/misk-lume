@@ -2,6 +2,7 @@
 
 import { useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -41,8 +42,14 @@ interface MobileNavProps {
 }
 
 export default function MobileNav({ open, onClose }: MobileNavProps) {
+  const pathname = usePathname();
   const panelRef = useRef<HTMLDivElement>(null);
   const handleClose = useCallback(() => onClose(), [onClose]);
+
+  function isActive(href: string) {
+    if (href === "/") return pathname === "/";
+    return pathname === href || pathname.startsWith(`${href}/`);
+  }
 
   useEffect(() => {
     if (open) {
@@ -132,7 +139,7 @@ export default function MobileNav({ open, onClose }: MobileNavProps) {
               key={link.href}
               href={link.href}
               onClick={onClose}
-              className="font-display text-3xl font-medium text-text-primary transition-colors hover:text-accent-gold"
+              className={`font-display text-3xl font-medium transition-colors hover:text-accent-gold ${isActive(link.href) ? "text-accent-gold" : "text-text-primary"}`}
               style={{
                 transitionDelay: open ? `${i * 50}ms` : "0ms",
                 opacity: open ? 1 : 0,

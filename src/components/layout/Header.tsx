@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import MobileNav from "./MobileNav";
 import SearchModal from "./SearchModal";
@@ -106,17 +107,17 @@ function MenuIcon({ className }: { className?: string }) {
   );
 }
 
-function NavLink({ href, label }: { href: string; label: string }) {
+function NavLink({ href, label, active = false }: { href: string; label: string; active?: boolean }) {
   return (
     <motion.span
       className="group relative inline-block"
       initial="rest"
       whileHover="hover"
-      animate="rest"
+      animate={active ? "active" : "rest"}
     >
       <Link
         href={href}
-        className="text-sm font-medium uppercase tracking-wider text-text-primary transition-colors hover:text-accent-gold"
+        className={`text-sm font-medium uppercase tracking-wider transition-colors ${active ? "text-accent-gold" : "text-text-primary hover:text-accent-gold"}`}
       >
         {label}
       </Link>
@@ -125,6 +126,7 @@ function NavLink({ href, label }: { href: string; label: string }) {
         variants={{
           rest: { width: 0 },
           hover: { width: "100%", transition: { duration: 0.3, ease: "easeOut" } },
+          active: { width: "100%", transition: { duration: 0.3, ease: "easeOut" } },
         }}
       />
     </motion.span>
@@ -132,9 +134,15 @@ function NavLink({ href, label }: { href: string; label: string }) {
 }
 
 export default function Header() {
+  const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const { itemCount: cartCount } = useCart();
+
+  function isActive(href: string) {
+    if (href === "/") return pathname === "/";
+    return pathname === href || pathname.startsWith(`${href}/`);
+  }
 
   return (
     <>
@@ -170,7 +178,7 @@ export default function Header() {
           {/* Desktop nav */}
           <nav aria-label="Main navigation" className="hidden items-center gap-8 lg:flex">
             {navLinks.map((link) => (
-              <NavLink key={link.href} href={link.href} label={link.label} />
+              <NavLink key={link.href} href={link.href} label={link.label} active={isActive(link.href)} />
             ))}
           </nav>
 
