@@ -258,10 +258,10 @@ export default function ProductsPage() {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <a href={`/product/${product.slug}`} className="flex h-8 w-8 items-center justify-center rounded-md text-admin-text-muted transition-colors hover:bg-admin-bg hover:text-admin-text">
+                        <a href={`/product/${product.slug}`} aria-label={`View ${product.name}`} className="flex h-8 w-8 items-center justify-center rounded-md text-admin-text-muted transition-colors hover:bg-admin-bg hover:text-admin-text">
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="h-4 w-4"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
                         </a>
-                        <button onClick={() => startEdit(product)} className="flex h-8 w-8 items-center justify-center rounded-md text-admin-text-muted transition-colors hover:bg-admin-bg hover:text-admin-text" title="Edit product">
+                        <button onClick={() => startEdit(product)} aria-label={`Edit ${product.name}`} className="flex h-8 w-8 items-center justify-center rounded-md text-admin-text-muted transition-colors hover:bg-admin-bg hover:text-admin-text" title="Edit product">
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" /></svg>
                         </button>
                         <button onClick={() => toggleBestSeller(product.id, product.is_bestseller ?? false)} disabled={bestSellerToggling === product.id} className={`flex h-8 w-8 items-center justify-center rounded-md transition-colors disabled:opacity-50 ${product.is_bestseller ? "text-accent-gold hover:bg-accent-gold/10" : "text-admin-text-muted hover:bg-admin-bg hover:text-admin-text"}`} title={product.is_bestseller ? "Remove from Best Sellers" : "Add to Best Sellers"} aria-label={product.is_bestseller ? `Remove ${product.name} from Best Sellers` : `Add ${product.name} to Best Sellers`}>

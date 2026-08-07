@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { createClient } from "@/lib/supabase/client";
+import { useWishlist } from "@/lib/context/WishlistContext";
 
 interface ProductCardProps {
   productId?: string;
@@ -56,53 +55,9 @@ export default function ProductCard({
   rating,
   reviewCount,
 }: ProductCardProps) {
-  const [saved, setSaved] = useState(false);
-  const [busy, setBusy] = useState(false);
-
-  useEffect(() => {
-    if (!productId) return;
-    let cancelled = false;
-    (async () => {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      const { data } = await supabase
-        .from("wishlist")
-        .select("id")
-        .eq("user_id", user.id)
-        .eq("product_id", productId)
-        .maybeSingle();
-      if (!cancelled && data) setSaved(true);
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [productId]);
-
-  async function toggleWishlist() {
-    if (!productId || busy) return;
-    const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`;
-      return;
-    }
-    setBusy(true);
-    if (saved) {
-      const { error } = await supabase
-        .from("wishlist")
-        .delete()
-        .eq("user_id", user.id)
-        .eq("product_id", productId);
-      if (!error) setSaved(false);
-    } else {
-      const { error } = await supabase
-        .from("wishlist")
-        .insert({ user_id: user.id, product_id: productId });
-      if (!error) setSaved(true);
-    }
-    setBusy(false);
-  }
+  const { isSaved, toggle, isBusy } = useWishlist();
+  const saved = productId ? isSaved(productId) : false;
+  const busy = productId ? isBusy(productId) : false;
 
   return (
     <Link
@@ -138,7 +93,7 @@ export default function ProductCard({
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            toggleWishlist();
+            if (productId) toggle(productId);
           }}
           className={`absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full border bg-bg-primary/60 text-text-primary opacity-0 backdrop-blur-sm transition-all duration-300 hover:border-accent-gold hover:text-accent-gold group-hover:opacity-100 ${
             saved ? "border-accent-gold text-accent-gold opacity-100" : "border-border-subtle"

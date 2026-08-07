@@ -27,10 +27,6 @@ export default function OrdersPage() {
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadOrders();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
   async function loadOrders() {
     try {
       const { data } = await supabase.from('orders').select('*, order_items(product_name, quantity), profiles(full_name)').order('created_at', { ascending: false });
@@ -38,6 +34,11 @@ export default function OrdersPage() {
     } catch { setError("Failed to load orders"); }
     setLoading(false);
   }
+
+  useEffect(() => {
+    const t = setTimeout(() => { loadOrders(); }, 0);
+    return () => clearTimeout(t);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function updateStatus(id: string, status: string) {
     setUpdatingId(id);

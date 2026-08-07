@@ -11,6 +11,7 @@ function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [authErrorDismissed, setAuthErrorDismissed] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const rawRedirect = searchParams.get("redirect") || "/account";
@@ -50,17 +51,17 @@ function LoginForm() {
         <h1 className="mb-1 text-center font-display text-2xl font-medium text-text-primary">Welcome Back</h1>
         <p className="mb-8 text-center text-sm text-text-muted">Sign in to your account</p>
 
-        {authError && (
+        {authError && !authErrorDismissed && (
           <div className="mb-5 flex items-start justify-between rounded-md border border-red-500/20 bg-red-500/5 p-3 text-sm text-red-500">
             <span>Authentication failed. Please try again.</span>
-            <button type="button" onClick={() => { /* authError is from URL params, can't be cleared via state */ }} className="ml-3 text-red-400 hover:text-red-300">&times;</button>
+            <button type="button" onClick={() => setAuthErrorDismissed(true)} aria-label="Dismiss error" className="ml-3 text-red-400 hover:text-red-300">&times;</button>
           </div>
         )}
 
         {error && (
           <div className="mb-5 flex items-start justify-between rounded-md border border-red-500/20 bg-red-500/5 p-3 text-sm text-red-500">
             <span>{error}</span>
-            <button type="button" onClick={() => setError("")} className="ml-3 text-red-400 hover:text-red-300">&times;</button>
+            <button type="button" onClick={() => setError("")} aria-label="Dismiss error" className="ml-3 text-red-400 hover:text-red-300">&times;</button>
           </div>
         )}
 

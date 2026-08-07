@@ -15,10 +15,6 @@ export default function CustomersPage() {
   const [search, setSearch] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadCustomers();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
   async function loadCustomers() {
     try {
       const { data: profiles } = await supabase.from('profiles').select('*').eq('role', 'customer').order('created_at', { ascending: false });
@@ -34,6 +30,11 @@ export default function CustomersPage() {
     } catch { setError("Failed to load customers"); }
     setLoading(false);
   }
+
+  useEffect(() => {
+    const t = setTimeout(() => { loadCustomers(); }, 0);
+    return () => clearTimeout(t);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const filtered = customers.filter(c => {
     if (!search) return true;

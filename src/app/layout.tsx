@@ -4,7 +4,9 @@ import "./globals.css";
 import SiteShell from "@/components/layout/SiteShell";
 import Preloader from "@/components/ui/Preloader";
 import { CartProvider } from "@/lib/context/CartContext";
+import { WishlistProvider } from "@/lib/context/WishlistContext";
 import { OrganizationJsonLd } from "@/components/ui/JsonLd";
+import AnalyticsTracker from "@/components/analytics/AnalyticsTracker";
 import { cloudinaryUrl } from "@/lib/images";
 
 const playfair = Playfair_Display({
@@ -58,8 +60,11 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <OrganizationJsonLd />
         <Preloader />
+        <AnalyticsTracker />
         <CartProvider>
-          <SiteShell>{children}</SiteShell>
+          <WishlistProvider>
+            <SiteShell>{children}</SiteShell>
+          </WishlistProvider>
         </CartProvider>
       </body>
     </html>

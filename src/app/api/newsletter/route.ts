@@ -10,8 +10,9 @@ export async function POST(request: NextRequest) {
     if (!rl.success) {
       return NextResponse.json({ error: "Too many requests. Please try again later." }, { status: 429 });
     }
+
     const body = await request.json();
-    const { email } = body;
+    const { email, consent } = body;
 
     if (!email || typeof email !== "string") {
       return NextResponse.json({ error: "Valid email is required" }, { status: 400 });
@@ -26,17 +27,26 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid email address" }, { status: 400 });
     }
 
-    try {
-      const supabase = await createClient();
-      await supabase.from("newsletter_subscribers").upsert(
-        { email: email.trim(), subscribed_at: new Date().toISOString() },
-        { onConflict: "email" }
-      );
-    } catch {
-      // Newsletter table may not exist yet — continue with email
+    // Explicit opt-in (C10). Reject signups that did not consent to marketing.
+    if (consent !== true) {
+      return NextResponse.json({ error: "Please agree to receive marketing emails" }, { status: 400 });
     }
 
-    await sendNewsletterWelcome(email.trim());
+    const supabase = await createClient();
+    const { error } = await supabase.from("newsletter_subscribers").upsert(
+      { email: email.trim(), consent: true, is_active: true },
+      { onConflict: "email" }
+    );
+
+    if (error) {
+      console.error("[newsletter] failed to store subscriber:", error.message);
+      return NextResponse.json({ error: "Failed to subscribe" }, { status: 500 });
+    }
+
+    // Welcome email is best-effort — a delivery failure shouldn't undo the subscription.
+    await sendNewsletterWelcome(email.trim()).catch((err) => {
+      console.error("[newsletter] welcome email failed:", err);
+    });
 
     return NextResponse.json({ success: true });
   } catch {

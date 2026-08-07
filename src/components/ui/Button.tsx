@@ -40,6 +40,7 @@ export default function Button({
       type={type}
       disabled={disabled || loading}
       onClick={onClick}
+      suppressHydrationWarning
       className={`inline-flex min-h-[44px] items-center justify-center gap-2 rounded-sm font-semibold uppercase tracking-wider transition-all duration-200 ${variantStyles[variant]} ${sizeStyles[size]} ${
         fullWidth ? "w-full" : ""
       } ${disabled || loading ? "pointer-events-none opacity-50" : ""} ${className}`}

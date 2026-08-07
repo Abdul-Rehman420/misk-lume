@@ -7,8 +7,8 @@ export default function Preloader() {
   const [fadeOut, setFadeOut] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => setFadeOut(true), 1800);
-    const unmount = setTimeout(() => setVisible(false), 2300);
+    const timer = setTimeout(() => setFadeOut(true), 250);
+    const unmount = setTimeout(() => setVisible(false), 450);
     return () => { clearTimeout(timer); clearTimeout(unmount); };
   }, []);
 

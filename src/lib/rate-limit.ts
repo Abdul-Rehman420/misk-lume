@@ -1,36 +1,30 @@
 import { createClient } from "./supabase/server";
 
+interface RateLimitRow {
+  success: boolean;
+  remaining: number;
+}
+
 export async function rateLimit(key: string, limit: number, windowMs: number): Promise<{ success: boolean; remaining: number }> {
   try {
     const supabase = await createClient();
-    const now = new Date();
-    const resetAt = new Date(now.getTime() + windowMs);
 
-    // Atomic upsert: increment count if key exists and not expired, else insert fresh
-    const { data: existing } = await supabase
-      .from("rate_limits")
-      .select("count, reset_at")
-      .eq("key", key)
-      .single();
+    // Atomic increment inside the DB (migration 013). A single
+    // INSERT..ON CONFLICT avoids the select-then-update race and works with
+    // RLS because the function is security definer.
+    const { data, error } = await supabase.rpc("apply_rate_limit", {
+      p_key: key,
+      p_limit: limit,
+      p_window_ms: windowMs,
+    });
 
-    if (!existing || new Date(existing.reset_at) < now) {
-      await supabase.from("rate_limits").upsert(
-        { key, count: 1, reset_at: resetAt.toISOString() },
-        { onConflict: "key" }
-      );
+    if (error || !Array.isArray(data) || data.length === 0) {
+      // RPC unavailable — fail open
       return { success: true, remaining: limit - 1 };
     }
 
-    if (existing.count >= limit) {
-      return { success: false, remaining: 0 };
-    }
-
-    await supabase
-      .from("rate_limits")
-      .update({ count: existing.count + 1 })
-      .eq("key", key);
-
-    return { success: true, remaining: limit - existing.count - 1 };
+    const row = data[0] as RateLimitRow;
+    return { success: row.success, remaining: row.remaining };
   } catch {
     // Fail open — if rate limit DB is down, allow the request
     return { success: true, remaining: limit - 1 };
@@ -43,5 +37,6 @@ export const rateLimiters = {
   contact: { limit: 5, windowMs: HOUR, prefix: "contact" },
   newsletter: { limit: 3, windowMs: HOUR, prefix: "newsletter" },
   orders: { limit: 10, windowMs: HOUR, prefix: "orders" },
-  reviews: { limit: 5, windowMs: HOUR, prefix: "reviews" },
+  discounts: { limit: 20, windowMs: HOUR, prefix: "discounts" },
+  analytics: { limit: 120, windowMs: HOUR, prefix: "analytics" },
 } as const;

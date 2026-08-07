@@ -11,11 +11,13 @@ export default function FaqAccordion({
 }) {
   const [open, setOpen] = useState(false);
   const id = useId();
+  const buttonId = `${id}-button`;
   const answerId = `${id}-answer`;
 
   return (
     <div className="first:rounded-t-lg last:rounded-b-lg">
       <button
+        id={buttonId}
         onClick={() => setOpen(!open)}
         aria-expanded={open}
         aria-controls={answerId}

@@ -48,8 +48,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    setItems(loadCart());
-    setHydrated(true);
+    const t = setTimeout(() => {
+      setItems(loadCart());
+      setHydrated(true);
+    }, 0);
+    return () => clearTimeout(t);
   }, []);
 
   useEffect(() => {

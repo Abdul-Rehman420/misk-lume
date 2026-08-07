@@ -9,7 +9,7 @@ export default function BlogNewsletter() {
       <div className="mx-auto max-w-xl text-center">
         <h2 className="font-display text-3xl font-medium text-text-primary">Stay Informed</h2>
         <p className="mt-3 text-sm text-text-muted">Get the latest fragrance guides, new arrivals, and exclusive offers delivered to your inbox.</p>
-        <NewsletterForm className="mt-8 flex flex-col gap-3 sm:flex-row" />
+        <NewsletterForm className="mt-8" />
       </div>
     </section>
   );

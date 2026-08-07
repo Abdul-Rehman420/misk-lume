@@ -17,10 +17,12 @@ export default function SearchModal({ open, onClose }: SearchModalProps) {
   const handleClose = useCallback(() => onClose(), [onClose]);
 
   useEffect(() => {
-    if (open) {
+    if (!open) return;
+    const t = setTimeout(() => {
       setQuery("");
-      setTimeout(() => inputRef.current?.focus(), 100);
-    }
+      inputRef.current?.focus();
+    }, 100);
+    return () => clearTimeout(t);
   }, [open]);
 
   useEffect(() => {

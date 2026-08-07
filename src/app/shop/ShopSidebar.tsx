@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useTransition } from "react";
+import { useTransition } from "react";
 
 const genders = [
   { label: "Men", value: "men" },
@@ -20,7 +20,7 @@ export default function ShopSidebar() {
   const minPrice = Number(searchParams.get("minPrice") || "1000");
   const maxPrice = Number(searchParams.get("maxPrice") || "10000");
 
-  const updateParams = useCallback((key: string, value: string | null) => {
+  function updateParams(key: string, value: string | null) {
     const params = new URLSearchParams(searchParams.toString());
     if (value === null || value === "") params.delete(key);
     else params.set(key, value);
@@ -28,7 +28,7 @@ export default function ShopSidebar() {
     startTransition(() => {
       router.push(`/shop?${params.toString()}`, { scroll: false });
     });
-  }, [router, searchParams]);
+  }
 
   function toggleMultiParam(key: string, current: string[], item: string) {
     const next = current.includes(item) ? current.filter(i => i !== item) : [...current, item];

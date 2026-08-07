@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { sendOrderConfirmation } from "@/lib/email";
 import { rateLimit, rateLimiters } from "@/lib/rate-limit";
+import { getDiscountAmount } from "@/lib/discounts";
 
 function generateOrderNumber(): string {
   const timestamp = Date.now().toString(36).toUpperCase();
@@ -64,7 +65,7 @@ export async function POST(request: NextRequest) {
     for (const item of items) {
       const { data: product, error: productError } = await supabase
         .from("products")
-        .select("id, name, price, sale_price, image_url, stock_quantity")
+        .select("id, name, price, sale_price, image_url, stock_quantity, product_sizes(size_ml, stock_quantity, is_active)")
         .eq("id", item.product_id)
         .single();
 
@@ -74,6 +75,18 @@ export async function POST(request: NextRequest) {
 
       if (product.stock_quantity < item.quantity) {
         return NextResponse.json({ error: `Insufficient stock for ${product.name}` }, { status: 400 });
+      }
+
+      if (item.size_ml != null) {
+        const size = Array.isArray(product.product_sizes)
+          ? product.product_sizes.find((s) => s.size_ml === item.size_ml)
+          : undefined;
+        if (!size || !size.is_active) {
+          return NextResponse.json({ error: `Size ${item.size_ml}ml is unavailable for ${product.name}` }, { status: 400 });
+        }
+        if (size.stock_quantity < item.quantity) {
+          return NextResponse.json({ error: `Insufficient stock for ${product.name} (${item.size_ml}ml)` }, { status: 400 });
+        }
       }
 
       const unitPrice = product.sale_price || product.price;
@@ -94,23 +107,9 @@ export async function POST(request: NextRequest) {
     // Apply discount
     let discountAmount = 0;
     if (discount_code) {
-      const { data: discount } = await supabase
-        .from("discount_codes")
-        .select("*")
-        .eq("code", discount_code.toUpperCase())
-        .eq("is_active", true)
-        .single();
-
-      if (discount) {
-        if (!discount.expires_at || new Date(discount.expires_at) > new Date()) {
-          if (!discount.usage_limit || discount.used_count < discount.usage_limit) {
-            if (subtotal >= (discount.min_order || 0)) {
-              discountAmount = discount.type === "percentage"
-                ? Math.round(subtotal * (discount.value / 100))
-                : discount.value;
-            }
-          }
-        }
+      const discount = await getDiscountAmount(supabase, discount_code, subtotal);
+      if (discount.valid) {
+        discountAmount = discount.amount;
       }
     }
 
@@ -128,6 +127,7 @@ export async function POST(request: NextRequest) {
         subtotal,
         shipping_cost: shippingCost,
         discount_amount: discountAmount,
+        discount_code: discount_code?.trim().toUpperCase() || null,
         total,
         payment_method: payment_method || "cod",
         payment_status: "pending",
@@ -171,9 +171,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Failed to create order items" }, { status: 500 });
     }
 
-    // Update discount usage atomically
+    // C9: Consume discount usage atomically. The RPC returns false when the
+    // code hit its usage_limit between validation and now — roll back the
+    // order instead of over-selling the discount.
     if (discount_code && discountAmount > 0) {
-      await supabase.rpc("increment_discount_usage", { code_text: discount_code.toUpperCase() });
+      const { data: incremented, error: incrementError } = await supabase.rpc("increment_discount_usage", {
+        code_text: discount_code.trim().toUpperCase(),
+      });
+
+      // If the RPC is unavailable (migration 015 not applied) fail open rather
+      // than blocking orders. Only enforce when the RPC actually ran.
+      if (!incrementError && incremented === false) {
+        await supabase.from("orders").delete().eq("id", order.id);
+        return NextResponse.json({ error: "This discount code has reached its usage limit" }, { status: 409 });
+      }
     }
 
     // Send confirmation email

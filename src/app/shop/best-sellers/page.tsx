@@ -42,11 +42,9 @@ export default async function BestSellersPage() {
         <span>/</span>
         <span className="text-text-primary">Best Sellers</span>
       </nav>
-      <h1 className="sr-only">Best Sellers</h1>
-
       <div className="mt-8">
         <span className="text-xs font-semibold uppercase tracking-[0.2em] text-accent-gold">Most Loved</span>
-        <p className="mt-2 font-display text-3xl font-medium text-text-primary md:text-4xl">Best Sellers</p>
+        <h1 className="mt-2 font-display text-3xl font-medium text-text-primary md:text-4xl">Best Sellers</h1>
         <p className="mt-2 text-sm text-text-muted">Our most-loved fragrances, hand-picked by the Misk Lume team.</p>
       </div>
 

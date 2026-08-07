@@ -188,6 +188,7 @@ export default function Header() {
               className="hidden items-center justify-center sm:flex"
               aria-label="Search"
               onClick={() => setSearchOpen(true)}
+              suppressHydrationWarning
             >
               <SearchIcon className="h-5 w-5 text-text-primary transition-colors hover:text-accent-gold" />
             </button>

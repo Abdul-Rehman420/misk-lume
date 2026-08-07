@@ -150,7 +150,7 @@ export default function BlogPage() {
                   </td>
                   <td className="whitespace-nowrap px-4 py-3">
                     <div className="flex items-center gap-2">
-                      <button onClick={() => startEdit(post)} className="flex h-8 w-8 items-center justify-center rounded-md text-admin-text-muted transition-colors hover:bg-admin-bg hover:text-admin-text" title="Edit post">
+                      <button onClick={() => startEdit(post)} aria-label={`Edit ${post.title}`} className="flex h-8 w-8 items-center justify-center rounded-md text-admin-text-muted transition-colors hover:bg-admin-bg hover:text-admin-text" title="Edit post">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" /></svg>
                       </button>
                       <button onClick={() => togglePublish(post.id, post.is_published)} disabled={deletingId === post.id} className="flex h-8 w-8 items-center justify-center rounded-md text-admin-text-muted transition-colors hover:bg-admin-bg hover:text-admin-text disabled:opacity-50" title={post.is_published ? "Unpublish" : "Publish"} aria-label={post.is_published ? `Unpublish ${post.title}` : `Publish ${post.title}`}>

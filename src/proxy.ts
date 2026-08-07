@@ -37,10 +37,9 @@ export async function proxy(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  // Protect order + review submission — must be authenticated
+  // Protect order submission — must be authenticated
   if (
-    request.nextUrl.pathname.startsWith('/api/orders') ||
-    request.nextUrl.pathname.startsWith('/api/reviews')
+    request.nextUrl.pathname.startsWith('/api/orders')
   ) {
     if (!user) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })

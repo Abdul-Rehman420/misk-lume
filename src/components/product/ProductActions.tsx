@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/lib/context/CartContext";
+import { useWishlist } from "@/lib/context/WishlistContext";
 
 interface ProductSize {
   size_ml: number;
@@ -41,6 +42,9 @@ export default function ProductActions({
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
   const { addItem } = useCart();
+  const { isSaved, toggle, isBusy } = useWishlist();
+  const saved = isSaved(productId);
+  const wishlistBusy = isBusy(productId);
   const router = useRouter();
 
   const allImages = images.length > 0 ? images : [{ image_url: imageUrl, is_primary: true }];
@@ -182,10 +186,17 @@ export default function ProductActions({
             {added ? "Added!" : "Add to Cart"}
           </button>
           <button
-            aria-label="Add to wishlist"
-            className="flex h-[52px] w-[52px] flex-shrink-0 items-center justify-center rounded-sm border border-border text-text-muted transition-all duration-200 hover:border-accent-gold hover:text-accent-gold"
+            type="button"
+            onClick={() => toggle(productId)}
+            disabled={wishlistBusy}
+            aria-label={`${saved ? "Remove" : "Add"} ${name} ${saved ? "from" : "to"} wishlist`}
+            aria-pressed={saved}
+            title={saved ? "Remove from wishlist" : "Add to wishlist"}
+            className={`flex h-[52px] w-[52px] flex-shrink-0 items-center justify-center rounded-sm border transition-all duration-200 hover:border-accent-gold hover:text-accent-gold ${
+              saved ? "border-accent-gold text-accent-gold" : "border-border text-text-muted"
+            }`}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={saved ? "currentColor" : "none"} stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
             </svg>
           </button>
