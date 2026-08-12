@@ -29,7 +29,7 @@ describe("rateLimit", () => {
     mocks.createClient.mockResolvedValue({ rpc: mocks.rpc });
     mocks.rpc.mockResolvedValue({ data: [{ success: false, remaining: 0 }], error: null });
 
-    const result = await rateLimit("newsletter:1.2.3.4", 3, 3_600_000);
+    const result = await rateLimit("contact:1.2.3.4", 3, 3_600_000);
     expect(result).toEqual({ success: false, remaining: 0 });
   });
 

@@ -4,7 +4,6 @@ import type { Metadata } from "next";
 import FeaturedCard from "@/components/ui/FeaturedCard";
 import SectionHeader from "@/components/ui/SectionHeader";
 import Button from "@/components/ui/Button";
-import BlogNewsletter from "./BlogNewsletter";
 import { getBlogPosts } from "@/lib/supabase/queries";
 import { cloudinaryUrl } from "@/lib/images";
 
@@ -136,9 +135,6 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
           </div>
         </div>
       </section>
-
-      {/* Newsletter */}
-      <BlogNewsletter />
     </div>
   );
 }

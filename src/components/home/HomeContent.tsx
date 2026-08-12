@@ -8,7 +8,6 @@ import Button from "@/components/ui/Button";
 import SectionReveal from "@/components/animations/SectionReveal";
 import ScrollReveal from "@/components/animations/ScrollReveal";
 import StaggerChildren from "@/components/animations/StaggerChildren";
-import NewsletterForm from "@/components/ui/NewsletterForm";
 
 interface Category {
   name: string;
@@ -257,18 +256,6 @@ export default function HomeContent({
           </StaggerChildren>
         </div>
       </SectionReveal>
-
-      {/* Newsletter */}
-      <ScrollReveal>
-        <section className="bg-gradient-to-b from-bg-primary via-bg-surface to-bg-primary px-4 py-20 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-xl text-center">
-            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-accent-gold">The Ritual</span>
-            <h2 className="mt-3 font-display text-3xl font-medium text-text-primary">Stay Informed</h2>
-            <p className="mt-3 text-sm text-text-muted">Get the latest fragrance guides, new arrivals, and exclusive offers delivered to your inbox.</p>
-            <NewsletterForm className="mt-8" />
-          </div>
-        </section>
-      </ScrollReveal>
     </>
   );
 }

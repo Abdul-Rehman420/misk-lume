@@ -96,10 +96,10 @@ export default function AboutPage() {
             <span>
               Email:{" "}
               <a
-                href="mailto:info@misklume.com"
+                href="mailto:misklume@gmail.com"
                 className="text-accent-gold underline underline-offset-4 transition-colors hover:text-text-primary"
               >
-                info@misklume.com
+                misklume@gmail.com
               </a>
             </span>
             <span>

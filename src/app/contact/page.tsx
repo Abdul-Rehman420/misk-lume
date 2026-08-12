@@ -38,8 +38,8 @@ export default function ContactPage() {
             <div className="grid gap-4 sm:grid-cols-2">
               <InfoCard
                 label="Email"
-                value="info@misklume.com"
-                href="mailto:info@misklume.com"
+                value="misklume@gmail.com"
+                href="mailto:misklume@gmail.com"
               />
               <InfoCard label="Phone" value="+92 300 1234567" href="tel:+923001234567" />
               <InfoCard

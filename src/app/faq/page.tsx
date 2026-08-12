@@ -62,7 +62,7 @@ const faqData = {
     {
       question: "Can I modify my order after placing it?",
       answer:
-        "Order modifications may be possible if the order has not yet been processed. Contact us at info@misklume.com with your order number as soon as possible.",
+        "Order modifications may be possible if the order has not yet been processed. Contact us at misklume@gmail.com with your order number as soon as possible.",
     },
   ],
   Payments: [

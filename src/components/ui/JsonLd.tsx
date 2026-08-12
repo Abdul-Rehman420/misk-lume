@@ -12,7 +12,7 @@ export function OrganizationJsonLd() {
       "@type": "ContactPoint",
       telephone: "+92-300-1234567",
       contactType: "customer service",
-      email: "info@misklume.com",
+      email: "misklume@gmail.com",
     },
     address: {
       "@type": "PostalAddress",

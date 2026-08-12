@@ -32,10 +32,10 @@ test("add-to-cart updates the header badge and the cart page lists the item", as
   await expect(page.locator("h1")).toBeVisible();
 });
 
-test("contact form and newsletter form exist on the homepage", async ({ page }) => {
-  await page.goto("/");
-  await page.getByPlaceholder("Enter your email").waitFor({ state: "visible" });
-  await expect(page.locator('input[type="checkbox"]')).toBeVisible();
+test("contact page shows the contact form", async ({ page }) => {
+  await page.goto("/contact");
+  await page.getByPlaceholder("Your name").waitFor({ state: "visible" });
+  await page.getByPlaceholder("your@email.com").waitFor({ state: "visible" });
 });
 
 test("unknown route returns a 404 page", async ({ page }) => {

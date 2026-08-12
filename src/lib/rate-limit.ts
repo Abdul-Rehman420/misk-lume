@@ -35,7 +35,6 @@ const HOUR = 60 * 60 * 1000;
 
 export const rateLimiters = {
   contact: { limit: 5, windowMs: HOUR, prefix: "contact" },
-  newsletter: { limit: 3, windowMs: HOUR, prefix: "newsletter" },
   orders: { limit: 10, windowMs: HOUR, prefix: "orders" },
   discounts: { limit: 20, windowMs: HOUR, prefix: "discounts" },
   analytics: { limit: 120, windowMs: HOUR, prefix: "analytics" },

@@ -67,7 +67,7 @@ export default function PrivacyPage() {
           title="Your Rights"
           paragraphs={[
             "You have the right to access, correct, or delete your personal information held by us.",
-            "To exercise these rights, please contact us at info@misklume.com. We will respond to your request within a reasonable timeframe.",
+            "To exercise these rights, please contact us at misklume@gmail.com. We will respond to your request within a reasonable timeframe.",
             "You may also request a copy of all personal data we hold about you in a structured, commonly used format.",
           ]}
         />
@@ -87,10 +87,10 @@ export default function PrivacyPage() {
           <p className="mt-3 text-text-muted">
             Contact us at{" "}
             <a
-              href="mailto:info@misklume.com"
+              href="mailto:misklume@gmail.com"
               className="text-accent-gold underline underline-offset-4 transition-colors hover:text-text-primary"
             >
-              info@misklume.com
+              misklume@gmail.com
             </a>
           </p>
         </div>
