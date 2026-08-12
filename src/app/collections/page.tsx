@@ -31,7 +31,7 @@ export default async function CollectionsPage() {
   } catch {}
 
   return (
-    <div className="min-h-screen bg-bg-primary">
+    <div className="min-h-svh bg-bg-primary">
       <section className="relative flex min-h-[50vh] items-center justify-center bg-gradient-to-b from-bg-primary via-bg-surface to-bg-primary px-4">
         <div className="text-center">
           <span className="text-xs font-semibold uppercase tracking-[0.2em] text-accent-gold">Curated Sets</span>

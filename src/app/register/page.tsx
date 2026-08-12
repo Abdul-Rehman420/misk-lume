@@ -60,7 +60,7 @@ export default function RegisterPage() {
 
   if (success) {
     return (
-      <div className="flex min-h-[calc(100vh-72px)] items-center justify-center bg-bg-primary px-4">
+      <div className="flex min-h-[calc(100svh-72px)] items-center justify-center bg-bg-primary px-4">
         <div className="w-full max-w-md rounded-lg border border-border-subtle bg-bg-surface p-8 text-center">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-accent-gold/10">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="h-8 w-8 text-accent-gold"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
@@ -76,7 +76,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-72px)] items-center justify-center bg-bg-primary px-4 py-12">
+    <div className="flex min-h-[calc(100svh-72px)] items-center justify-center bg-bg-primary px-4 py-12">
       <div className="w-full max-w-md rounded-lg border border-border-subtle bg-bg-surface p-8">
         <div className="mb-8 text-center">
           <Link href="/" className="inline-flex items-center gap-0">

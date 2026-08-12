@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-bg-primary text-text-primary">
+    <div className="min-h-svh bg-bg-primary text-text-primary">
       <section className="flex min-h-[40vh] flex-col items-center justify-center bg-gradient-to-b from-bg-primary via-bg-surface to-bg-primary px-6 text-center">
         <p className="font-body text-sm uppercase tracking-[0.3em] text-text-dim">
           The Philosophy

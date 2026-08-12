@@ -107,7 +107,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   if (!post) notFound();
 
   return (
-    <article className="min-h-screen bg-bg-primary">
+    <article className="min-h-svh bg-bg-primary">
       <div className="relative aspect-[21/9] w-full overflow-hidden">
         <Image src={post.image_url} alt={post.title} fill priority sizes="100vw" className="object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-bg-primary via-bg-primary/40 to-transparent" />

@@ -15,7 +15,7 @@ const fadeUp = {
 
 export default function HomeHero() {
   return (
-    <section className="relative flex min-h-screen items-center overflow-hidden bg-[linear-gradient(135deg,#0B0B0B_0%,#1a1510_50%,#0B0B0B_100%)]">
+    <section className="relative flex min-h-svh items-center overflow-hidden bg-[linear-gradient(135deg,#0B0B0B_0%,#1a1510_50%,#0B0B0B_100%)]">
       <Image
         src="https://images.unsplash.com/photo-1541643600914-78b084683601?w=1920&q=80"
         alt="Luxury perfume bottle"

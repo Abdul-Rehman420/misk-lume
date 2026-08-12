@@ -99,7 +99,7 @@ export default function AccountPage() {
   const displayName = profile?.full_name?.split(" ")[0] || "Guest";
 
   return (
-    <div className="min-h-screen bg-bg-primary px-4 py-24 sm:px-6 lg:px-8">
+    <div className="min-h-svh bg-bg-primary px-4 py-24 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
           {/* Sidebar */}

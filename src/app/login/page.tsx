@@ -39,7 +39,7 @@ function LoginForm() {
   };
 
   return (
-    <div className="flex min-h-[calc(100vh-72px)] items-center justify-center bg-bg-primary px-4">
+    <div className="flex min-h-[calc(100svh-72px)] items-center justify-center bg-bg-primary px-4">
       <div className="w-full max-w-md rounded-lg border border-border-subtle bg-bg-surface p-8">
         <div className="mb-8 text-center">
           <Link href="/" className="inline-flex items-center gap-0">
@@ -136,7 +136,7 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="flex min-h-[calc(100vh-72px)] items-center justify-center bg-bg-primary"><div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-gold border-t-transparent" /></div>}>
+    <Suspense fallback={<div className="flex min-h-[calc(100svh-72px)] items-center justify-center bg-bg-primary"><div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-gold border-t-transparent" /></div>}>
       <LoginForm />
     </Suspense>
   );

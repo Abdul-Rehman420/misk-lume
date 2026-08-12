@@ -141,10 +141,9 @@ export default function MobileNav({ open, onClose }: MobileNavProps) {
               onClick={onClose}
               className={`font-display text-3xl font-medium transition-colors hover:text-accent-gold ${isActive(link.href) ? "text-accent-gold" : "text-text-primary"}`}
               style={{
-                transitionDelay: open ? `${i * 50}ms` : "0ms",
                 opacity: open ? 1 : 0,
                 transform: open ? "translateY(0)" : "translateY(12px)",
-                transition: "opacity 0.3s ease, transform 0.3s ease, color 0.15s ease",
+                transition: `opacity 0.3s ease ${open ? i * 50 : 0}ms, transform 0.3s ease ${open ? i * 50 : 0}ms, color 0.15s ease`,
               }}
             >
               {link.label}

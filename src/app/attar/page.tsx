@@ -72,7 +72,7 @@ export default async function AttarPage() {
   } catch {}
 
   return (
-    <div className="min-h-screen bg-bg-primary">
+    <div className="min-h-svh bg-bg-primary">
       {/* Hero */}
       <section className="relative flex min-h-[50vh] items-center justify-center bg-gradient-to-b from-bg-primary via-bg-surface to-bg-primary px-4">
         <div className="text-center">

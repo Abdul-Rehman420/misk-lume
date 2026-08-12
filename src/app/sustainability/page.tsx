@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function SustainabilityPage() {
   return (
-    <div className="min-h-screen bg-bg-primary">
+    <div className="min-h-svh bg-bg-primary">
       <div className="mx-auto max-w-3xl px-4 pb-20 pt-12 sm:px-6 lg:px-8">
         <h1 className="font-display text-3xl font-medium text-text-primary">Our Commitment to <span className="italic text-accent-gold">Sustainability</span></h1>
         <p className="mt-4 text-sm leading-relaxed text-text-muted">

@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function NotFound() {
   return (
-    <div className="flex min-h-[calc(100vh-72px)] flex-col items-center justify-center px-4 text-center">
+    <div className="flex min-h-[calc(100svh-72px)] flex-col items-center justify-center px-4 text-center">
       <span className="text-8xl font-bold text-accent-gold/20">404</span>
       <h1 className="mt-4 font-display text-3xl font-medium text-text-primary">
         Page Not Found

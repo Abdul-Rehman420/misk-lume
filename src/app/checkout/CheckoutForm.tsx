@@ -171,7 +171,7 @@ export default function CheckoutForm({ bankDetails }: { bankDetails: BankDetails
 
   if (!authChecked) {
     return (
-      <div className="min-h-screen bg-bg-primary">
+      <div className="min-h-svh bg-bg-primary">
         <div className="mx-auto flex min-h-[60vh] max-w-7xl items-center justify-center px-4">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent-gold border-t-transparent" />
         </div>
@@ -181,7 +181,7 @@ export default function CheckoutForm({ bankDetails }: { bankDetails: BankDetails
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-bg-primary">
+      <div className="min-h-svh bg-bg-primary">
         <div className="mx-auto max-w-7xl px-4 pb-20 pt-12 sm:px-6 lg:px-8">
           <h1 className="mb-10 font-display text-3xl font-medium text-text-primary">Checkout</h1>
           <div className="rounded-md border border-border bg-bg-surface p-12 text-center">
@@ -196,7 +196,7 @@ export default function CheckoutForm({ bankDetails }: { bankDetails: BankDetails
   }
 
   return (
-    <div className="min-h-screen bg-bg-primary">
+    <div className="min-h-svh bg-bg-primary">
       <div className="mx-auto max-w-7xl px-4 pb-20 pt-12 sm:px-6 lg:px-8">
         <h1 className="mb-10 font-display text-3xl font-medium text-text-primary">Checkout</h1>
 
