@@ -1,10 +1,12 @@
+import { cloudinaryUrl } from "@/lib/images";
+
 export function OrganizationJsonLd() {
   const schema = {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: "Misk Lume",
     url: "https://misklume.com",
-    logo: "https://res.cloudinary.com/dktcck0jj/image/fetch/f_auto,q_auto,w_1200/https%3A%2F%2Fimages.unsplash.com%2Fphoto-1615634260169-c994b9a33e3e",
+    logo: cloudinaryUrl("https://images.unsplash.com/photo-1615634260169-c994b9a33e3e", 1200),
     description: "Luxury perfumes and attars crafted with rare ingredients from around the world.",
     contactPoint: {
       "@type": "ContactPoint",

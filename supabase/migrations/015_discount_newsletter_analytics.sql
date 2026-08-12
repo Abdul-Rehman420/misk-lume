@@ -6,6 +6,10 @@
 -- usage_limit was never enforced. Now security definer + atomic conditional
 -- increment, returning whether the code still had room.
 -- ============================================================================
+-- The migration-007 version returns void; 015 must replace it (returns boolean),
+-- which requires dropping the old signature first.
+-- ============================================================================
+drop function if exists public.increment_discount_usage(text);
 create or replace function public.increment_discount_usage(code_text text)
 returns boolean
 language plpgsql security definer set search_path = ''

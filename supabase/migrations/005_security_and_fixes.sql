@@ -40,6 +40,8 @@ create policy "Admins can manage newsletter subscribers"
 -- 3. Fix discount_codes RLS — hide internals from unauthenticated users
 -- ============================================================================
 drop policy if exists "Discount codes are viewable by everyone" on public.discount_codes;
+drop policy if exists "Discount codes are publicly readable" on public.discount_codes;
+drop policy if exists "Admins can manage discount codes" on public.discount_codes;
 
 create policy "Active discount codes are viewable by everyone"
   on public.discount_codes for select
