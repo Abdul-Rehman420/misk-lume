@@ -104,7 +104,7 @@ const BASE_PAYLOAD = {
     city: "Lahore",
     phone: "03000000000",
   },
-  payment_method: "bank_transfer",
+  payment_method: "bank",
 };
 
 describe("POST /api/orders", () => {

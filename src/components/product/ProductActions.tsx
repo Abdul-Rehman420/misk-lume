@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { useCart } from "@/lib/context/CartContext";
 import { useWishlist } from "@/lib/context/WishlistContext";
 
@@ -45,7 +44,6 @@ export default function ProductActions({
   const { isSaved, toggle, isBusy } = useWishlist();
   const saved = isSaved(productId);
   const wishlistBusy = isBusy(productId);
-  const router = useRouter();
 
   const allImages = images.length > 0 ? images : [{ image_url: imageUrl, is_primary: true }];
   const displayPrice = selectedSize?.sale_price || selectedSize?.price || salePrice || price;
@@ -156,7 +154,8 @@ export default function ProductActions({
           <div className="flex items-center gap-3">
             <button
               onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-              className="flex h-10 w-10 items-center justify-center rounded-sm border border-border text-text-muted transition-colors hover:border-accent-gold hover:text-text-primary"
+              disabled={quantity <= 1}
+              className="flex h-10 w-10 items-center justify-center rounded-sm border border-border text-text-muted transition-colors hover:border-accent-gold hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-40"
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><line x1="5" y1="12" x2="19" y2="12" /></svg>
             </button>

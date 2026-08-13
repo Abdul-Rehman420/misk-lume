@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import ProductCard from "@/components/ui/ProductCard";
 import ProductActions from "@/components/product/ProductActions";

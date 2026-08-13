@@ -418,9 +418,9 @@ alter table public.activity_log        enable row level security;
 -- Anyone can read public profile data.  Users can update their own.
 -- Only admins can insert/update roles.
 -- ============================================================================
-create policy "Profiles are publicly readable"
+create policy "Users can view their own profile"
   on public.profiles for select
-  using (true);
+  using (auth.uid() = id or public.is_admin());
 
 create policy "Users can insert their own profile"
   on public.profiles for insert
@@ -1205,33 +1205,7 @@ drop function if exists public.generate_order_number();
 drop sequence if exists public.order_number_seq;
 
 -- ============================================================================
--- 2. Add newsletter_subscribers table
--- ============================================================================
-create table public.newsletter_subscribers (
-  id uuid default uuid_generate_v4() primary key,
-  email text unique not null,
-  is_active boolean not null default true,
-  created_at timestamptz not null default now()
-);
-
-comment on table public.newsletter_subscribers is 'Email subscribers to the Misk Lume newsletter';
-
-alter table public.newsletter_subscribers enable row level security;
-
-create policy "Anyone can subscribe to newsletter"
-  on public.newsletter_subscribers for insert
-  with check (true);
-
-create policy "Subscribers can view their own subscription"
-  on public.newsletter_subscribers for select
-  using (true);
-
-create policy "Admins can manage newsletter subscribers"
-  on public.newsletter_subscribers for all
-  using (public.is_admin());
-
--- ============================================================================
--- 3. Fix discount_codes RLS â€” hide internals from unauthenticated users
+-- 2. Fix discount_codes RLS â€” hide internals from unauthenticated users
 -- ============================================================================
 drop policy if exists "Discount codes are viewable by everyone" on public.discount_codes;
 drop policy if exists "Discount codes are publicly readable" on public.discount_codes;
@@ -1307,6 +1281,28 @@ insert into store_settings (key, value) values
   ('account_number', '0123-0101-2345678-01'),
   ('iban', 'PK90MEZN0001230101234567801')
 on conflict (key) do nothing;
+
+-- MIGRATION 016_store_settings_rls_and_profiles.sql
+-- RLS for store_settings: public read (checkout renders bank details), admin writes only.
+alter table public.store_settings enable row level security;
+
+create policy "Store settings are publicly readable"
+  on public.store_settings for select
+  using (true);
+
+create policy "Admins can insert store settings"
+  on public.store_settings for insert
+  with check (public.is_admin());
+
+create policy "Admins can update store settings"
+  on public.store_settings for update
+  using (public.is_admin());
+
+create policy "Admins can delete store settings"
+  on public.store_settings for delete
+  using (public.is_admin());
+
+
 
 
 -- ========== MIGRATION 009_product_count_rpc.sql ==========
@@ -1571,16 +1567,6 @@ grant execute on function public.increment_discount_usage(text) to authenticated
 
 -- Drop unused helper (no application code calls it anymore)
 drop function if exists public.check_stock(uuid, integer);
-
--- ============================================================================
--- C10: Newsletter opt-in
--- Explicit marketing-consent flag. The app requires consent before storing a
--- subscriber (GDPR/PECR-style opt-in).
--- ============================================================================
-alter table public.newsletter_subscribers
-  add column if not exists consent boolean not null default false;
-
-comment on column public.newsletter_subscribers.consent is 'Explicit marketing consent given at signup. The API rejects signups without it.';
 
 -- ============================================================================
 -- C6: Seed bank details into store_settings

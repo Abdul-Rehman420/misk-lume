@@ -17,11 +17,13 @@ export default function CustomersPage() {
 
   async function loadCustomers() {
     try {
-      const { data: profiles } = await supabase.from('profiles').select('*').eq('role', 'customer').order('created_at', { ascending: false });
+      const { data: profiles, error: profilesError } = await supabase.from('profiles').select('*').eq('role', 'customer').order('created_at', { ascending: false });
+      if (profilesError) throw profilesError;
       if (!profiles || profiles.length === 0) { setLoading(false); return; }
 
       const ids = profiles.map(p => p.id);
-      const { data: orders } = await supabase.from('orders').select('user_id, total').in('user_id', ids);
+      const { data: orders, error: ordersError } = await supabase.from('orders').select('user_id, total').in('user_id', ids);
+      if (ordersError) throw ordersError;
 
       setCustomers(profiles.map(p => {
         const co = orders?.filter(o => o.user_id === p.id) || [];

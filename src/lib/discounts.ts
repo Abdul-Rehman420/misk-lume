@@ -42,5 +42,5 @@ export async function getDiscountAmount(
       ? Math.round(subtotal * (discount.value / 100))
       : discount.value;
 
-  return { amount, valid: true };
+  return { amount: Math.min(amount, subtotal), valid: true };
 }

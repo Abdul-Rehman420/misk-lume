@@ -13,7 +13,8 @@ export default function SettingsPage() {
 
   useEffect(() => {
     async function load() {
-      const { data } = await supabase.from("store_settings").select("*");
+      const { data, error } = await supabase.from("store_settings").select("*");
+      if (error) { setError("Failed to load settings"); setLoading(false); return; }
       if (data) {
         const map: Record<string, string> = {};
         data.forEach((r) => { map[r.key] = r.value; });

@@ -30,7 +30,8 @@ export default function BlogPage() {
 
   async function loadPosts() {
     try {
-      const { data } = await supabase.from('blog_posts').select('*').order('created_at', { ascending: false });
+      const { data, error } = await supabase.from('blog_posts').select('*').order('created_at', { ascending: false });
+      if (error) throw error;
       if (data) setPosts(data);
     } catch { setError("Failed to load blog posts"); }
     setLoading(false);
@@ -40,7 +41,8 @@ export default function BlogPage() {
     if (!confirm("Delete this post?")) return;
     setDeletingId(id);
     try {
-      await supabase.from('blog_posts').delete().eq('id', id);
+      const { error } = await supabase.from('blog_posts').delete().eq('id', id);
+      if (error) throw error;
       setPosts(prev => prev.filter(p => p.id !== id));
     } catch { setError("Failed to delete post"); }
     setDeletingId(null);
@@ -49,7 +51,8 @@ export default function BlogPage() {
   async function togglePublish(id: string, current: boolean) {
     try {
       const update = current ? { is_published: false } : { is_published: true, published_at: new Date().toISOString() };
-      await supabase.from('blog_posts').update(update).eq('id', id);
+      const { error } = await supabase.from('blog_posts').update(update).eq('id', id);
+      if (error) throw error;
       setPosts(prev => prev.map(p => p.id === id ? { ...p, is_published: !current, published_at: !current ? new Date().toISOString() : undefined } : p));
     } catch { setError("Failed to update post"); }
   }

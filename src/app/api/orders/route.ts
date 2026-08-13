@@ -27,6 +27,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Cart is empty" }, { status: 400 });
     }
 
+    if (payment_method !== undefined && payment_method !== "cod" && payment_method !== "bank") {
+      return NextResponse.json({ error: "Invalid payment method" }, { status: 400 });
+    }
+
     for (const item of items) {
       if (!item.product_id || typeof item.product_id !== "string") {
         return NextResponse.json({ error: "Each item must have a valid product_id" }, { status: 400 });

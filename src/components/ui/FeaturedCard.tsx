@@ -30,8 +30,10 @@ export default function FeaturedCard({
       className={`grid items-center gap-8 md:grid-cols-2 md:gap-12 ${reverse ? "direction-rtl" : ""}`}
     >
       {/* Image */}
-      <div
-        className={`relative aspect-[4/5] overflow-hidden rounded-md bg-bg-elevated ${reverse ? "direction-ltr" : ""}`}
+      <Link
+        href={href}
+        className={`relative block aspect-[4/5] overflow-hidden rounded-md bg-bg-elevated ${reverse ? "direction-ltr" : ""}`}
+        aria-label={name}
       >
         <Image
           src={imageUrl}
@@ -40,16 +42,18 @@ export default function FeaturedCard({
           sizes="(max-width: 768px) 100vw, 50vw"
           className="object-cover transition-transform duration-500 hover:scale-105"
         />
-      </div>
+      </Link>
 
       {/* Content */}
       <div className={`flex flex-col gap-4 ${reverse ? "direction-ltr text-left" : ""}`}>
         <span className="text-xs font-semibold uppercase tracking-wider text-accent-gold">
           {label}
         </span>
-        <h3 className="font-display text-2xl font-medium text-text-primary">
-          {name}
-        </h3>
+        <Link href={href}>
+          <h3 className="font-display text-2xl font-medium text-text-primary transition-colors hover:text-accent-gold">
+            {name}
+          </h3>
+        </Link>
         <p className="max-w-md text-sm leading-relaxed text-text-muted">
           {description}
         </p>

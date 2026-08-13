@@ -66,8 +66,6 @@ export default function AccountPage() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadData() {
@@ -77,7 +75,6 @@ export default function AccountPage() {
           window.location.href = "/login?redirect=/account";
           return;
         }
-        setUserId(user.id);
 
         const [profileRes, ordersRes, wishlistRes] = await Promise.all([
           supabase.from('profiles').select('full_name, email, role').eq('id', user.id).single(),
@@ -91,7 +88,6 @@ export default function AccountPage() {
       } catch {
         // Silently fail — will show demo data below
       }
-      setLoading(false);
     }
     loadData();
   }, [supabase]);

@@ -12,7 +12,7 @@ interface Product {
   product_images?: { id: string; image_url: string; is_primary: boolean }[];
 }
 
-const emptyForm = { name: "", slug: "", price: "", gender: "unisex", category_id: "", stock: "10", is_active: true, is_bestseller: false, sort_order: "0", description: "", image_url: "" };
+const emptyForm = { name: "", slug: "", price: "", gender: "unisex", category_id: "", stock: "10", is_active: true, is_bestseller: false, sort_order: "0", description: "", image_url: "", imageRemoved: false };
 
 const statusStyles: Record<string, string> = {
   Active: "bg-success/15 text-success",
@@ -42,14 +42,16 @@ export default function ProductsPage() {
 
   async function loadProducts() {
     try {
-      const { data } = await supabase.from('products').select('*, categories(name), product_images(image_url, is_primary)').order('sort_order', { ascending: true }).order('created_at', { ascending: false });
+      const { data, error } = await supabase.from('products').select('*, categories(name), product_images(image_url, is_primary)').order('sort_order', { ascending: true }).order('created_at', { ascending: false });
+      if (error) throw error;
       if (data) setProducts(data);
     } catch { setError("Failed to load products"); }
     setLoading(false);
   }
 
   async function loadCategories() {
-    const { data } = await supabase.from('categories').select('id, name').order('name');
+    const { data, error } = await supabase.from('categories').select('id, name').order('name');
+    if (error) { setError("Failed to load categories"); return; }
     if (data) setCategories(data);
   }
 
@@ -57,7 +59,8 @@ export default function ProductsPage() {
     if (!confirm("Delete this product?")) return;
     setDeleting(id);
     try {
-      await supabase.from('products').delete().eq('id', id);
+      const { error } = await supabase.from('products').delete().eq('id', id);
+      if (error) throw error;
       setProducts(prev => prev.filter(p => p.id !== id));
     } catch { setError("Failed to delete product"); }
     setDeleting(null);
@@ -66,7 +69,8 @@ export default function ProductsPage() {
   async function toggleActive(id: string, current: boolean) {
     setToggling(id);
     try {
-      await supabase.from('products').update({ is_active: !current }).eq('id', id);
+      const { error } = await supabase.from('products').update({ is_active: !current }).eq('id', id);
+      if (error) throw error;
       setProducts(prev => prev.map(p => p.id === id ? { ...p, is_active: !current } : p));
     } catch { setError("Failed to update product"); }
     setToggling(null);
@@ -75,7 +79,8 @@ export default function ProductsPage() {
   async function toggleBestSeller(id: string, current: boolean) {
     setBestSellerToggling(id);
     try {
-      await supabase.from('products').update({ is_bestseller: !current }).eq('id', id);
+      const { error } = await supabase.from('products').update({ is_bestseller: !current }).eq('id', id);
+      if (error) throw error;
       setProducts(prev => prev.map(p => p.id === id ? { ...p, is_bestseller: !current } : p));
     } catch { setError("Failed to update product"); }
     setBestSellerToggling(null);
@@ -92,7 +97,8 @@ export default function ProductsPage() {
       [reordered[from], reordered[to]] = [reordered[to], reordered[from]];
       for (let i = 0; i < reordered.length; i++) {
         if ((reordered[i].sort_order ?? 0) !== i + 1) {
-          await supabase.from('products').update({ sort_order: i + 1 }).eq('id', reordered[i].id);
+          const { error } = await supabase.from('products').update({ sort_order: i + 1 }).eq('id', reordered[i].id);
+          if (error) throw error;
         }
       }
       setProducts(reordered.map((p, i) => ({ ...p, sort_order: i + 1 })));
@@ -128,20 +134,30 @@ export default function ProductsPage() {
       name: p.name, slug: p.slug, price: String(p.price), gender: p.gender || "unisex",
       category_id: p.category_id || "", stock: String(p.stock_quantity ?? 0),
       is_active: p.is_active, is_bestseller: p.is_bestseller ?? false,
-      sort_order: String(p.sort_order ?? 0), description: p.description || "", image_url: img,
+      sort_order: String(p.sort_order ?? 0), description: p.description || "", image_url: img, imageRemoved: false,
     });
     setShowModal(true);
   }
 
   async function handleSave() {
+    const price = parseFloat(form.price);
+    const stock = parseInt(form.stock, 10);
+    if (!Number.isFinite(price) || price <= 0) {
+      setError("Price must be a number greater than 0");
+      return;
+    }
+    if (!Number.isInteger(stock) || stock < 0) {
+      setError("Stock cannot be negative");
+      return;
+    }
     setSaving(true);
     setError(null);
     try {
       const slug = form.slug || form.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
       const payload = {
-        name: form.name, slug, price: parseFloat(form.price) || 0,
+        name: form.name, slug, price,
         gender: form.gender, category_id: form.category_id || null,
-        stock_quantity: parseInt(form.stock) || 0, is_active: form.is_active,
+        stock_quantity: stock, is_active: form.is_active,
         is_bestseller: form.is_bestseller, sort_order: parseInt(form.sort_order) || 0,
         description: form.description,
       };
@@ -163,11 +179,19 @@ export default function ProductsPage() {
         const existing = products.find(p => p.id === productId)?.product_images || [];
         const primary = existing.find(i => i.is_primary) || existing[0];
         if (primary) {
-          await supabase.from('product_images').update({ image_url: form.image_url }).eq('id', primary.id);
+          const { error } = await supabase.from('product_images').update({ image_url: form.image_url }).eq('id', primary.id);
+          if (error) throw error;
         } else {
-          await supabase.from('product_images').insert({ product_id: productId, image_url: form.image_url, is_primary: true, sort_order: 0 });
+          const { error } = await supabase.from('product_images').insert({ product_id: productId, image_url: form.image_url, is_primary: true, sort_order: 0 });
+          if (error) throw error;
         }
-        await supabase.from('products').update({ image_url: form.image_url }).eq('id', productId);
+        const { error: prodErr } = await supabase.from('products').update({ image_url: form.image_url }).eq('id', productId);
+        if (prodErr) throw prodErr;
+      } else if (productId && form.imageRemoved) {
+        const { error: delErr } = await supabase.from('product_images').delete().eq('product_id', productId);
+        if (delErr) throw delErr;
+        const { error: prodErr } = await supabase.from('products').update({ image_url: null }).eq('id', productId);
+        if (prodErr) throw prodErr;
       }
 
       setShowModal(false);
@@ -354,7 +378,7 @@ export default function ProductsPage() {
                     <input type="file" accept="image/*" className="hidden" onChange={handleFileSelect} disabled={uploading} />
                   </label>
                   {form.image_url && !uploading && (
-                    <button type="button" onClick={() => setForm(f => ({ ...f, image_url: "" }))} className="text-xs text-admin-text-muted transition-colors hover:text-error">Remove</button>
+                    <button type="button" onClick={() => setForm(f => ({ ...f, image_url: "", imageRemoved: true }))} className="text-xs text-admin-text-muted transition-colors hover:text-error">Remove</button>
                   )}
                 </div>
                 {form.image_url && (

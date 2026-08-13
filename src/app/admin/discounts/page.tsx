@@ -28,7 +28,8 @@ export default function DiscountsPage() {
 
   async function loadDiscounts() {
     try {
-      const { data } = await supabase.from('discount_codes').select('*').order('created_at', { ascending: false });
+      const { data, error } = await supabase.from('discount_codes').select('*').order('created_at', { ascending: false });
+      if (error) throw error;
       if (data) setDiscounts(data);
     } catch { setError("Failed to load discounts"); }
     setLoading(false);
@@ -94,7 +95,8 @@ export default function DiscountsPage() {
   async function toggleActive(id: string, current: boolean) {
     setToggling(id);
     try {
-      await supabase.from('discount_codes').update({ is_active: !current }).eq('id', id);
+      const { error } = await supabase.from('discount_codes').update({ is_active: !current }).eq('id', id);
+      if (error) throw error;
       setDiscounts(prev => prev.map(d => d.id === id ? { ...d, is_active: !current } : d));
     } catch { setError("Failed to update discount"); }
     setToggling(null);
@@ -103,7 +105,8 @@ export default function DiscountsPage() {
   async function handleDelete(id: string) {
     if (!confirm("Delete this discount?")) return;
     try {
-      await supabase.from('discount_codes').delete().eq('id', id);
+      const { error } = await supabase.from('discount_codes').delete().eq('id', id);
+      if (error) throw error;
       setDiscounts(prev => prev.filter(d => d.id !== id));
     } catch { setError("Failed to delete discount"); }
   }

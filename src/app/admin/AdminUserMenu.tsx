@@ -33,8 +33,11 @@ export default function AdminUserMenu() {
   const initial = (name || email || "A").charAt(0).toUpperCase();
 
   async function signOut() {
-    await supabase.auth.signOut();
-    window.location.href = "/login";
+    try {
+      await supabase.auth.signOut();
+    } finally {
+      window.location.href = "/login";
+    }
   }
 
   return (

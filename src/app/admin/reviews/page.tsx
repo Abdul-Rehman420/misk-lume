@@ -31,7 +31,8 @@ export default function ReviewsPage() {
 
   async function loadReviews() {
     try {
-      const { data } = await supabase.from('reviews').select('*, products(name), profiles(full_name)').order('created_at', { ascending: false });
+      const { data, error } = await supabase.from('reviews').select('*, products(name), profiles(full_name)').order('created_at', { ascending: false });
+      if (error) throw error;
       if (data) setReviews(data);
     } catch { setError("Failed to load reviews"); }
     setLoading(false);
@@ -44,7 +45,8 @@ export default function ReviewsPage() {
   async function toggleApproval(id: string, current: boolean) {
     setUpdatingId(id);
     try {
-      await supabase.from('reviews').update({ is_approved: !current }).eq('id', id);
+      const { error } = await supabase.from('reviews').update({ is_approved: !current }).eq('id', id);
+      if (error) throw error;
       setReviews(prev => prev.map(r => r.id === id ? { ...r, is_approved: !current } : r));
     } catch { setError("Failed to update review"); }
     setUpdatingId(null);
@@ -54,7 +56,8 @@ export default function ReviewsPage() {
     if (!confirm("Delete this review?")) return;
     setUpdatingId(id);
     try {
-      await supabase.from('reviews').delete().eq('id', id);
+      const { error } = await supabase.from('reviews').delete().eq('id', id);
+      if (error) throw error;
       setReviews(prev => prev.filter(r => r.id !== id));
     } catch { setError("Failed to delete review"); }
     setUpdatingId(null);

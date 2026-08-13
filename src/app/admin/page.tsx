@@ -6,7 +6,6 @@ import { createClient } from "@/lib/supabase/client";
 interface KpiData { label: string; value: string }
 interface OrderRow { id: string; order_number: string; customer: string; products: string; total: number; status: string; date: string }
 interface TopProduct { name: string; units: number; revenue: string; color: string }
-interface Activity { color: string; description: string; time: string }
 
 const statusStyles: Record<string, string> = {
   processing: "bg-accent-gold-muted text-accent-gold",

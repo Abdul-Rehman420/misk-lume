@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { getBlogPostBySlug, getBlogPosts } from "@/lib/supabase/queries";
+import { getBlogPostBySlug } from "@/lib/supabase/queries";
 import type { Metadata } from "next";
 
 interface BlogPostPageProps {

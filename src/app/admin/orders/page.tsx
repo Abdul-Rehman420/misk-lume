@@ -29,7 +29,8 @@ export default function OrdersPage() {
 
   async function loadOrders() {
     try {
-      const { data } = await supabase.from('orders').select('*, order_items(product_name, quantity), profiles(full_name)').order('created_at', { ascending: false });
+      const { data, error } = await supabase.from('orders').select('*, order_items(product_name, quantity), profiles(full_name)').order('created_at', { ascending: false });
+      if (error) throw error;
       if (data) setOrders(data);
     } catch { setError("Failed to load orders"); }
     setLoading(false);
@@ -43,7 +44,8 @@ export default function OrdersPage() {
   async function updateStatus(id: string, status: string) {
     setUpdatingId(id);
     try {
-      await supabase.from('orders').update({ status }).eq('id', id);
+      const { error } = await supabase.from('orders').update({ status }).eq('id', id);
+      if (error) throw error;
       setOrders(prev => prev.map(o => o.id === id ? { ...o, status } : o));
     } catch { setError("Failed to update status"); }
     setUpdatingId(null);

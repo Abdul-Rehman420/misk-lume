@@ -48,23 +48,6 @@ export default function ContactPage() {
               />
               <InfoCard label="Hours" value="Mon – Sat, 10am – 6pm" />
             </div>
-
-            <div className="mt-8">
-              <h3 className="font-display text-lg text-text-primary">
-                Follow Us
-              </h3>
-              <div className="mt-4 flex gap-4">
-                <SocialLink href="#" label="Instagram">
-                  <InstagramIcon />
-                </SocialLink>
-                <SocialLink href="#" label="Facebook">
-                  <FacebookIcon />
-                </SocialLink>
-                <SocialLink href="#" label="Twitter">
-                  <TwitterIcon />
-                </SocialLink>
-              </div>
-            </div>
           </div>
         </div>
       </section>
@@ -102,79 +85,4 @@ function InfoCard({
   }
 
   return content;
-}
-
-function SocialLink({
-  href,
-  label,
-  children,
-}: {
-  href: string;
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <a
-      href={href}
-      aria-label={label}
-      className="flex h-10 w-10 items-center justify-center rounded-lg border border-border-subtle bg-bg-surface text-text-muted transition-colors hover:border-accent-gold/40 hover:text-accent-gold"
-    >
-      {children}
-    </a>
-  );
-}
-
-function InstagramIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="h-4 w-4"
-    >
-      <rect x="2" y="2" width="20" height="20" rx="5" />
-      <circle cx="12" cy="12" r="5" />
-      <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none" />
-    </svg>
-  );
-}
-
-function FacebookIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="h-4 w-4"
-    >
-      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-    </svg>
-  );
-}
-
-function TwitterIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="h-4 w-4"
-    >
-      <path d="M4 4l11.733 16H20L8.267 4z" />
-      <path d="M4 20l6.768-6.768" />
-      <path d="M20 4l-6.768 6.768" />
-    </svg>
-  );
 }
