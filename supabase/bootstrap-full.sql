@@ -283,18 +283,6 @@ create table public.discount_codes (
 comment on table public.discount_codes is 'Promotional / discount codes';
 
 -- ============================================================================
--- SETTINGS
--- Simple key-value store for application configuration.
--- ============================================================================
-create table public.settings (
-  key text primary key,
-  value jsonb not null,
-  updated_at timestamptz not null default now()
-);
-
-comment on table public.settings is 'Application-level key-value configuration store';
-
--- ============================================================================
 -- ACTIVITY LOG
 -- Audit trail for admin-facing events (orders, reviews, user actions).
 -- ============================================================================
@@ -410,7 +398,6 @@ alter table public.wishlist            enable row level security;
 alter table public.reviews             enable row level security;
 alter table public.blog_posts          enable row level security;
 alter table public.discount_codes      enable row level security;
-alter table public.settings            enable row level security;
 alter table public.activity_log        enable row level security;
 
 -- ============================================================================
@@ -732,26 +719,6 @@ create policy "Admins can delete discount codes"
   using (public.is_admin());
 
 -- ============================================================================
--- SETTINGS
--- Public read; admin write.
--- ============================================================================
-create policy "Settings are publicly readable"
-  on public.settings for select
-  using (true);
-
-create policy "Admins can manage settings"
-  on public.settings for insert
-  with check (public.is_admin());
-
-create policy "Admins can update settings"
-  on public.settings for update
-  using (public.is_admin());
-
-create policy "Admins can delete settings"
-  on public.settings for delete
-  using (public.is_admin());
-
--- ============================================================================
 -- ACTIVITY LOG
 -- Read-only for admins; insert-only via triggers for authenticated users.
 -- ============================================================================
@@ -797,10 +764,6 @@ create trigger set_updated_at_orders
 
 create trigger set_updated_at_blog_posts
   before update on public.blog_posts
-  for each row execute function public.set_updated_at();
-
-create trigger set_updated_at_settings
-  before update on public.settings
   for each row execute function public.set_updated_at();
 
 -- ============================================================================
@@ -1163,27 +1126,6 @@ insert into public.discount_codes (code, type, value, min_order, usage_limit, is
   ('WELCOME10', 'percentage', 10, 2000, 500, true, '2027-12-31 23:59:59+05');
 
 -- ============================================================================
--- Default Settings
--- ============================================================================
-insert into public.settings (key, value) values
-  ('store_name',         '"Misk Lume"'),
-  ('store_tagline',      '"The Art of Distinction"'),
-  ('currency',           '"PKR"'),
-  ('currency_symbol',    '"PKR"'),
-  ('shipping_cost',      '200'),
-  ('free_shipping_min',  '8000'),
-  ('bank_name',          '"Meezan Bank"'),
-  ('bank_account_title', '"Misk Lume (Pvt) Ltd"'),
-  ('bank_account_no',    '"0123-0101-2345678-01"'),
-  ('bank_iban',          '"PK90MEZN0001230101234567801"'),
-  ('email_contact',      '"hello@misklume.com"'),
-  ('phone_contact',      '"+92 300 1234567"'),
-  ('address',            '"Lahore, Pakistan"'),
-  ('social_instagram',   '"@misklume"'),
-  ('social_facebook',    '"MiskLume"'),
-  ('maintenance_mode',   'false');
-
--- ============================================================================
 -- Reviews
 -- ============================================================================
 -- No seeded reviews. All reviews are written by real authenticated customers
@@ -1209,11 +1151,12 @@ drop sequence if exists public.order_number_seq;
 -- ============================================================================
 drop policy if exists "Discount codes are viewable by everyone" on public.discount_codes;
 drop policy if exists "Discount codes are publicly readable" on public.discount_codes;
+drop policy if exists "Active discount codes are viewable by everyone" on public.discount_codes;
 drop policy if exists "Admins can manage discount codes" on public.discount_codes;
 
-create policy "Active discount codes are viewable by everyone"
+create policy "Admins can view discount codes"
   on public.discount_codes for select
-  using (is_active = true);
+  using (public.is_admin());
 
 create policy "Admins can manage discount codes"
   on public.discount_codes for all

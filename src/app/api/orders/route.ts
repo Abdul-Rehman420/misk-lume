@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { sendOrderConfirmation } from "@/lib/email";
 import { rateLimit, rateLimiters } from "@/lib/rate-limit";
 import { getDiscountAmount } from "@/lib/discounts";
@@ -111,7 +112,10 @@ export async function POST(request: NextRequest) {
     // Apply discount
     let discountAmount = 0;
     if (discount_code) {
-      const discount = await getDiscountAmount(supabase, discount_code, subtotal);
+      // discount_codes is admin-only under RLS (migration 017); the server reads
+      // it via the service-role client so checkout can still validate codes.
+      const admin = createAdminClient();
+      const discount = await getDiscountAmount(admin, discount_code, subtotal);
       if (discount.valid) {
         discountAmount = discount.amount;
       }
@@ -179,7 +183,8 @@ export async function POST(request: NextRequest) {
     // code hit its usage_limit between validation and now — roll back the
     // order instead of over-selling the discount.
     if (discount_code && discountAmount > 0) {
-      const { data: incremented, error: incrementError } = await supabase.rpc("increment_discount_usage", {
+      const admin = createAdminClient();
+      const { data: incremented, error: incrementError } = await admin.rpc("increment_discount_usage", {
         code_text: discount_code.trim().toUpperCase(),
       });
 

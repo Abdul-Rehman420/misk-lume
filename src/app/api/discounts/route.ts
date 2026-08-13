@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getDiscountAmount } from "@/lib/discounts";
 import { rateLimit, rateLimiters } from "@/lib/rate-limit";
 
@@ -24,7 +24,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid subtotal" }, { status: 400 });
     }
 
-    const supabase = await createClient();
+    // discount_codes is admin-only under RLS (migration 017); the server reads
+    // it via the service-role client so checkout can still validate codes.
+    const supabase = createAdminClient();
     const result = await getDiscountAmount(supabase, code, subtotal);
 
     if (!result.valid) {

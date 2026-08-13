@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   rateLimit: vi.fn(),
   createClient: vi.fn(),
+  createAdminClient: vi.fn(),
   sendOrderConfirmation: vi.fn(),
   getDiscountAmount: vi.fn(),
 }));
@@ -20,6 +21,7 @@ vi.mock("next/server", () => ({
 }));
 
 vi.mock("@/lib/supabase/server", () => ({ createClient: mocks.createClient }));
+vi.mock("@/lib/supabase/admin", () => ({ createAdminClient: mocks.createAdminClient }));
 vi.mock("@/lib/email", () => ({ sendOrderConfirmation: mocks.sendOrderConfirmation }));
 vi.mock("@/lib/discounts", () => ({ getDiscountAmount: mocks.getDiscountAmount }));
 vi.mock("@/lib/rate-limit", () => ({
@@ -118,6 +120,7 @@ describe("POST /api/orders", () => {
   it("creates an order and consumes the discount when valid", async () => {
     const supabase = buildSupabase({ product: PRODUCT, order: ORDER, rpcData: true });
     mocks.createClient.mockResolvedValue(supabase);
+    mocks.createAdminClient.mockReturnValue(supabase);
     mocks.getDiscountAmount.mockResolvedValue({ amount: 300, valid: true });
 
     const res = await POST(makeRequest({ ...BASE_PAYLOAD, discount_code: "WELCOME10" }));
@@ -132,6 +135,7 @@ describe("POST /api/orders", () => {
     let deletes = 0;
     const supabase = buildSupabase({ product: PRODUCT, order: ORDER, rpcData: false, deleteCalled: () => { deletes++; } });
     mocks.createClient.mockResolvedValue(supabase);
+    mocks.createAdminClient.mockReturnValue(supabase);
     mocks.getDiscountAmount.mockResolvedValue({ amount: 300, valid: true });
 
     const res = await POST(makeRequest({ ...BASE_PAYLOAD, discount_code: "LIMITED" }));
@@ -143,6 +147,7 @@ describe("POST /api/orders", () => {
   it("fails open when the discount RPC errors (migration not applied)", async () => {
     const supabase = buildSupabase({ product: PRODUCT, order: ORDER, rpcError: { message: "function not found" } });
     mocks.createClient.mockResolvedValue(supabase);
+    mocks.createAdminClient.mockReturnValue(supabase);
     mocks.getDiscountAmount.mockResolvedValue({ amount: 300, valid: true });
 
     const res = await POST(makeRequest({ ...BASE_PAYLOAD, discount_code: "WELCOME10" }));
