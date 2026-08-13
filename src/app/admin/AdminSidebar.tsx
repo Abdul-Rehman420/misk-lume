@@ -83,6 +83,19 @@ const navLinks = [
     ),
   },
   {
+    label: "Collections",
+    href: "/admin/collections",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+        <path d="M2 12h20" />
+        <path d="M7 12a5 5 0 0 1 5-5" />
+        <path d="M7 12a5 5 0 0 0 5 5" />
+        <path d="M12 7l-4 2M12 7l4 2M12 17l-4-2M12 17l4-2" />
+        <path d="M16 9l2-2M16 15l2 2" />
+      </svg>
+    ),
+  },
+  {
     label: "Settings",
     href: "/admin/settings",
     icon: (

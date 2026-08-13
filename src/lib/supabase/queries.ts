@@ -2,7 +2,10 @@ import { createClient } from './server'
 
 export async function getProducts(filters?: { category?: string; gender?: string; search?: string; limit?: number; offset?: number }) {
   const supabase = await createClient()
-  let query = supabase.from('products').select('*, categories(name, slug), product_images(image_url, is_primary)')
+  // PostgREST only filters the parent by an embedded resource when the embed is
+  // an inner join (!inner); without it the category filter is silently ignored.
+  const categoriesEmbed = filters?.category ? 'categories!inner(name, slug)' : 'categories(name, slug)'
+  let query = supabase.from('products').select(`*, ${categoriesEmbed}, product_images(image_url, is_primary)`)
     .eq('is_active', true)
 
   if (filters?.category) query = query.eq('categories.slug', filters.category)
@@ -160,7 +163,10 @@ export async function getShopProducts(filters?: {
   sort?: string; limit?: number; offset?: number;
 }) {
   const supabase = await createClient()
-  let query = supabase.from('products').select('*, categories(name, slug), product_images(image_url, is_primary), product_sizes(size_ml, price)')
+  // PostgREST only filters the parent by an embedded resource when the embed is
+  // an inner join (!inner); without it the category filter is silently ignored.
+  const categoriesEmbed = filters?.category ? 'categories!inner(name, slug)' : 'categories(name, slug)'
+  let query = supabase.from('products').select(`*, ${categoriesEmbed}, product_images(image_url, is_primary), product_sizes(size_ml, price)`)
     .eq('is_active', true)
 
   if (filters?.category) query = query.eq('categories.slug', filters.category)
@@ -205,7 +211,9 @@ export async function getShopProductsCount(filters?: {
     return data || 0
   }
 
-  let query = supabase.from('products').select('id', { count: 'exact', head: true }).eq('is_active', true)
+  let query = filters?.category
+    ? supabase.from('products').select('id, categories!inner(id)', { count: 'exact', head: true }).eq('is_active', true)
+    : supabase.from('products').select('id', { count: 'exact', head: true }).eq('is_active', true)
 
   if (filters?.category) query = query.eq('categories.slug', filters.category)
   if (filters?.gender) {
