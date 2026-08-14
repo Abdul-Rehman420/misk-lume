@@ -1174,7 +1174,7 @@ insert into store_settings (key, value) values
   ('store_name', 'Misk Lume'),
   ('store_description', 'Luxury fragrances crafted with the finest ingredients from the heart of the East.'),
   ('contact_email', 'info@misklume.com'),
-  ('contact_phone', '+92 300 1234567'),
+  ('contact_phone', '+92 325 8685580'),
   ('shipping_rate', '200'),
   ('free_shipping_threshold', '8000'),
   ('delivery_estimate', '4-5 business days'),

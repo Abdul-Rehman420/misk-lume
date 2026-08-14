@@ -10,7 +10,7 @@ export function OrganizationJsonLd() {
     description: "Luxury perfumes and attars crafted with rare ingredients from around the world.",
     contactPoint: {
       "@type": "ContactPoint",
-      telephone: "+92-300-1234567",
+      telephone: "+92-325-8685580",
       contactType: "customer service",
       email: "misklume@gmail.com",
     },
@@ -19,8 +19,9 @@ export function OrganizationJsonLd() {
       addressCountry: "PK",
     },
     sameAs: [
-      "https://instagram.com/misklume",
-      "https://facebook.com/misklume",
+      "https://www.facebook.com/share/1EZZNbC8hm/",
+      "https://www.instagram.com/misklume",
+      "https://www.tiktok.com/@misk.lume",
     ],
   };
   return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />;

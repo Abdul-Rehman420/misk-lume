@@ -85,7 +85,6 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       title: `${post.title} | Misk Lume Blog`,
       description: post.excerpt,
       openGraph: { title: post.title, description: post.excerpt, images: [{ url: post.image_url || "" }] },
-      twitter: { card: "summary_large_image", title: post.title, description: post.excerpt },
     };
   } catch {
     return { title: "Blog Post | Misk Lume" };

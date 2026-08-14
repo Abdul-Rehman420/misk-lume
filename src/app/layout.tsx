@@ -35,12 +35,6 @@ export const metadata: Metadata = {
     type: "website",
     images: [{ url: cloudinaryUrl("https://images.unsplash.com/photo-1615634260169-c994b9a33e3e", 1200), width: 1200, height: 630 }],
   },
-  twitter: {
-    card: "summary_large_image",
-    title: "Misk Lume - Luxury Perfumes & Attars",
-    description: "Discover exquisite fragrances crafted with rare ingredients from around the world.",
-    images: [cloudinaryUrl("https://images.unsplash.com/photo-1615634260169-c994b9a33e3e", 1200)],
-  },
   icons: {
     icon: cloudinaryUrl("https://images.unsplash.com/photo-1588405748880-12d1d2a59f75", 192),
     apple: cloudinaryUrl("https://images.unsplash.com/photo-1588405748880-12d1d2a59f75", 180),

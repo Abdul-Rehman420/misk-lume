@@ -41,7 +41,7 @@ export default function ContactPage() {
                 value="misklume@gmail.com"
                 href="mailto:misklume@gmail.com"
               />
-              <InfoCard label="Phone" value="+92 300 1234567" href="tel:+923001234567" />
+              <InfoCard label="Phone" value="+92 325 8685580" href="tel:+923258685580" />
               <InfoCard
                 label="Address"
                 value="Karachi, Pakistan"
