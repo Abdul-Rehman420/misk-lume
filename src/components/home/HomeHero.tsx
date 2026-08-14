@@ -17,14 +17,14 @@ export default function HomeHero() {
   return (
     <section className="relative flex min-h-svh items-center overflow-hidden bg-[linear-gradient(135deg,#0B0B0B_0%,#1a1510_50%,#0B0B0B_100%)]">
       <Image
-        src="https://images.unsplash.com/photo-1541643600914-78b084683601?w=1920&q=80"
-        alt="Luxury perfume bottle"
+        src="/images/berry-shine-hero.jpg"
+        alt="Berry Shine fragrance"
         fill
         priority
         sizes="100vw"
-        className="object-cover opacity-40"
+        className="object-cover object-[50%_75%] opacity-90 sm:opacity-100"
       />
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(11,11,11,0.9)_0%,rgba(11,11,11,0.4)_100%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(11,11,11,0.92)_0%,rgba(11,11,11,0.55)_50%,rgba(11,11,11,0.15)_100%)]" />
       <div className="relative z-10 mx-auto w-full max-w-[600px] px-4 sm:px-6 ml-0 md:ml-[10%]">
         <motion.p
           variants={fadeUp}
