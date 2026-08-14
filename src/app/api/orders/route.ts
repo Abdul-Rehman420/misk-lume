@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
     for (const item of items) {
       const { data: product, error: productError } = await supabase
         .from("products")
-        .select("id, name, price, sale_price, image_url, stock_quantity, product_sizes(size_ml, stock_quantity, is_active)")
+        .select("id, name, price, sale_price, image_url, stock_quantity")
         .eq("id", item.product_id)
         .single();
 
@@ -82,18 +82,6 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: `Insufficient stock for ${product.name}` }, { status: 400 });
       }
 
-      if (item.size_ml != null) {
-        const size = Array.isArray(product.product_sizes)
-          ? product.product_sizes.find((s) => s.size_ml === item.size_ml)
-          : undefined;
-        if (!size || !size.is_active) {
-          return NextResponse.json({ error: `Size ${item.size_ml}ml is unavailable for ${product.name}` }, { status: 400 });
-        }
-        if (size.stock_quantity < item.quantity) {
-          return NextResponse.json({ error: `Insufficient stock for ${product.name} (${item.size_ml}ml)` }, { status: 400 });
-        }
-      }
-
       const unitPrice = product.sale_price || product.price;
       const totalPrice = unitPrice * item.quantity;
       subtotal += totalPrice;
@@ -102,7 +90,6 @@ export async function POST(request: NextRequest) {
         product_id: product.id,
         product_name: product.name,
         product_image: product.image_url,
-        size_ml: item.size_ml || null,
         quantity: item.quantity,
         unit_price: unitPrice,
         total_price: totalPrice,

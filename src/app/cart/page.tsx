@@ -58,7 +58,7 @@ export default function CartPage() {
                         {item.name}
                       </Link>
                       <p className="mt-1 text-xs text-text-dim">
-                        {item.size} &mdash; {item.gender}
+                        {item.gender}
                       </p>
                       <p className="mt-1 text-sm font-semibold text-accent-gold">
                         PKR {item.price.toLocaleString()}

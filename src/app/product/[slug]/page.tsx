@@ -18,7 +18,6 @@ interface ProductDetail {
   short_description: string; image_url: string; stock_quantity: number;
   categories: { name: string; slug: string };
   product_images: { image_url: string; is_primary: boolean }[];
-  product_sizes: { size_ml: number; price: number; sale_price?: number; stock_quantity: number; is_active: boolean }[];
   fragrance_notes: { note_type: string; name: string; description: string }[];
 }
 
@@ -83,7 +82,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   const allImages = product.product_images?.length > 0 ? product.product_images : [{ image_url: product.image_url, is_primary: true }];
   const notes = { top: product.fragrance_notes?.find((n) => n.note_type === "top"), middle: product.fragrance_notes?.find((n) => n.note_type === "middle"), base: product.fragrance_notes?.find((n) => n.note_type === "base") };
-  const activeSizes = product.product_sizes?.filter((s) => s.is_active) || [];
 
   return (
     <>
@@ -121,7 +119,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
             salePrice={product.sale_price}
             imageUrl={product.image_url}
             images={allImages}
-            sizes={activeSizes}
             stockQuantity={product.stock_quantity || 0}
           />
         </div>

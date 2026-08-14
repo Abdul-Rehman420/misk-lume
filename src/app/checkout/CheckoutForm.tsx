@@ -123,7 +123,7 @@ export default function CheckoutForm({ bankDetails }: { bankDetails: BankDetails
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          items: items.map((item) => ({ product_id: item.productId || item.id.replace(/-(?:default|\d+)$/, ""), size_ml: parseInt(item.size) || null, quantity: item.quantity, price: item.price })),
+          items: items.map((item) => ({ product_id: item.productId || item.id, quantity: item.quantity, price: item.price })),
           shipping_address: { name: `${form.firstName} ${form.lastName}`.trim(), email: form.email, phone: form.phone, city: form.city, address: form.address, province: form.province, postalCode: form.postalCode, instructions: form.deliveryInstructions },
           payment_method: paymentMethod,
           discount_code: discount?.code || undefined,
@@ -301,7 +301,7 @@ export default function CheckoutForm({ bankDetails }: { bankDetails: BankDetails
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-text-primary truncate">{item.name}</p>
-                      <p className="text-xs text-text-dim">{item.size} &times; {item.quantity}</p>
+                      <p className="text-xs text-text-dim">Qty: {item.quantity}</p>
                     </div>
                     <p className="text-sm text-text-muted">PKR {(item.price * item.quantity).toLocaleString()}</p>
                   </div>

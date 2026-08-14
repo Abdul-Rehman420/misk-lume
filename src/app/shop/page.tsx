@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 };
 
 interface ShopPageProps {
-  searchParams: Promise<{ gender?: string; category?: string; search?: string; sort?: string; page?: string; sizes?: string; minPrice?: string; maxPrice?: string }>;
+  searchParams: Promise<{ gender?: string; category?: string; search?: string; sort?: string; page?: string; minPrice?: string; maxPrice?: string }>;
 }
 
 const ITEMS_PER_PAGE = 12;
@@ -28,24 +28,22 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
   const page = parseInt(params.page || "1", 10);
   const minPrice = params.minPrice ? Number(params.minPrice) : undefined;
   const maxPrice = params.maxPrice ? Number(params.maxPrice) : undefined;
-  const sizes = params.sizes?.split(",").filter(Boolean) || [];
   const offset = (page - 1) * ITEMS_PER_PAGE;
 
   let products: {
     id: string; name: string; slug: string; price: number; sale_price?: number; gender: string;
     image_url: string; badge?: "new" | "sale" | "out-of-stock"; rating: number; review_count: number;
-    sizes?: { size_ml: number; price: number }[];
   }[] = [];
   let totalCount = 0;
 
   try {
     const [dbProducts, count] = await Promise.all([
       getShopProducts({ gender, category, search, minPrice, maxPrice, sort, limit: ITEMS_PER_PAGE, offset }),
-      getShopProductsCount({ gender, category, search, minPrice, maxPrice, sizes: sizes.length > 0 ? sizes : undefined }),
+      getShopProductsCount({ gender, category, search, minPrice, maxPrice }),
     ]);
 
     if (dbProducts && dbProducts.length > 0) {
-      let mapped = dbProducts.map((p) => ({
+      products = dbProducts.map((p) => ({
         id: p.id,
         name: p.name,
         slug: p.slug,
@@ -56,14 +54,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
         badge: normalizeBadge(p.badge),
         rating: p.rating,
         review_count: p.review_count,
-        sizes: p.product_sizes?.map((s: { size_ml: number; price: number }) => ({ size_ml: s.size_ml, price: s.price })) || [],
       }));
-
-      if (sizes.length > 0) {
-        mapped = mapped.filter(p => p.sizes.some((s: { size_ml: number; price: number }) => sizes.includes(`${s.size_ml}ml`)));
-      }
-
-      products = mapped;
     }
     totalCount = count;
   } catch {}
@@ -83,17 +74,16 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
     if (sort) sp.set("sort", sort);
     if (minPrice) sp.set("minPrice", String(minPrice));
     if (maxPrice) sp.set("maxPrice", String(maxPrice));
-    if (sizes.length > 0) sp.set("sizes", sizes.join(","));
     if (p > 1) sp.set("page", String(p));
     const qs = sp.toString();
     return `/shop${qs ? `?${qs}` : ""}`;
   }
 
-  const activeFilters = (gender || category || search || minPrice || maxPrice || sizes.length > 0);
+  const activeFilters = (gender || category || search || minPrice || maxPrice);
 
   function buildFilterUrl(overrides: Record<string, string | undefined>) {
     const sp = new URLSearchParams();
-    const keys = { gender, category, search, sort, minPrice: minPrice ? String(minPrice) : undefined, maxPrice: maxPrice ? String(maxPrice) : undefined, sizes: sizes.length > 0 ? sizes.join(",") : undefined, ...overrides };
+    const keys = { gender, category, search, sort, minPrice: minPrice ? String(minPrice) : undefined, maxPrice: maxPrice ? String(maxPrice) : undefined, ...overrides };
     for (const [k, v] of Object.entries(keys)) { if (v) sp.set(k, v); }
     const qs = sp.toString();
     return `/shop${qs ? `?${qs}` : ""}`;
@@ -120,11 +110,6 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
               {category} <Link href={buildFilterUrl({ category: undefined })} className="ml-1">&times;</Link>
             </span>
           )}
-          {sizes.length > 0 && sizes.map(s => (
-            <span key={s} className="inline-flex items-center gap-1 rounded-full border border-accent-gold/30 bg-accent-gold/5 px-3 py-1 text-xs text-accent-gold">
-              {s} <Link href={buildFilterUrl({ sizes: sizes.filter(x => x !== s).join(",") || undefined })} className="ml-1">&times;</Link>
-            </span>
-          ))}
         </div>
       )}
 

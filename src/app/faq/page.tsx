@@ -101,7 +101,7 @@ const faqData = {
     {
       question: "Can I exchange for a different fragrance?",
       answer:
-        "Exchanges are available for different sizes of the same product. For fragrance swaps, we recommend reaching out to discuss your options with our team.",
+        "Exchanges are available for the same product if it arrives damaged or defective. For fragrance swaps, we recommend reaching out to discuss your options with our team.",
     },
   ],
 } as const;

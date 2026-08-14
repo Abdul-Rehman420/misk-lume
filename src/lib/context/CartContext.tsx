@@ -7,7 +7,6 @@ export interface CartItem {
   productId: string;
   name: string;
   slug: string;
-  size: string;
   gender: string;
   price: number;
   quantity: number;

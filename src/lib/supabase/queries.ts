@@ -26,7 +26,7 @@ export async function getProductBySlug(slug: string) {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('products')
-    .select('*, categories(name, slug), product_images(*), product_sizes(*), fragrance_notes(*)')
+    .select('*, categories(name, slug), product_images(*), fragrance_notes(*)')
     .eq('slug', slug)
     .single()
 
@@ -166,7 +166,7 @@ export async function getShopProducts(filters?: {
   // PostgREST only filters the parent by an embedded resource when the embed is
   // an inner join (!inner); without it the category filter is silently ignored.
   const categoriesEmbed = filters?.category ? 'categories!inner(name, slug)' : 'categories(name, slug)'
-  let query = supabase.from('products').select(`*, ${categoriesEmbed}, product_images(image_url, is_primary), product_sizes(size_ml, price)`)
+  let query = supabase.from('products').select(`*, ${categoriesEmbed}, product_images(image_url, is_primary)`)
     .eq('is_active', true)
 
   if (filters?.category) query = query.eq('categories.slug', filters.category)
@@ -194,22 +194,9 @@ export async function getShopProducts(filters?: {
 
 export async function getShopProductsCount(filters?: {
   category?: string; gender?: string; search?: string;
-  minPrice?: number; maxPrice?: number; sizes?: string[];
+  minPrice?: number; maxPrice?: number;
 }) {
   const supabase = await createClient()
-
-  if (filters?.sizes?.length) {
-    const sizeFilters = filters.sizes.map(s => parseInt(s.replace('ml', '')))
-    const { data } = await supabase.rpc('count_filtered_products', {
-      p_category: filters.category || null,
-      p_gender: filters.gender || null,
-      p_search: filters.search || null,
-      p_min_price: filters.minPrice || null,
-      p_max_price: filters.maxPrice || null,
-      p_sizes: sizeFilters,
-    })
-    return data || 0
-  }
 
   let query = filters?.category
     ? supabase.from('products').select('id, categories!inner(id)', { count: 'exact', head: true }).eq('is_active', true)

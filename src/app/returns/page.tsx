@@ -51,8 +51,8 @@ export default function ReturnsPage() {
         <ContentBlock
           title="Exchanges"
           paragraphs={[
-            "Exchanges are available if you wish to receive a different size of the same product.",
-            "Contact us with your order number and the desired size, and we will arrange the exchange for you.",
+            "Exchanges are available if you wish to swap the product for a different fragrance of the same value.",
+            "Contact us with your order number and the product you would like instead, and we will arrange the exchange for you.",
           ]}
         />
 

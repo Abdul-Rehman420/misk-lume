@@ -94,23 +94,6 @@ create table public.product_images (
 comment on table public.product_images is 'Gallery images associated with each product';
 
 -- ============================================================================
--- PRODUCT SIZES
--- Size variants (e.g. 6ml, 12ml, 25ml) with their own pricing & stock.
--- ============================================================================
-create table public.product_sizes (
-  id uuid default uuid_generate_v4() primary key,
-  product_id uuid not null references public.products(id) on delete cascade,
-  size_ml integer not null,
-  price integer not null,
-  sale_price integer,
-  stock_quantity integer not null default 0,
-  sku text,
-  is_active boolean not null default true
-);
-
-comment on table public.product_sizes is 'Size variants for each product with independent pricing/stock';
-
--- ============================================================================
 -- FRAGRANCE NOTES
 -- Olfactory pyramid (top / middle / base notes) per product.
 -- ============================================================================
@@ -150,11 +133,10 @@ comment on table public.collections is 'Curated product sets & gift boxes';
 create table public.collection_products (
   id uuid default uuid_generate_v4() primary key,
   collection_id uuid not null references public.collections(id) on delete cascade,
-  product_id uuid not null references public.products(id) on delete cascade,
-  size_ml integer
+  product_id uuid not null references public.products(id) on delete cascade
 );
 
-comment on table public.collection_products is 'Which products (and sizes) belong to each collection';
+comment on table public.collection_products is 'Which products belong to each collection';
 
 -- ============================================================================
 -- ORDERS
@@ -201,7 +183,6 @@ create table public.order_items (
   product_id uuid references public.products(id) on delete set null,
   product_name text not null,
   product_image text,
-  size_ml integer,
   quantity integer not null default 1,
   unit_price integer not null,
   total_price integer not null
@@ -316,7 +297,6 @@ create index idx_products_is_featured on public.products(is_featured);
 create index idx_products_price on public.products(price);
 
 create index idx_product_images_product_id on public.product_images(product_id);
-create index idx_product_sizes_product_id on public.product_sizes(product_id);
 create index idx_fragrance_notes_product_id on public.fragrance_notes(product_id);
 
 create index idx_collections_slug on public.collections(slug);
@@ -388,7 +368,6 @@ alter table public.profiles            enable row level security;
 alter table public.categories          enable row level security;
 alter table public.products            enable row level security;
 alter table public.product_images      enable row level security;
-alter table public.product_sizes       enable row level security;
 alter table public.fragrance_notes     enable row level security;
 alter table public.collections         enable row level security;
 alter table public.collection_products enable row level security;
@@ -487,26 +466,6 @@ create policy "Admins can update product images"
 
 create policy "Admins can delete product images"
   on public.product_images for delete
-  using (public.is_admin());
-
--- ============================================================================
--- PRODUCT SIZES
--- Public read access; admin write access.
--- ============================================================================
-create policy "Product sizes are publicly readable"
-  on public.product_sizes for select
-  using (true);
-
-create policy "Admins can manage product sizes"
-  on public.product_sizes for insert
-  with check (public.is_admin());
-
-create policy "Admins can update product sizes"
-  on public.product_sizes for update
-  using (public.is_admin());
-
-create policy "Admins can delete product sizes"
-  on public.product_sizes for delete
   using (public.is_admin());
 
 -- ============================================================================
@@ -1248,39 +1207,6 @@ create policy "Admins can delete store settings"
 
 
 
--- ========== MIGRATION 009_product_count_rpc.sql ==========
--- Efficient product count with optional size filter (avoids loading all rows client-side)
-create or replace function count_filtered_products(
-  p_category text default null,
-  p_gender text default null,
-  p_search text default null,
-  p_min_price int default null,
-  p_max_price int default null,
-  p_sizes int[] default null
-)
-returns int
-language sql
-stable
-as $$
-  with base as (
-    select p.id
-    from products p
-    where p.is_active = true
-      and (p_category is null or p.category_id in (select id from categories where slug = p_category))
-      and (p_gender is null or p.gender = p_gender)
-      and (p_search is null or p.name ilike '%' || p_search || '%' or p.description ilike '%' || p_search || '%')
-      and (p_min_price is null or p.price >= p_min_price)
-      and (p_max_price is null or p.price <= p_max_price)
-  )
-  select count(*)::int
-  from base b
-  where (p_sizes is null or exists (
-    select 1 from product_sizes ps
-    where ps.product_id = b.id and ps.size_ml = any(p_sizes)
-  ));
-$$;
-
-
 -- ========== MIGRATION 010_atomic_stock_and_auth.sql ==========
 -- ============================================================================
 -- H1: Make stock decrement trigger safe â€” only decrement if stock >= quantity
@@ -1442,14 +1368,8 @@ grant execute on function public.cleanup_rate_limits() to anon, authenticated;
 
 
 -- ========== MIGRATION 014_size_stock_trigger.sql ==========
--- ============================================================================
--- C7: Decrement size-level stock when an order is placed
--- The 010 trigger only decremented products.stock_quantity. product_sizes rows
--- carry their own stock_quantity (and the checkout UI sells by size), so size
--- stock never decreased â€” making size-level inventory stale. This redefines the
--- same trigger to also decrement the matching product_sizes row when the order
--- item has a size, raising "Insufficient stock" if the size cannot be fulfilled.
--- ============================================================================
+-- Original 014 added per-size stock decrementing. The size feature was removed
+-- in 018, so this re-affirms the product-level-only trigger (same as 010).
 create or replace function public.decrement_stock_on_order()
 returns trigger
 language plpgsql
@@ -1462,19 +1382,6 @@ begin
 
   if not found then
     raise exception 'Insufficient stock for product %', new.product_id;
-  end if;
-
-  if new.size_ml is not null then
-    update public.product_sizes
-    set stock_quantity = stock_quantity - new.quantity
-    where product_id = new.product_id
-      and size_ml = new.size_ml
-      and is_active
-      and stock_quantity >= new.quantity;
-
-    if not found then
-      raise exception 'Insufficient stock for product % size %', new.product_id, new.size_ml;
-    end if;
   end if;
 
   return new;

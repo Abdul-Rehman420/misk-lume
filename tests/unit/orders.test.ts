@@ -39,7 +39,6 @@ const PRODUCT = {
   sale_price: null,
   image_url: "https://example.com/img.jpg",
   stock_quantity: 50,
-  product_sizes: [{ size_ml: 6, stock_quantity: 20, is_active: true }],
 };
 
 const ORDER = {
@@ -98,7 +97,7 @@ function buildSupabase(opts: SupabaseMockOpts) {
 }
 
 const BASE_PAYLOAD = {
-  items: [{ product_id: PRODUCT.id, quantity: 2, size_ml: 6 }],
+  items: [{ product_id: PRODUCT.id, quantity: 2 }],
   shipping_address: {
     name: "Abdul Rehman",
     email: "abdulrehmansheikh4747@gmail.com",

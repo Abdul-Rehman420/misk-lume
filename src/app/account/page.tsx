@@ -17,7 +17,6 @@ interface OrderItem {
   product_name: string;
   product_image: string;
   quantity: number;
-  size_ml: number;
   unit_price: number;
   total_price: number;
 }

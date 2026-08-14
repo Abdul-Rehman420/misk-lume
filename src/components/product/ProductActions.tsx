@@ -5,14 +5,6 @@ import Image from "next/image";
 import { useCart } from "@/lib/context/CartContext";
 import { useWishlist } from "@/lib/context/WishlistContext";
 
-interface ProductSize {
-  size_ml: number;
-  price: number;
-  sale_price?: number;
-  stock_quantity: number;
-  is_active: boolean;
-}
-
 interface ProductImage {
   image_url: string;
   is_primary: boolean;
@@ -27,17 +19,13 @@ interface ProductActionsProps {
   salePrice?: number;
   imageUrl: string;
   images: ProductImage[];
-  sizes: ProductSize[];
   stockQuantity: number;
 }
 
 export default function ProductActions({
-  productId, name, slug, gender, price, salePrice, imageUrl, images, sizes, stockQuantity,
+  productId, name, slug, gender, price, salePrice, imageUrl, images, stockQuantity,
 }: ProductActionsProps) {
   const [selectedImage, setSelectedImage] = useState(0);
-  const [selectedSize, setSelectedSize] = useState<ProductSize | null>(
-    sizes.length > 0 ? sizes.find((s) => s.stock_quantity > 0) || sizes[0] : null
-  );
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
   const { addItem } = useCart();
@@ -46,17 +34,15 @@ export default function ProductActions({
   const wishlistBusy = isBusy(productId);
 
   const allImages = images.length > 0 ? images : [{ image_url: imageUrl, is_primary: true }];
-  const displayPrice = selectedSize?.sale_price || selectedSize?.price || salePrice || price;
-  const selectedStock = selectedSize?.stock_quantity ?? stockQuantity;
+  const displayPrice = salePrice || price;
 
   function handleAddToCart() {
     for (let i = 0; i < quantity; i++) {
       addItem({
-        id: `${productId}-${selectedSize?.size_ml || "default"}`,
+        id: productId,
         productId,
         name,
         slug,
-        size: selectedSize ? `${selectedSize.size_ml}ml` : "Standard",
         gender,
         price: displayPrice,
         imageUrl: allImages[selectedImage]?.image_url || imageUrl,
@@ -101,7 +87,7 @@ export default function ProductActions({
         )}
       </div>
 
-      {/* Size selector + Price + Add to Cart */}
+      {/* Price + Add to Cart */}
       <div className="flex flex-col gap-6 lg:py-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent-gold">{gender}</p>
@@ -110,42 +96,15 @@ export default function ProductActions({
 
         <div className="flex items-baseline gap-3">
           <span className="text-2xl font-bold text-accent-gold">PKR {displayPrice.toLocaleString()}</span>
-          {selectedSize?.sale_price && selectedSize.sale_price < selectedSize.price && (
-            <span className="text-sm text-text-dim line-through">PKR {selectedSize.price.toLocaleString()}</span>
-          )}
-          {!selectedSize && salePrice && salePrice < price && (
+          {salePrice && salePrice < price && (
             <span className="text-sm text-text-dim line-through">PKR {price.toLocaleString()}</span>
           )}
         </div>
 
-        {sizes.length > 0 && (
-          <div>
-            <p className="mb-3 text-sm font-medium text-text-primary">Size</p>
-            <div className="flex gap-3">
-              {sizes.map((size) => (
-                <button
-                  key={size.size_ml}
-                  onClick={() => size.stock_quantity > 0 && setSelectedSize(size)}
-                  disabled={size.stock_quantity === 0}
-                  className={`rounded-full border px-5 py-2 text-sm font-medium transition-all duration-200 ${
-                    selectedSize?.size_ml === size.size_ml
-                      ? "border-accent-gold bg-accent-gold text-bg-primary"
-                      : size.stock_quantity === 0
-                        ? "cursor-not-allowed border-border-subtle text-text-dim/50 line-through"
-                        : "border-border text-text-muted hover:border-accent-gold hover:text-text-primary"
-                  }`}
-                >
-                  {size.size_ml}ml
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
         <div className="flex items-center gap-2">
-          <span className={`h-2 w-2 rounded-full ${selectedStock > 0 ? "bg-green-500" : "bg-red-500"}`} />
+          <span className={`h-2 w-2 rounded-full ${stockQuantity > 0 ? "bg-green-500" : "bg-red-500"}`} />
           <span className="text-sm text-text-muted">
-            {selectedStock > 0 ? `In Stock — Only ${selectedStock} left in this batch` : "Out of Stock"}
+            {stockQuantity > 0 ? `In Stock — Only ${stockQuantity} left in this batch` : "Out of Stock"}
           </span>
         </div>
 
@@ -161,8 +120,8 @@ export default function ProductActions({
             </button>
             <span className="w-8 text-center text-sm font-medium text-text-primary">{quantity}</span>
             <button
-              onClick={() => setQuantity((q) => Math.min(selectedStock, q + 1))}
-              disabled={quantity >= selectedStock}
+              onClick={() => setQuantity((q) => Math.min(stockQuantity, q + 1))}
+              disabled={quantity >= stockQuantity}
               className="flex h-10 w-10 items-center justify-center rounded-sm border border-border text-text-muted transition-colors hover:border-accent-gold hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-40"
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
@@ -173,11 +132,11 @@ export default function ProductActions({
         <div className="flex gap-3">
           <button
             onClick={handleAddToCart}
-            disabled={selectedStock === 0}
+            disabled={stockQuantity === 0}
             className={`inline-flex flex-1 items-center justify-center rounded-sm px-10 py-3 text-sm font-semibold uppercase tracking-wider transition-all duration-200 ${
               added
                 ? "bg-green-600 text-white"
-                : selectedStock === 0
+                : stockQuantity === 0
                   ? "cursor-not-allowed bg-bg-elevated text-text-dim"
                   : "bg-accent-gold text-bg-primary hover:bg-accent-gold-hover hover:shadow-gold"
             }`}

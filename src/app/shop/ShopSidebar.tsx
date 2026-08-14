@@ -8,7 +8,6 @@ const genders = [
   { label: "Women", value: "women" },
   { label: "Unisex", value: "unisex" },
 ] as const;
-const sizes = ["6ml", "12ml", "25ml"] as const;
 
 export default function ShopSidebar() {
   const router = useRouter();
@@ -16,7 +15,6 @@ export default function ShopSidebar() {
   const [, startTransition] = useTransition();
 
   const selectedGenders = (searchParams.get("gender")?.toLowerCase().split(",").filter(Boolean)) || [];
-  const selectedSizes = searchParams.get("sizes")?.split(",").filter(Boolean) || [];
   const minPrice = Number(searchParams.get("minPrice") || "1000");
   const maxPrice = Number(searchParams.get("maxPrice") || "10000");
 
@@ -67,19 +65,7 @@ export default function ShopSidebar() {
         </div>
       </div>
 
-      <fieldset>
-        <legend className="text-sm font-semibold uppercase tracking-wider text-text-primary">Size</legend>
-        <div className="mt-4 space-y-3">
-          {sizes.map((s) => (
-            <label key={s} className="flex cursor-pointer items-center gap-3">
-              <input type="checkbox" checked={selectedSizes.includes(s)} onChange={() => toggleMultiParam("sizes", selectedSizes, s)} className="h-4 w-4 rounded-sm border border-border-subtle bg-bg-elevated accent-accent-gold" />
-              <span className="text-sm text-text-muted">{s}</span>
-            </label>
-          ))}
-        </div>
-      </fieldset>
-
-      {(selectedGenders.length > 0 || selectedSizes.length > 0 || minPrice !== 1000 || maxPrice !== 10000) && (
+      {(selectedGenders.length > 0 || minPrice !== 1000 || maxPrice !== 10000) && (
         <button onClick={() => router.push("/shop")} className="w-full rounded-sm border border-border py-2 text-sm font-medium text-text-muted transition-colors hover:border-accent-gold hover:text-accent-gold">
           Clear All Filters
         </button>
