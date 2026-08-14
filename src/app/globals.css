@@ -91,10 +91,12 @@ body {
   background-color: var(--color-bg-primary);
 }
 
-img {
-  max-width: 100%;
-  height: auto;
-  display: block;
+@layer base {
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
 }
 
 a {
@@ -102,7 +104,6 @@ a {
   text-decoration: none;
   transition: color 150ms ease;
 }
-
 ul, ol {
   list-style: none;
 }

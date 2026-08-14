@@ -2,6 +2,7 @@
 
 import { useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 
 const navLinks = [
@@ -115,13 +116,14 @@ export default function MobileNav({ open, onClose }: MobileNavProps) {
       >
         {/* Header */}
         <div className="flex h-[72px] items-center justify-between border-b border-border px-4">
-          <Link href="/" className="flex items-center gap-0" onClick={onClose}>
-            <span className="font-display text-2xl font-semibold text-text-primary">
-              Misk
-            </span>
-            <span className="font-display text-2xl font-semibold text-accent-gold">
-              Lume
-            </span>
+          <Link href="/" className="flex items-center" onClick={onClose} aria-label="Misk Lume">
+            <Image
+              src="/images/logo.png"
+              alt="Misk Lume"
+              width={2400}
+              height={1519}
+              className="h-11 w-auto"
+            />
           </Link>
           <button
             onClick={onClose}

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import MobileNav from "./MobileNav";
@@ -166,13 +167,15 @@ export default function Header() {
           </button>
 
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-0">
-            <span className="font-display text-2xl font-semibold text-text-primary">
-              Misk
-            </span>
-            <span className="font-display text-2xl font-semibold text-accent-gold">
-              Lume
-            </span>
+          <Link href="/" className="flex items-center" aria-label="Misk Lume">
+            <Image
+              src="/images/logo.png"
+              alt="Misk Lume"
+              width={2400}
+              height={1519}
+              priority
+              className="h-12 w-auto sm:h-14"
+            />
           </Link>
 
           {/* Desktop nav */}

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 const shopLinks = [
   { label: "Men", href: "/shop?gender=men" },
@@ -111,13 +112,14 @@ export default function Footer() {
         <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-4">
           {/* Brand column */}
           <div className="sm:col-span-2 lg:col-span-1">
-            <Link href="/" className="inline-flex items-center gap-0">
-              <span className="font-display text-2xl font-semibold text-text-primary">
-                Misk
-              </span>
-              <span className="font-display text-2xl font-semibold text-accent-gold">
-                Lume
-              </span>
+            <Link href="/" className="inline-flex items-center" aria-label="Misk Lume">
+              <Image
+                src="/images/logo.png"
+                alt="Misk Lume"
+                width={2400}
+                height={1519}
+                className="h-11 w-auto"
+              />
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-text-muted">
               Handcrafted, oil-based fragrances distilled in small batches. Each
