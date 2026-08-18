@@ -35,7 +35,7 @@ export default function ReturnsPage() {
         <ContentBlock
           title="How to Initiate a Return"
           paragraphs={[
-            "Email us at returns@misklume.com with your order number and reason for the return.",
+            "Email us at misklume@gmail.com with your order number and reason for the return.",
             "Our team will review your request and provide return instructions, including the shipping address and any applicable guidelines.",
           ]}
         />

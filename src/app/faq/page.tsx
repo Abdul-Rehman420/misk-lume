@@ -91,7 +91,7 @@ const faqData = {
     {
       question: "How do I initiate a return?",
       answer:
-        "Email returns@misklume.com with your order number and reason for the return. Our team will provide instructions within 24 hours.",
+        "Email misklume@gmail.com with your order number and reason for the return. Our team will provide instructions within 24 hours.",
     },
     {
       question: "How long does a refund take?",

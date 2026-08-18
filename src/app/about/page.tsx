@@ -104,7 +104,7 @@ export default function AboutPage() {
             </span>
             <span>
               Phone:{" "}
-              <span className="text-text-primary">+92 300 1234567</span>
+              <span className="text-text-primary">+92 325 8685580</span>
             </span>
             <span>
               Address:{" "}

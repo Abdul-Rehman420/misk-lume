@@ -130,9 +130,9 @@ insert into public.settings (key, value) values
   ('bank_account_title', '"Misk Lume (Pvt) Ltd"'),
   ('bank_account_no',    '"0123-0101-2345678-01"'),
   ('bank_iban',          '"PK90MEZN0001230101234567801"'),
-  ('email_contact',      '"hello@misklume.com"'),
-  ('phone_contact',      '"+92 300 1234567"'),
-  ('address',            '"Lahore, Pakistan"'),
+  ('email_contact',      '"misklume@gmail.com"'),
+  ('phone_contact',      '"+92 325 8685580"'),
+  ('address',            '"Karachi, Pakistan"'),
   ('social_instagram',   '"@misklume"'),
   ('social_facebook',    '"MiskLume"'),
   ('maintenance_mode',   'false');

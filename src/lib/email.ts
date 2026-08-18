@@ -23,7 +23,7 @@ export async function sendOrderConfirmation(order: {
     .join('')
 
   await resend.emails.send({
-    from: 'Misk Lume <orders@misklume.com>',
+    from: 'Misk Lume <onboarding@resend.dev>',
     to: order.email,
     subject: `Order Confirmation — ${order.orderNumber}`,
     html: `
