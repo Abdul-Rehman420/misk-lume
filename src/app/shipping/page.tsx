@@ -27,7 +27,7 @@ export default function ShippingPage() {
         <ContentBlock
           title="Delivery Timeline"
           paragraphs={[
-            "Standard delivery takes 4–5 business days from the date of order confirmation.",
+            "Standard delivery takes 5–6 business days from the date of order confirmation.",
             "All shipments are handled by PostEx, a trusted logistics partner, ensuring your package arrives safely and on time.",
           ]}
         />
@@ -63,10 +63,10 @@ export default function ShippingPage() {
           <p className="mt-3 text-text-muted">
             For shipping inquiries, contact us at{" "}
             <a
-              href="mailto:shipping@misklume.com"
+              href="mailto:misklume@gmail.com"
               className="text-accent-gold underline underline-offset-4 transition-colors hover:text-text-primary"
             >
-              shipping@misklume.com
+              misklume@gmail.com
             </a>
           </p>
         </div>

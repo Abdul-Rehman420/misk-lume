@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Return Policy | Misk Lume",
   description:
-    "Understand Misk Lume's return policy, including return windows, conditions, refund timelines, and exchange options.",
+    "Understand Misk Lume's return policy, including return windows, conditions, and refund timelines.",
 };
 
 export default function ReturnsPage() {
@@ -45,14 +45,6 @@ export default function ReturnsPage() {
           paragraphs={[
             "Refunds are processed within 5–7 business days after we receive and inspect the returned item.",
             "The refund will be credited to your original payment method. Bank processing times may vary.",
-          ]}
-        />
-
-        <ContentBlock
-          title="Exchanges"
-          paragraphs={[
-            "Exchanges are available if you wish to swap the product for a different fragrance of the same value.",
-            "Contact us with your order number and the product you would like instead, and we will arrange the exchange for you.",
           ]}
         />
 

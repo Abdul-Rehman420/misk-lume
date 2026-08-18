@@ -21,7 +21,7 @@ export default function CheckoutSuccessPage() {
           Thank you for your purchase. We&apos;ll send you an email with your order details and tracking information.
         </p>
         <p className="mt-2 text-xs text-text-dim">
-          Expected delivery: 4-5 business days
+          Expected delivery: 5-6 business days
         </p>
         <div className="mt-8 flex flex-col gap-3">
           <Link href="/shop">

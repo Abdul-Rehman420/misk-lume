@@ -108,7 +108,7 @@ export default function SettingsPage() {
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium text-admin-text">Estimated Delivery</label>
-              <input type="text" value={settings.delivery_estimate || "4-5 business days"} onChange={(e) => update("delivery_estimate", e.target.value)} className="w-full rounded-md border border-admin-border bg-admin-bg px-4 py-2 text-sm text-admin-text outline-none transition-colors focus:border-accent-gold" />
+              <input type="text" value={settings.delivery_estimate || "5-6 business days"} onChange={(e) => update("delivery_estimate", e.target.value)} className="w-full rounded-md border border-admin-border bg-admin-bg px-4 py-2 text-sm text-admin-text outline-none transition-colors focus:border-accent-gold" />
             </div>
           </div>
         </div>

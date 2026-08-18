@@ -42,7 +42,7 @@ const faqData = {
     {
       question: "How long does delivery take?",
       answer:
-        "Standard delivery takes 4–5 business days within Pakistan. Remote areas may require an additional 1–2 business days.",
+        "Standard delivery takes 5–6 business days within Pakistan. Remote areas may require an additional 1–2 business days.",
     },
     {
       question: "Is there a shipping fee?",
@@ -82,11 +82,11 @@ const faqData = {
         "Currently, we do not offer installment or buy-now-pay-later options. We are evaluating this for future availability.",
     },
   ],
-  "Returns & Exchanges": [
+  "Returns": [
     {
       question: "Can I return a product if I don't like the scent?",
       answer:
-        "We accept returns within 14 days of delivery for unopened products in their original packaging. Opened products cannot be returned unless they are defective.",
+        "We accept returns within 14 days of delivery for unopened products in their original packaging with seals intact. Opened or used products cannot be returned unless they are defective or damaged upon arrival.",
     },
     {
       question: "How do I initiate a return?",
@@ -98,11 +98,7 @@ const faqData = {
       answer:
         "Refunds are processed within 5–7 business days after we receive and inspect the returned item. The refund is credited to your original payment method.",
     },
-    {
-      question: "Can I exchange for a different fragrance?",
-      answer:
-        "Exchanges are available for the same product if it arrives damaged or defective. For fragrance swaps, we recommend reaching out to discuss your options with our team.",
-    },
+
   ],
 } as const;
 
