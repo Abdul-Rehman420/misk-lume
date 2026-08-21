@@ -35,16 +35,8 @@ export default function ShippingPage() {
         <ContentBlock
           title="Order Processing"
           paragraphs={[
-            "Orders are processed within 1–2 business days of placement. You will receive an SMS and email confirmation once your order has been dispatched.",
+            "Orders are processed within 1–2 business days of placement. You will receive an email confirmation once your order has been dispatched.",
             "Processing times may be slightly extended during promotional periods or holidays. We appreciate your patience.",
-          ]}
-        />
-
-        <ContentBlock
-          title="Tracking Your Order"
-          paragraphs={[
-            "A PostEx tracking number is sent to you via SMS and email once your order is on its way.",
-            "Use the tracking number on the PostEx website or app to monitor your delivery in real time.",
           ]}
         />
 

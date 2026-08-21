@@ -32,7 +32,6 @@ export default function TermsPage() {
           title="Account Terms"
           paragraphs={[
             "You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account.",
-            "You must be at least 18 years of age to create an account and place orders on Misk Lume.",
             "We reserve the right to suspend or terminate accounts that violate these terms or engage in fraudulent activity.",
           ]}
         />
@@ -42,7 +41,7 @@ export default function TermsPage() {
           paragraphs={[
             "All orders are subject to availability. We reserve the right to cancel or limit quantities at our discretion.",
             "Prices are listed in Pakistani Rupees (PKR) and are inclusive of applicable taxes unless otherwise stated.",
-            "Payment must be completed in full before an order is processed. We accept major credit/debit cards and cash on delivery.",
+            "Payment must be completed in full before an order is processed. We accept cash on delivery (COD) and bank transfer.",
           ]}
         />
 

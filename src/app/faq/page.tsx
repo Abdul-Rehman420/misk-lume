@@ -57,7 +57,7 @@ const faqData = {
     {
       question: "How can I track my order?",
       answer:
-        "Once your order is dispatched, you will receive a PostEx tracking number via SMS and email. You can use this to monitor your delivery in real time.",
+        "Once your order is dispatched, you will receive an email confirmation with your order details. For any delivery updates, please contact us at misklume@gmail.com.",
     },
     {
       question: "Can I modify my order after placing it?",
@@ -69,12 +69,7 @@ const faqData = {
     {
       question: "What payment methods do you accept?",
       answer:
-        "We accept all major credit and debit cards, as well as cash on delivery (COD) for orders within Pakistan.",
-    },
-    {
-      question: "Is my payment information secure?",
-      answer:
-        "Yes. All transactions are processed through encrypted, PCI-compliant payment gateways. We never store your card details on our servers.",
+        "We accept cash on delivery (COD) and bank transfer for orders within Pakistan.",
     },
     {
       question: "Do you offer installment plans?",

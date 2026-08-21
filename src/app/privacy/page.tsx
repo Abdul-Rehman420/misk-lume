@@ -33,16 +33,6 @@ export default function PrivacyPage() {
           paragraphs={[
             "We use your personal information to process and fulfill orders, communicate order updates, and provide customer support.",
             "Technical data helps us analyze website performance, improve user experience, and tailor our marketing efforts to better serve you.",
-            "We may use your email address to send promotional communications. You can opt out of these at any time by clicking the unsubscribe link in any marketing email.",
-          ]}
-        />
-
-        <ContentBlock
-          title="Cookies & Tracking Technologies"
-          paragraphs={[
-            "Misk Lume uses essential cookies to ensure the website functions correctly and to maintain your session during checkout.",
-            "Analytics cookies allow us to understand how visitors interact with our site, helping us optimize performance and content.",
-            "You can manage cookie preferences through your browser settings. Disabling certain cookies may affect website functionality.",
           ]}
         />
 
@@ -66,7 +56,7 @@ export default function PrivacyPage() {
         <ContentBlock
           title="Your Rights"
           paragraphs={[
-            "You have the right to access, correct, or delete your personal information held by us.",
+            "You have the right to access and correct your personal information held by us.",
             "To exercise these rights, please contact us at misklume@gmail.com. We will respond to your request within a reasonable timeframe.",
             "You may also request a copy of all personal data we hold about you in a structured, commonly used format.",
           ]}

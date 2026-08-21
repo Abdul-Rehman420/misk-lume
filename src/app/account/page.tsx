@@ -65,10 +65,6 @@ export default function AccountPage() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deleteConfirm, setDeleteConfirm] = useState("");
-  const [deleting, setDeleting] = useState(false);
-  const [deleteError, setDeleteError] = useState("");
 
   useEffect(() => {
     async function loadData() {
@@ -96,23 +92,6 @@ export default function AccountPage() {
   }, [supabase]);
 
   const displayName = profile?.full_name?.split(" ")[0] || "Guest";
-
-  async function handleDeleteAccount() {
-    setDeleting(true);
-    setDeleteError("");
-    try {
-      const res = await fetch("/api/account", { method: "DELETE" });
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Failed to delete account");
-      }
-      await supabase.auth.signOut();
-      window.location.href = "/";
-    } catch (err) {
-      setDeleteError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
-      setDeleting(false);
-    }
-  }
 
   return (
     <div className="min-h-svh bg-bg-primary px-4 py-24 sm:px-6 lg:px-8">
@@ -145,16 +124,6 @@ export default function AccountPage() {
                   <span>Admin Dashboard</span>
                 </Link>
               )}
-              <button
-                onClick={() => { setShowDeleteModal(true); setDeleteConfirm(""); setDeleteError(""); }}
-                className="flex w-full items-center gap-3 rounded-md px-4 py-3 text-sm text-red-400 transition-colors hover:bg-red-500/10"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
-                  <polyline points="3 6 5 6 21 6" />
-                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                </svg>
-                <span>Delete Account</span>
-              </button>
               <button
                 onClick={async () => { await supabase.auth.signOut(); window.location.href = "/login"; }}
                 className="flex w-full items-center gap-3 rounded-md px-4 py-3 text-sm text-red-400 transition-colors hover:bg-red-500/10"
@@ -272,59 +241,6 @@ export default function AccountPage() {
           </section>
         </div>
       </div>
-
-      {/* Delete Account Modal */}
-      {showDeleteModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
-          <div className="w-full max-w-md rounded-lg border border-border bg-bg-surface p-6">
-            <h2 className="font-display text-xl font-medium text-text-primary">Delete Account</h2>
-            <p className="mt-2 text-sm text-text-muted">
-              This action is permanent and cannot be undone. All your data will be removed.
-            </p>
-            <ul className="mt-3 space-y-1 text-sm text-text-muted">
-              <li>- Your profile and account details</li>
-              <li>- Your wishlist</li>
-              <li>- Your order history link (orders are anonymized)</li>
-            </ul>
-
-            {deleteError && (
-              <div className="mt-4 rounded-md border border-red-500/20 bg-red-500/5 p-3 text-sm text-red-500">
-                {deleteError}
-              </div>
-            )}
-
-            <div className="mt-5">
-              <label className="mb-1 block text-sm font-medium text-text-primary">
-                Type <span className="font-bold text-red-400">DELETE</span> to confirm
-              </label>
-              <input
-                type="text"
-                value={deleteConfirm}
-                onChange={(e) => setDeleteConfirm(e.target.value)}
-                placeholder="DELETE"
-                className="w-full rounded-sm border border-border bg-bg-primary px-4 py-3 text-sm text-text-primary placeholder:text-text-dim focus:border-red-500 focus:outline-none"
-              />
-            </div>
-
-            <div className="mt-6 flex gap-3">
-              <button
-                onClick={() => setShowDeleteModal(false)}
-                disabled={deleting}
-                className="flex-1 rounded-sm border border-border px-4 py-2.5 text-sm font-medium text-text-primary transition-colors hover:bg-bg-surface-hover disabled:opacity-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDeleteAccount}
-                disabled={deleting || deleteConfirm !== "DELETE"}
-                className="flex-1 rounded-sm bg-red-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50"
-              >
-                {deleting ? "Deleting..." : "Delete Account"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
