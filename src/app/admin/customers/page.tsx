@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 interface Customer {
   id: string; full_name: string; email: string; phone?: string;
   created_at: string; order_count: number; total_spent: number;
+  suspended: boolean;
 }
 
 export default function CustomersPage() {
@@ -14,6 +15,7 @@ export default function CustomersPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
 
   async function loadCustomers() {
     try {
@@ -37,6 +39,26 @@ export default function CustomersPage() {
     const t = setTimeout(() => { loadCustomers(); }, 0);
     return () => clearTimeout(t);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  async function toggleSuspend(customer: Customer) {
+    setTogglingId(customer.id);
+    setError(null);
+    try {
+      const newSuspended = !customer.suspended;
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ suspended: newSuspended, updated_at: new Date().toISOString() })
+        .eq('id', customer.id);
+      if (updateError) throw updateError;
+
+      setCustomers(prev =>
+        prev.map(c => c.id === customer.id ? { ...c, suspended: newSuspended } : c)
+      );
+    } catch {
+      setError(`Failed to ${customer.suspended ? 'unsuspend' : 'suspend'} customer`);
+    }
+    setTogglingId(null);
+  }
 
   const filtered = customers.filter(c => {
     if (!search) return true;
@@ -76,19 +98,41 @@ export default function CustomersPage() {
                 <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-admin-text-muted">Orders</th>
                 <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-admin-text-muted">Total Spent</th>
                 <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-admin-text-muted">Joined</th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-admin-text-muted">Status</th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-admin-text-muted">Actions</th>
               </tr>
             </thead>
             <tbody>
               {filtered.length === 0 ? (
-                <tr><td colSpan={6} className="px-4 py-8 text-center text-sm text-admin-text-muted">No customers found</td></tr>
+                <tr><td colSpan={8} className="px-4 py-8 text-center text-sm text-admin-text-muted">No customers found</td></tr>
               ) : filtered.map((c) => (
-                <tr key={c.id} className="border-t border-admin-border transition-colors hover:bg-admin-bg/50">
+                <tr key={c.id} className={`border-t border-admin-border transition-colors hover:bg-admin-bg/50 ${c.suspended ? 'opacity-60' : ''}`}>
                   <td className="whitespace-nowrap px-4 py-3 text-sm font-medium text-admin-text">{c.full_name || "—"}</td>
                   <td className="whitespace-nowrap px-4 py-3 text-sm text-admin-text-muted">{c.email || "—"}</td>
                   <td className="whitespace-nowrap px-4 py-3 text-sm text-admin-text-muted">{c.phone || "—"}</td>
                   <td className="whitespace-nowrap px-4 py-3 text-sm text-admin-text">{c.order_count}</td>
                   <td className="whitespace-nowrap px-4 py-3 text-sm font-medium text-admin-text">PKR {c.total_spent.toLocaleString()}</td>
                   <td className="whitespace-nowrap px-4 py-3 text-sm text-admin-text-muted">{new Date(c.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
+                  <td className="whitespace-nowrap px-4 py-3">
+                    {c.suspended ? (
+                      <span className="rounded-full bg-red-500/20 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-red-400">Suspended</span>
+                    ) : (
+                      <span className="rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-emerald-400">Active</span>
+                    )}
+                  </td>
+                  <td className="whitespace-nowrap px-4 py-3">
+                    <button
+                      onClick={() => toggleSuspend(c)}
+                      disabled={togglingId === c.id}
+                      className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors disabled:opacity-50 ${
+                        c.suspended
+                          ? "bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20"
+                          : "bg-red-500/10 text-red-400 hover:bg-red-500/20"
+                      }`}
+                    >
+                      {togglingId === c.id ? "..." : c.suspended ? "Unsuspend" : "Suspend"}
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>

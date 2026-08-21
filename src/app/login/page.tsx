@@ -29,6 +29,22 @@ function LoginForm() {
         setError(signInError.message === "Invalid login credentials" ? "Invalid email or password" : signInError.message);
         return;
       }
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('suspended')
+          .eq('id', user.id)
+          .single();
+
+        if (profile?.suspended) {
+          await supabase.auth.signOut();
+          setError("Your account has been suspended. Please contact support for assistance.");
+          return;
+        }
+      }
+
       router.push(redirect);
       router.refresh();
     } catch {
@@ -53,7 +69,7 @@ function LoginForm() {
 
         {authError && !authErrorDismissed && (
           <div className="mb-5 flex items-start justify-between rounded-md border border-red-500/20 bg-red-500/5 p-3 text-sm text-red-500">
-            <span>Authentication failed. Please try again.</span>
+            <span>{authError === "suspended" ? "Your account has been suspended. Please contact support for assistance." : "Authentication failed. Please try again."}</span>
             <button type="button" onClick={() => setAuthErrorDismissed(true)} aria-label="Dismiss error" className="ml-3 text-red-400 hover:text-red-300">&times;</button>
           </div>
         )}

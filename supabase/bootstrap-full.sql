@@ -25,12 +25,14 @@ create table public.profiles (
   phone text,
   role text not null default 'customer' check (role in ('customer', 'admin', 'super_admin')),
   avatar_url text,
+  suspended boolean not null default false,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
 
 comment on table public.profiles is 'Application user profiles linked to Supabase auth.users';
 comment on column public.profiles.role is 'Access level: customer (default), admin, or super_admin';
+comment on column public.profiles.suspended is 'When true, the account is suspended and cannot log in or place orders';
 
 -- ============================================================================
 -- CATEGORIES
@@ -285,6 +287,7 @@ comment on table public.activity_log is 'Audit trail for admin events & user act
 -- ============================================================================
 create index idx_profiles_email on public.profiles(email);
 create index idx_profiles_role on public.profiles(role);
+create index idx_profiles_suspended on public.profiles(suspended);
 
 create index idx_categories_slug on public.categories(slug);
 create index idx_categories_is_active on public.categories(is_active);
