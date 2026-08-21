@@ -60,9 +60,10 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // Protect order submission — must be authenticated
+  // Protect order submission and account deletion — must be authenticated
   if (
-    request.nextUrl.pathname.startsWith('/api/orders')
+    request.nextUrl.pathname.startsWith('/api/orders') ||
+    request.nextUrl.pathname.startsWith('/api/account')
   ) {
     if (!user) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
