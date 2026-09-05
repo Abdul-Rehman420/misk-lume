@@ -39,7 +39,7 @@ const nextConfig: NextConfig = {
           "style-src 'self' 'unsafe-inline'",
           "img-src 'self' data: blob: https://images.unsplash.com https://*.supabase.co https://res.cloudinary.com",
           "font-src 'self' data:",
-          "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
+          "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.cloudinary.com",
           "frame-ancestors 'none'",
           "base-uri 'self'",
           "form-action 'self'",
