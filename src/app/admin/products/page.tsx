@@ -121,8 +121,8 @@ export default function ProductsPage() {
     try {
       const url = await uploadImageToCloudinary(file);
       setForm(f => ({ ...f, image_url: url }));
-    } catch {
-      setError("Image upload failed. Make sure Cloudinary upload preset is configured.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Image upload failed");
     }
     setUploading(false);
   }

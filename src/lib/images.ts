@@ -1,5 +1,5 @@
-const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "";
-const UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "";
+const CLOUD_NAME = (process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || "").trim();
+const UPLOAD_PRESET = (process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "").trim();
 
 export function cloudinaryUrl(url: string, width?: number): string {
   const base = `https://res.cloudinary.com/${CLOUD_NAME}/image/fetch/f_auto,q_auto`;
@@ -9,7 +9,10 @@ export function cloudinaryUrl(url: string, width?: number): string {
 
 export async function uploadImageToCloudinary(file: File, folder = "misk-lume/products"): Promise<string> {
   if (!CLOUD_NAME || !UPLOAD_PRESET) {
-    throw new Error("Cloudinary upload is not configured");
+    throw new Error(
+      "Cloudinary upload is not configured. Add NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME and " +
+        "NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET to your hosting environment, then rebuild and redeploy."
+    );
   }
   const formData = new FormData();
   formData.append("file", file);
@@ -20,8 +23,20 @@ export async function uploadImageToCloudinary(file: File, folder = "misk-lume/pr
     method: "POST",
     body: formData,
   });
-  if (!res.ok) throw new Error("Image upload failed");
-  const data = await res.json();
-  if (!data.secure_url) throw new Error("Image upload failed");
+
+  let data: { secure_url?: string; error?: { message?: string } } = {};
+  try {
+    data = await res.json();
+  } catch {
+    // Non-JSON response — fall through to the generic error below
+  }
+
+  if (!res.ok) {
+    const detail = data.error?.message ? `: ${data.error.message}` : ` (HTTP ${res.status})`;
+    throw new Error(`Image upload failed${detail}`);
+  }
+  if (!data.secure_url) {
+    throw new Error("Image upload failed: Cloudinary did not return a secure URL");
+  }
   return data.secure_url;
 }
