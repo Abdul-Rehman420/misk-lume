@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { uploadImageToCloudinary } from "@/lib/images";
 
 interface BlogPost {
   id: string; title: string; slug: string; category: string; excerpt?: string;
-  content?: string; is_published: boolean; published_at?: string; created_at: string;
+  content?: string; image_url?: string | null; is_published: boolean; published_at?: string; created_at: string;
 }
 
 const statusStyles: Record<string, string> = {
@@ -13,7 +14,7 @@ const statusStyles: Record<string, string> = {
   Draft: "bg-gray-200 text-gray-600",
 };
 
-const emptyForm = { title: "", slug: "", category: "Fragrance Guides", content: "", excerpt: "", is_published: false };
+const emptyForm = { title: "", slug: "", category: "Fragrance Guides", content: "", excerpt: "", image_url: "", is_published: false };
 
 export default function BlogPage() {
   const supabase = createClient();
@@ -23,6 +24,7 @@ export default function BlogPage() {
   const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
 
@@ -67,9 +69,24 @@ export default function BlogPage() {
     setEditingId(post.id);
     setForm({
       title: post.title, slug: post.slug, category: post.category || "Fragrance Guides",
-      content: post.content || "", excerpt: post.excerpt || "", is_published: post.is_published,
+      content: post.content || "", excerpt: post.excerpt || "", image_url: post.image_url || "", is_published: post.is_published,
     });
     setShowModal(true);
+  }
+
+  async function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setUploading(true);
+    setError(null);
+    try {
+      const url = await uploadImageToCloudinary(file, "misk-lume/blog");
+      setForm(f => ({ ...f, image_url: url }));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Image upload failed");
+    }
+    setUploading(false);
   }
 
   async function handleSave() {
@@ -82,14 +99,14 @@ export default function BlogPage() {
         const existing = posts.find(p => p.id === editingId);
         const { error: err } = await supabase.from('blog_posts').update({
           title: form.title, slug, category: form.category, content: form.content,
-          excerpt: form.excerpt, is_published: form.is_published,
+          excerpt: form.excerpt, image_url: form.image_url || null, is_published: form.is_published,
           published_at: form.is_published ? (existing?.published_at || new Date().toISOString()) : existing?.published_at ?? null,
         }).eq('id', editingId);
         if (err) throw err;
       } else {
         const { error: err } = await supabase.from('blog_posts').insert({
           title: form.title, slug, category: form.category, content: form.content,
-          excerpt: form.excerpt, is_published: form.is_published,
+          excerpt: form.excerpt, image_url: form.image_url || null, is_published: form.is_published,
           published_at: form.is_published ? new Date().toISOString() : null,
         });
         if (err) throw err;
@@ -199,6 +216,36 @@ export default function BlogPage() {
               <div>
                 <label className="mb-1 block text-sm font-medium text-admin-text">Excerpt</label>
                 <textarea rows={2} value={form.excerpt} onChange={e => setForm(f => ({ ...f, excerpt: e.target.value }))} className="w-full resize-none rounded-md border border-admin-border bg-admin-bg px-4 py-2 text-sm text-admin-text outline-none focus:border-accent-gold" />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-admin-text">Image</label>
+                <div className="flex items-center gap-3">
+                  <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-admin-border bg-admin-bg px-4 py-2 text-sm text-admin-text transition-colors hover:border-accent-gold disabled:cursor-not-allowed disabled:opacity-50">
+                    {uploading ? (
+                      <>
+                        <span className="h-4 w-4 animate-spin rounded-full border-2 border-accent-gold border-t-transparent" />
+                        Uploading...
+                      </>
+                    ) : (
+                      <>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
+                        Choose from device
+                      </>
+                    )}
+                    <input type="file" accept="image/*" className="hidden" onChange={handleFileSelect} disabled={uploading} />
+                  </label>
+                  {form.image_url && !uploading && (
+                    <button type="button" onClick={() => setForm(f => ({ ...f, image_url: "" }))} className="text-xs text-admin-text-muted transition-colors hover:text-error">Remove</button>
+                  )}
+                </div>
+                {form.image_url && (
+                  <div className="mt-3 flex items-center gap-3">
+                    <img src={form.image_url} alt="Preview" className="h-20 w-20 flex-shrink-0 rounded-md border border-admin-border object-cover" />
+                    <span className="truncate text-xs text-admin-text-muted">{form.image_url}</span>
+                  </div>
+                )}
+                <p className="mt-2 text-xs text-admin-text-muted">Uploaded images are stored on Cloudinary. Or paste a URL instead:</p>
+                <input type="url" value={form.image_url} onChange={e => setForm(f => ({ ...f, image_url: e.target.value }))} className="mt-2 w-full rounded-md border border-admin-border bg-admin-bg px-4 py-2 text-sm text-admin-text outline-none focus:border-accent-gold" placeholder="https://..." />
               </div>
               <div>
                 <label className="mb-1 block text-sm font-medium text-admin-text">Content (HTML)</label>
