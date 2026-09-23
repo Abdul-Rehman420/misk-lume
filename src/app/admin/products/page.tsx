@@ -42,7 +42,7 @@ export default function ProductsPage() {
 
   async function loadProducts() {
     try {
-      const { data, error } = await supabase.from('products').select('*, categories(name), product_images(image_url, is_primary)').order('sort_order', { ascending: true }).order('created_at', { ascending: false });
+      const { data, error } = await supabase.from('products').select('*, categories(name), product_images(id, image_url, is_primary)').order('sort_order', { ascending: true }).order('created_at', { ascending: false });
       if (error) throw error;
       if (data) setProducts(data);
     } catch { setError("Failed to load products"); }
@@ -199,6 +199,7 @@ export default function ProductsPage() {
       setForm(emptyForm);
       loadProducts();
     } catch (e: unknown) {
+      console.error("Failed to save product", e);
       setError(e instanceof Error ? e.message : "Failed to save product");
     }
     setSaving(false);
