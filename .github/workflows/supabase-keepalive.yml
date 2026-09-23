@@ -1,0 +1,38 @@
+name: Supabase Keep-Alive
+
+# Free-tier Supabase projects auto-pause after 7 days of no activity.
+# This workflow pings the project once a day so it never goes inactive.
+# Requires two repository secrets (Settings -> Secrets and variables -> Actions):
+#   SUPABASE_URL         e.g. https://xxxx.supabase.co
+#   SUPABASE_ANON_KEY    "anon public" key from Dashboard -> Settings -> API
+
+on:
+  schedule:
+    # Runs every day at 08:00 UTC
+    - cron: '0 8 * * *'
+  workflow_dispatch: # lets you trigger a run manually from the Actions tab
+
+permissions:
+  contents: read
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase REST API
+        run: |
+          code=$(curl -sS -o /tmp/supabase_ping.txt -w '%{http_code}' \
+            --retry 3 --retry-delay 5 \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+            "${{ secrets.SUPABASE_URL }}/rest/v1/")
+          echo "REST API responded with HTTP $code"
+          test "$code" = "200"
+
+      - name: Ping Supabase Auth health
+        run: |
+          code=$(curl -sS -o /dev/null -w '%{http_code}' \
+            --retry 3 --retry-delay 5 \
+            "${{ secrets.SUPABASE_URL }}/auth/v1/health")
+          echo "Auth API responded with HTTP $code"
+          test "$code" = "200"
