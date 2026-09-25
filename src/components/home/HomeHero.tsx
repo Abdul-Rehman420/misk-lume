@@ -17,7 +17,7 @@ export default function HomeHero() {
   return (
     <section className="relative flex min-h-svh items-center overflow-hidden bg-[linear-gradient(135deg,#0B0B0B_0%,#1a1510_50%,#0B0B0B_100%)]">
       <Image
-        src="/images/berry-shine-hero.jpg"
+        src="/images/berry-shine.jpeg"
         alt="Berry Shine fragrance"
         fill
         priority
