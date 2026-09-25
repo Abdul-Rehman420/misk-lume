@@ -146,7 +146,7 @@ export default function HomeContent({
         <div className="grid items-center gap-16 md:grid-cols-2">
           <ScrollReveal direction="left">
             <div className="relative aspect-[4/5] overflow-hidden rounded-md bg-bg-elevated">
-              <Image src="https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=800&q=80" alt="Misk Lume craftsmanship" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
+              <Image src="/images/office-creed.png" alt="Misk Lume craftsmanship" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
             </div>
           </ScrollReveal>
           <ScrollReveal direction="right">
