@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import ProductCard from "@/components/ui/ProductCard";
 import SectionHeader from "@/components/ui/SectionHeader";
 import { getProducts } from "@/lib/supabase/queries";
-import { cloudinaryUrl } from "@/lib/images";
 import { normalizeBadge } from "@/lib/badge";
 
 export const metadata: Metadata = {
@@ -90,7 +89,7 @@ export default async function AttarPage() {
       <section className="px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-6xl items-center gap-12 md:grid-cols-2">
           <div className="relative aspect-[4/3] overflow-hidden rounded-md bg-bg-elevated">
-            <Image src={cloudinaryUrl("https://images.unsplash.com/photo-1541643600914-78b084683601", 800)} alt="Traditional attar making" fill sizes="(max-width: 768px) 100vw, 50vw" className="h-full w-full object-cover" />
+            <Image src="/images/Attar.png" alt="Traditional attar making" fill sizes="(max-width: 768px) 100vw, 50vw" className="h-full w-full object-cover" />
           </div>
           <div className="flex flex-col gap-5">
             <span className="text-xs font-semibold uppercase tracking-[0.2em] text-accent-gold">Heritage</span>
