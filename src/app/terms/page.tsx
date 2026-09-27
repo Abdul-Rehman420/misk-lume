@@ -81,7 +81,7 @@ export default function TermsPage() {
           title="Governing Law"
           paragraphs={[
             "These terms are governed by and construed in accordance with the laws of Pakistan.",
-            "Any disputes arising from these terms shall be resolved in the courts of Karachi, Pakistan.",
+            "Any disputes arising from these terms shall be resolved in the courts of Lahore, Pakistan.",
           ]}
         />
 

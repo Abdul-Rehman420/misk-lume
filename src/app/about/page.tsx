@@ -108,7 +108,7 @@ export default function AboutPage() {
             </span>
             <span>
               Address:{" "}
-              <span className="text-text-primary">Karachi, Pakistan</span>
+              <span className="text-text-primary">Lahore, Pakistan</span>
             </span>
           </div>
         </div>

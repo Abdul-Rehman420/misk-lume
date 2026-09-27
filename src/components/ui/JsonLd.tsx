@@ -16,6 +16,7 @@ export function OrganizationJsonLd() {
     },
     address: {
       "@type": "PostalAddress",
+      addressLocality: "Lahore",
       addressCountry: "PK",
     },
     sameAs: [
