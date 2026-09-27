@@ -27,8 +27,8 @@ export default function ReturnsPage() {
         <ContentBlock
           title="Conditions for Returns"
           paragraphs={[
-            "Items must be unopened and unused, with all original packaging and seals intact.",
-            "Proof of purchase — your order confirmation or receipt — is required for all returns.",
+            "Go ahead — open it and wear it. You have 2–3 days to try your fragrance, and if you don't love it, send it back.",
+            "Items should be returned in reasonable condition. Proof of purchase — your order confirmation or receipt — is required for all returns.",
           ]}
         />
 
@@ -51,8 +51,8 @@ export default function ReturnsPage() {
         <ContentBlock
           title="Non-Returnable Items"
           paragraphs={[
-            "Opened or used products cannot be returned unless they are defective or damaged upon arrival.",
-            "This policy ensures the integrity and hygiene standards we uphold for all Misk Lume fragrances.",
+            "If you've used a fragrance beyond the 2–3 day trial window, we're unable to accept the return.",
+            "This policy helps us maintain the quality and hygiene standards of every Misk Lume fragrance while still giving you time to truly experience it.",
           ]}
         />
 
