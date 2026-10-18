@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/admin/", "/api/"],
       },
     ],
-    sitemap: "https://misklume.shop/sitemap.xml",
+    sitemap: "https://www.misklume.shop/sitemap.xml",
   };
 }

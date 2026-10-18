@@ -5,7 +5,7 @@ export function OrganizationJsonLd() {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: "Misk Lume",
-    url: "https://misklume.shop",
+    url: "https://www.misklume.shop",
     logo: cloudinaryUrl("https://images.unsplash.com/photo-1615634260169-c994b9a33e3e", 1200),
     description: "Luxury perfumes and attars crafted with rare ingredients from around the world.",
     contactPoint: {
