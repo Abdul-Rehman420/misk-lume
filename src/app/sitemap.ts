@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = "https://misklume.com";
+  const base = "https://misklume.shop";
   const staticPages = ["", "/shop", "/shop/best-sellers", "/collections", "/attar", "/blog", "/about", "/contact", "/shipping", "/returns", "/privacy", "/terms", "/faq", "/gift-sets", "/sustainability"].map((path) => ({
     url: `${base}${path}`,
     lastModified: new Date(),

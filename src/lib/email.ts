@@ -2,10 +2,10 @@ import { Resend } from 'resend'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
-// Contact form recipient — misklume@gmail.com until the @misklume.com mailbox exists.
+// Contact form recipient — misklume@gmail.com until the @misklume.shop mailbox exists.
 const CONTACT_TO = process.env.CONTACT_EMAIL_TO || 'misklume@gmail.com'
 // Resend's onboarding sender works without domain verification (owner inbox only).
-// Switch to a verified domain (e.g. "Misk Lume Contact <noreply@misklume.com>") once misklume.com is verified.
+// Switch to a verified domain (e.g. "Misk Lume Contact <noreply@misklume.shop>") once misklume.shop is verified.
 const CONTACT_FROM = process.env.EMAIL_FROM_CONTACT || 'Misk Lume Contact <onboarding@resend.dev>'
 
 function escapeHtml(str: string): string {

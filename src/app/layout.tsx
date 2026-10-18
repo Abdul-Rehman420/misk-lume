@@ -22,14 +22,14 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://misklume.com"),
+  metadataBase: new URL("https://misklume.shop"),
   title: "Misk Lume - Luxury Perfumes & Attars",
   description:
     "Discover exquisite fragrances crafted with rare ingredients from around the world. Shop luxury perfumes, attars, and gift sets.",
   openGraph: {
     title: "Misk Lume - Luxury Perfumes & Attars",
     description: "Discover exquisite fragrances crafted with rare ingredients from around the world.",
-    url: "https://misklume.com",
+    url: "https://misklume.shop",
     siteName: "Misk Lume",
     locale: "en_PK",
     type: "website",
