@@ -7,6 +7,8 @@ const CONTACT_TO = process.env.CONTACT_EMAIL_TO || 'misklume@gmail.com'
 // Resend's onboarding sender works without domain verification (owner inbox only).
 // Switch to a verified domain (e.g. "Misk Lume Contact <noreply@misklume.shop>") once misklume.shop is verified.
 const CONTACT_FROM = process.env.EMAIL_FROM_CONTACT || 'Misk Lume Contact <onboarding@resend.dev>'
+// Order emails sender — set EMAIL_FROM_ORDERS (e.g. "Misk Lume <noreply@misklume.shop>") after domain verification.
+const ORDERS_FROM = process.env.EMAIL_FROM_ORDERS || 'Misk Lume <onboarding@resend.dev>'
 
 function escapeHtml(str: string): string {
   return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;')
@@ -23,7 +25,7 @@ export async function sendOrderConfirmation(order: {
     .join('')
 
   await resend.emails.send({
-    from: 'Misk Lume <onboarding@resend.dev>',
+    from: ORDERS_FROM,
     to: order.email,
     subject: `Order Confirmation — ${order.orderNumber}`,
     html: `
