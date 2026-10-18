@@ -5,6 +5,7 @@ import Button from "@/components/ui/Button";
 export const metadata: Metadata = {
   title: "Gift Sets | Misk Lume",
   description: "Curated fragrance collections, beautifully packaged for gifting.",
+  alternates: { canonical: "/gift-sets" },
 };
 
 export default function GiftSetsPage() {

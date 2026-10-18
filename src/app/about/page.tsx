@@ -4,6 +4,7 @@ export const metadata: Metadata = {
   title: "Our Story | Misk Lume",
   description:
     "Discover the Misk Lume philosophy — handcrafted, oil-based fragrances distilled in small batches for those who treat scent as ritual.",
+  alternates: { canonical: "/about" },
 };
 
 export default function AboutPage() {

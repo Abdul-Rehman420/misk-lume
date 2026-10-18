@@ -4,6 +4,7 @@ export const metadata: Metadata = {
   title: "Return Policy | Misk Lume",
   description:
     "Understand Misk Lume's return policy, including return windows, conditions, and refund timelines.",
+  alternates: { canonical: "/returns" },
 };
 
 export default function ReturnsPage() {

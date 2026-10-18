@@ -4,6 +4,7 @@ export const metadata: Metadata = {
   title: "Privacy Policy | Misk Lume",
   description:
     "Learn how Misk Lume collects, uses, and protects your personal information.",
+  alternates: { canonical: "/privacy" },
 };
 
 export default function PrivacyPage() {

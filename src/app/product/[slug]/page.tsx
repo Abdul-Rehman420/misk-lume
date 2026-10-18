@@ -29,9 +29,10 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
       title: `${product.name} | Misk Lume`,
       description: product.short_description || product.description?.slice(0, 160),
       openGraph: { title: product.name, description: product.short_description, images: [{ url: product.image_url }] },
+      alternates: { canonical: `/product/${slug}` },
     };
   } catch {
-    return { title: "Product | Misk Lume" };
+    return { title: "Product | Misk Lume", alternates: { canonical: `/product/${slug}` } };
   }
 }
 

@@ -7,6 +7,7 @@ import { normalizeBadge } from "@/lib/badge";
 export const metadata: Metadata = {
   title: "Best Sellers | Misk Lume",
   description: "Shop Misk Lume's most-loved fragrances — the best-selling perfumes and attars our customers keep coming back to.",
+  alternates: { canonical: "/shop/best-sellers" },
 };
 
 export default async function BestSellersPage() {

@@ -11,6 +11,7 @@ import { normalizeBadge } from "@/lib/badge";
 export const metadata: Metadata = {
   title: "Shop All Fragrances | Misk Lume",
   description: "Browse the full Misk Lume collection of luxury perfumes, attars, and oils. Free shipping on orders over PKR 8,000.",
+  alternates: { canonical: "/shop" },
 };
 
 interface ShopPageProps {

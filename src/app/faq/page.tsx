@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   title: "FAQ | Misk Lume",
   description:
     "Find answers to frequently asked questions about Misk Lume fragrances, orders, payments, and returns.",
+  alternates: { canonical: "/faq" },
 };
 
 const faqData = {

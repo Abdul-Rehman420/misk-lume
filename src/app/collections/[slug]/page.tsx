@@ -22,9 +22,10 @@ export async function generateMetadata({ params }: CollectionPageProps): Promise
     return {
       title: `${collection?.name || "Collection"} | Misk Lume`,
       description: collection?.description,
+      alternates: { canonical: `/collections/${slug}` },
     };
   } catch {
-    return { title: "Collection | Misk Lume" };
+    return { title: "Collection | Misk Lume", alternates: { canonical: `/collections/${slug}` } };
   }
 }
 

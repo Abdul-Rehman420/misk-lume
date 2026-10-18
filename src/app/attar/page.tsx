@@ -8,6 +8,7 @@ import { normalizeBadge } from "@/lib/badge";
 export const metadata: Metadata = {
   title: "Attar Oils | Misk Lume",
   description: "Discover Misk Lume's collection of pure oil-based attars, crafted from rare natural ingredients for exceptional longevity.",
+  alternates: { canonical: "/attar" },
 };
 
 const ritualSteps = [

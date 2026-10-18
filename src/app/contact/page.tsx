@@ -5,6 +5,7 @@ export const metadata: Metadata = {
   title: "Contact Us | Misk Lume",
   description:
     "Get in touch with Misk Lume for inquiries, order support, wholesale opportunities, or press collaborations.",
+  alternates: { canonical: "/contact" },
 };
 
 export default function ContactPage() {

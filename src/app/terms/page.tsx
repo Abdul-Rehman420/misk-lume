@@ -4,6 +4,7 @@ export const metadata: Metadata = {
   title: "Terms of Service | Misk Lume",
   description:
     "Review the terms and conditions governing your use of the Misk Lume website and services.",
+  alternates: { canonical: "/terms" },
 };
 
 export default function TermsPage() {

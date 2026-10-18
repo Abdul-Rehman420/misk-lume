@@ -3,6 +3,11 @@ import HomeContent from "@/components/home/HomeContent";
 import { getBestSellerProducts, getFeaturedProducts, getCategories, getBlogPosts } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 import { normalizeBadge } from "@/lib/badge";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 const fallbackCategories = [
   { name: "Men", image: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=600&q=80", href: "/shop?gender=men", count: "24 Fragrances" },

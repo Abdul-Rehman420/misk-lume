@@ -10,6 +10,7 @@ import { cloudinaryUrl } from "@/lib/images";
 export const metadata: Metadata = {
   title: "Journal | Misk Lume",
   description: "Stories, guides, and insights from the world of luxury fragrance.",
+  alternates: { canonical: "/blog" },
 };
 
 interface BlogPageProps {

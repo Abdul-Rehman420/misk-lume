@@ -4,6 +4,7 @@ export const metadata: Metadata = {
   title: "Shipping Policy | Misk Lume",
   description:
     "Learn about Misk Lume's shipping coverage, delivery timelines, and tracking options across Pakistan.",
+  alternates: { canonical: "/shipping" },
 };
 
 export default function ShippingPage() {

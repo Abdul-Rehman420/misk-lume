@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Collections | Misk Lume",
   description: "Thoughtfully curated fragrance sets, designed to gift or to discover your next signature scent.",
+  alternates: { canonical: "/collections" },
 };
 
 export default async function CollectionsPage() {

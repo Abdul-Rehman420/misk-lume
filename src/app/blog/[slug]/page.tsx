@@ -85,9 +85,10 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       title: `${post.title} | Misk Lume Blog`,
       description: post.excerpt,
       openGraph: { title: post.title, description: post.excerpt, images: [{ url: post.image_url || "" }] },
+      alternates: { canonical: `/blog/${slug}` },
     };
   } catch {
-    return { title: "Blog Post | Misk Lume" };
+    return { title: "Blog Post | Misk Lume", alternates: { canonical: `/blog/${slug}` } };
   }
 }
 
